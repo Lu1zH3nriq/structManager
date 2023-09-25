@@ -24,8 +24,7 @@ export default function RedefSenha() {
         {
           text: "Fazer login com nova senha",
           onPress: () => {
-            // Aqui você pode adicionar a lógica para redefinir a senha, se necessário
-            // Em seguida, navegue de volta para a tela de login
+            // Aqui adicionar a lógica para redefinir a senha
             navigation.navigate("Login");
           },
         },
@@ -45,10 +44,13 @@ export default function RedefSenha() {
           </View>
 
           <View style={styles.form}>
+          <Text style={styles.formText}>Digite seu endereço de e-mail cadastrado para enviarmos uma nova senha temporária. </Text>
             <Text style={styles.formText}>E-mail:</Text>
             <TextInput
-              placeholder="Digite seu email"
+              keyboardType="email-address"
+              placeholder="example@email.com.br"
               style={styles.formTextInput}
+              autoCapitalize="none"
             />
           </View>
 

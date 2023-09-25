@@ -1,14 +1,14 @@
 {
   "expo": {
     "name": "structManager",
-    "slug": "structManager",
+    "slug": "O seu gerenciador de obras",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "image": "./assets/bgImage3.jpg",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [

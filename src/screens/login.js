@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,61 +7,91 @@ import {
   TouchableOpacity,
   ImageBackground,
   SafeAreaView,
+  Keyboard,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
 } from "react-native";
 
 import * as Animatable from "react-native-animatable";
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation } from "@react-navigation/native";
 
 export default function Login() {
-
   const navigation = useNavigation();
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require("../../assets/bgImage.jpg")}
+        source={require("../../assets/bgImage3.jpg")}
         style={styles.backgroundImage}
         imageStyle={{ opacity: 0.2 }}
       >
-        <Animatable.View
-          animation="fadeInUp"
+
+        <KeyboardAvoidingView
+          
+          style={styles.keyboardAvoidingView}
         >
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Bem vindo(a)</Text>
-            <Text style={styles.headerText}>Entrar</Text>
-          </View>
+          <Animatable.View animation="fadeInUp">
+            <View style={styles.header}>
+              <Text style={styles.headerText}>Bem vindo(a)</Text>
+              <Text style={styles.headerText}>Entrar</Text>
+            </View>
 
-          <View style={styles.form}>
-            <Text style={styles.formText}>Usuário:</Text>
-            <TextInput
-              placeholder="Digite seu usuário ou email"
-              style={styles.formTextInput}
-            />
+            <View style={styles.form}>
+              <Text style={styles.formText}>Usuário:</Text>
+              <TextInput
+                autoCorrect={false} // Desativa o corretor automático
+                autoCompleteType="off" // Desativa o sugestor de palavras
+                autoCapitalize="none"
+                placeholder="Digite seu usuário"
+                style={styles.formTextInput}
+              />
 
-            <Text style={styles.formText}>Senha:</Text>
-            <TextInput
-              placeholder="Digite sua senha"
-              style={styles.formTextInput}
-              secureTextEntry={true} // Se desejar que a senha seja ocultada
-            />
-          </View>
+              <Text style={styles.formText}>Senha:</Text>
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  autoCorrect={false} // Desativa o corretor automático
+                  autoCompleteType="off" // Desativa o sugestor de palavras
+                  autoCapitalize="none"
+                  placeholder="Digite sua senha"
+                  style={styles.passwordTextInput}
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
+                />
+                <TouchableOpacity
+                  autoCorrect={false} // Desativa o corretor automático
+                  autoCompleteType="off" // Desativa o sugestor de palavras
+                  onPress={toggleShowPassword}
+                  style={styles.toggleButton}
+                >
+                  <Text>{showPassword ? "Ocultar" : "Mostrar"}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
 
-          <View style={styles.buttons}>
-            <TouchableOpacity 
-              style={styles.btnEntrar}
-              onPress={()=>navigation.navigate('Home')}
+            <View style={styles.buttons}>
+              <TouchableOpacity
+                style={styles.btnEntrar}
+                onPress={() => navigation.navigate("Home")}
               >
-              <Text style={styles.btnEntrarText}>Entrar</Text>
-            </TouchableOpacity>
+                <Text style={styles.btnEntrarText}>Entrar</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.btnEsqSenha}
-              onPress={()=>navigation.navigate('RedefSenha')}
+              <TouchableOpacity
+                style={styles.btnEsqSenha}
+                onPress={() => navigation.navigate("RedefSenha")}
               >
-              <Text style={styles.btnEsqSenhaText}>Esqueci minha senha</Text>
-            </TouchableOpacity>
-          </View>
-        </Animatable.View>
+                <Text style={styles.btnEsqSenhaText}>Esqueci minha senha</Text>
+              </TouchableOpacity>
+            </View>
+          </Animatable.View>
+        </KeyboardAvoidingView>
       </ImageBackground>
     </SafeAreaView>
   );
@@ -69,7 +99,7 @@ export default function Login() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
+    flex: 1,
     backgroundColor: "#454A50",
   },
   header: {
@@ -99,6 +129,26 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 15,
   },
+  passwordInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  passwordTextInput: {
+    flex: 1,
+    backgroundColor: "#FFF",
+    height: 45,
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+    paddingHorizontal: 15,
+  },
+  toggleButton: {
+    backgroundColor: "#FFF",
+    height: 45,
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+  },
   buttons: {
     width: "100%",
     paddingHorizontal: 45,
@@ -127,6 +177,9 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     flex: 1,
-    resizeMode: "cover",
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+    justifyContent: "center",
   },
 });
