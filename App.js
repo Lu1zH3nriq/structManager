@@ -1,13 +1,18 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import LoginScreen from "./src/screens/login";
+import { StatusBar } from 'react-native';
+
+import { NavigationContainer } from '@react-navigation/native';
+
+import Routes from './src/routes/index';
+
 
 export default function App() {
   return (
-    <view>
-      <LoginScreen/>
-      <StatusBar style='auto'/>
-    </view>
+    <NavigationContainer>
+      <StatusBar backgroundColor="#63676B" barStyle="ligh-content"/>
+      <Routes/>
+    </NavigationContainer>
+
   );
 }
+
