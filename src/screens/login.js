@@ -10,6 +10,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 import * as Animatable from "react-native-animatable";
@@ -31,66 +32,67 @@ export default function Login() {
         style={styles.backgroundImage}
         imageStyle={{ opacity: 0.2 }}
       >
-
         <KeyboardAvoidingView
-          
           style={styles.keyboardAvoidingView}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <Animatable.View animation="fadeInUp">
-            <View style={styles.header}>
-              <Text style={styles.headerText}>Bem vindo(a)</Text>
-              <Text style={styles.headerText}>Entrar</Text>
-            </View>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <Animatable.View animation="fadeInUp">
+              <View style={styles.header}>
+                <Text style={styles.headerText}>Bem vindo(a)</Text>
+                <Text style={styles.headerText}>Entrar</Text>
+              </View>
 
-            <View style={styles.form}>
-              <Text style={styles.formText}>Usuário:</Text>
-              <TextInput
-                autoCorrect={false} // Desativa o corretor automático
-                autoCompleteType="off" // Desativa o sugestor de palavras
-                autoCapitalize="none"
-                placeholder="Digite seu usuário"
-                style={styles.formTextInput}
-              />
-
-              <Text style={styles.formText}>Senha:</Text>
-              <View style={styles.passwordInputContainer}>
+              <View style={styles.form}>
+                <Text style={styles.formText}>Usuário:</Text>
                 <TextInput
-                  autoCorrect={false} // Desativa o corretor automático
-                  autoCompleteType="off" // Desativa o sugestor de palavras
+                  autoCorrect={false}
+                  autoCompleteType="off"
                   autoCapitalize="none"
-                  placeholder="Digite sua senha"
-                  style={styles.passwordTextInput}
-                  secureTextEntry={!showPassword}
-                  value={password}
-                  onChangeText={(text) => setPassword(text)}
+                  placeholder="Digite seu usuário"
+                  style={styles.formTextInput}
                 />
+
+                <Text style={styles.formText}>Senha:</Text>
+                <View style={styles.passwordInputContainer}>
+                  <TextInput
+                    autoCorrect={false}
+                    autoCompleteType="off"
+                    autoCapitalize="none"
+                    placeholder="Digite sua senha"
+                    style={styles.passwordTextInput}
+                    secureTextEntry={!showPassword}
+                    value={password}
+                    onChangeText={(text) => setPassword(text)}
+                  />
+                  <TouchableOpacity
+                    onPress={toggleShowPassword}
+                    style={styles.toggleButton}
+                  >
+                    <Text>{showPassword ? "Ocultar" : "Exibir"}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View style={styles.buttons}>
                 <TouchableOpacity
-                  autoCorrect={false} // Desativa o corretor automático
-                  autoCompleteType="off" // Desativa o sugestor de palavras
-                  onPress={toggleShowPassword}
-                  style={styles.toggleButton}
+                  style={styles.btnEntrar}
+                  onPress={() => navigation.navigate("Main")}
                 >
-                  <Text>{showPassword ? "Ocultar" : "Mostrar"}</Text>
+                  <Text style={styles.btnEntrarText}>Entrar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.btnEsqSenha}
+                  onPress={() => navigation.navigate("RedefSenha")}
+                >
+                  <Text style={styles.btnEsqSenhaText}>
+                    Esqueci minha senha
+                  </Text>
                 </TouchableOpacity>
               </View>
-            </View>
-
-            <View style={styles.buttons}>
-              <TouchableOpacity
-                style={styles.btnEntrar}
-                onPress={() => navigation.navigate("Home")}
-              >
-                <Text style={styles.btnEntrarText}>Entrar</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.btnEsqSenha}
-                onPress={() => navigation.navigate("RedefSenha")}
-              >
-                <Text style={styles.btnEsqSenhaText}>Esqueci minha senha</Text>
-              </TouchableOpacity>
-            </View>
-          </Animatable.View>
+            </Animatable.View>
+          </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
       </ImageBackground>
     </SafeAreaView>

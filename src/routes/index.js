@@ -1,7 +1,7 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import Login from '../screens/login.js';
-import Home from '../screens/home.js';
+import Main from '../screens/main.js';
 import RedefSenha from '../screens/redefSenha.js';
 
 
@@ -16,9 +16,9 @@ export default function Routes(){
                 options={{headerShown : false}}
             />
             <Stack.Screen
-                name='Home'
-                component={Home}
-                options={{ headerShown: false}}
+                name='Main'
+                component={Main}
+                options={{ headerShown: false, gestureEnabled: false }}
             />
             <Stack.Screen
                 name='RedefSenha'
