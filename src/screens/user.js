@@ -4,7 +4,6 @@ import { Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import ModalSenha from 'react-native-modal';
 import ModalEmail from 'react-native-modal'
-
 import ImagePicker from 'react-native-image-picker';
 
 export default function User() {
@@ -15,11 +14,13 @@ export default function User() {
 
   const [avatarSource, setAvatarSource] = useState(null);
 
-  const handleSelectImage = ()=>{
+ 
+
+  const handleSelectImage = () => {
     const options = {
       title: 'Selecionar foto de perfil',
       takePhotoButtonTitle: 'Tirar foto',
-      chooseFromLibraryButtonTitle: 'Escolhar da galeria',
+      chooseFromLibraryButtonTitle: 'Escolher da galeria',
       cancelButtonTitle: 'Cancelar',
       quality: 1,
       maxWidth: 500,
@@ -27,18 +28,20 @@ export default function User() {
     };
 
     ImagePicker.showImagePicker(options, (response) => {
-      if (response.didCancel){
+      if (response.didCancel) {
         console.log('Usuário cancelou a escolha da imagem');
+      } else if (response.error) {
+        console.error('Erro ao selecionar a imagem:', response.error);
+      } else {
+        // A imagem foi selecionada com sucesso
+        setAvatarSource({ uri: response.uri });
       }
-      else if (response.error){
-        console.log('Erro ao selecioar imagem: ', response.error);
-      }
-      else{
-        //imagem selecionada
-        setAvatarSource( { uri: response.uri } );
-      }
-    })
-  }
+    });
+  };
+
+
+
+
   const handleLogout = () => {
     Alert.alert(
       "Encerrar sessão",
@@ -112,7 +115,7 @@ export default function User() {
         {
           text: "Confirmar",
           onPress: () => {
-            
+
           },
         },
       ],
@@ -129,9 +132,9 @@ export default function User() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleSelectImage}>
+        <TouchableOpacity onPress={()=>{}}>
           <Image
-            source={avatarSource ? avatarSource : require ('../../assets/bgImage.jpg')}
+            source={avatarSource ? avatarSource : require('../../assets/bgImage.jpg')}
             style={styles.userImage}
           />
         </TouchableOpacity>
@@ -167,7 +170,7 @@ export default function User() {
                 style={styles.input}
                 value={emailSenha}
                 onChangeText={(text) => setEmailSeha(text)}
-                placeholderTextColor="white" 
+                placeholderTextColor="white"
                 color="white"
               />
               <TextInput
@@ -176,7 +179,7 @@ export default function User() {
                 value={newPassword}
                 onChangeText={(text) => setNewPassword(text)}
                 secureTextEntry={true}
-                placeholderTextColor="white" 
+                placeholderTextColor="white"
                 color="white"
               />
               <TouchableOpacity onPress={handleSavePassword} style={styles.modalButton}>
@@ -204,7 +207,7 @@ export default function User() {
                 style={styles.input}
                 value={email}
                 onChangeText={(text) => setEmail(text)}
-                placeholderTextColor="white" 
+                placeholderTextColor="white"
                 color="white"
               />
               <TextInput
@@ -212,7 +215,7 @@ export default function User() {
                 style={styles.input}
                 value={newEmail}
                 onChangeText={(text) => setNewEmail(text)}
-                placeholderTextColor="white" 
+                placeholderTextColor="white"
                 color="white"
               />
               <TouchableOpacity onPress={handleSaveEmail} style={styles.modalButton}>
