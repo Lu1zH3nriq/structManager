@@ -178,7 +178,7 @@ export default function User() {
         />
       </View>
 
-      <ModalSenha isVisible={isModaSenhaVisible}>
+      <ModalSenha isVisible={isModaSenhaVisible} onBackdropPress={toggleModalSenha}>
         <KeyboardAvoidingView
           style={styles.keyboardAvoidingView}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -220,9 +220,8 @@ export default function User() {
         </KeyboardAvoidingView>
       </ModalSenha>
 
-      <ModalEmail isVisible={isModaEmailVisible}>
+      <ModalEmail isVisible={isModaEmailVisible} onBackdropPress={toggleModalEmail}>
         <KeyboardAvoidingView
-          style={styles.keyboardAvoidingView}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
