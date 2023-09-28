@@ -8,15 +8,18 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ModalPesquisa from "react-native-modal";
-import ModalCadastro from "react-native-modal";
 import { TextInputMask } from "react-native-masked-text";
+
+//importar navegção
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function Home() {
   const [isModalPesquisaVisible, setModalPesquisaVisible] = useState(false);
-  const [isModalCadastroVisible, setModalCadastroVisible] = useState(false);
   const [nomeCliente, setNomeCliente] = useState("");
   const [tipoObra, setTipoObra] = useState("");
   const [dataInicio, setDataInicio] = useState("");
@@ -25,13 +28,33 @@ export default function Home() {
     setModalPesquisaVisible(!isModalPesquisaVisible);
   };
 
-  const toggleModalCadastro = () => {
-    setModalCadastroVisible(!isModalCadastroVisible); // Função para abrir/fechar o modal de cadastro
+  //navegação
+  const navigation = useNavigation();
+  const toggleCadastrarObra = () => {
+    navigation.navigate('CadastraNovaObra')
   };
+
 
   //função para pesquisar as obras
   const handlePesquisar = () => {
-    // Lógica de pesquisa através dos campos informados aqui
+
+    // verifica se os campos estão vazios
+    if( nomeCliente === '' && tipoObra === '' && dataInicio === ''){
+      Alert.alert(
+        'Atenção!',
+        'Preencha algum dos campos para pesquisar obras.',
+        [
+          {
+            text: "Ok",
+          },
+        ],
+      );
+    }
+    else{
+
+      //pesquisar no banco de dados as obras de acordo com os filtros;
+
+    }
 
     //ao final fechar o modal de pesquisa
     toggleModalPesquisa();
@@ -43,10 +66,9 @@ export default function Home() {
         <Icon name="search" size={30} color="white" style={styles.searchIcon} />
       </TouchableOpacity>
 
-      <Text style={styles.text}>Dashboard de todas as obras cadastradas</Text>
-
+      
       <View style={styles.footer}>
-        <TouchableOpacity onPress={toggleModalCadastro}>
+        <TouchableOpacity onPress={toggleCadastrarObra}>
           <Icon name="plus" size={30} color="white" style={styles.addIcon} />
         </TouchableOpacity>
       </View>
@@ -101,95 +123,7 @@ export default function Home() {
         </KeyboardAvoidingView>
       </ModalPesquisa>
 
-      <ModalCadastro
-        isVisible={isModalCadastroVisible}
-        onBackdropPress={toggleModalCadastro}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Cadastrar nova obra</Text>
-            {/* Adicione os campos e a lógica para cadastrar uma nova obra aqui */}
-            <Icon
-              name="search"
-              size={30}
-              color="white"
-              style={styles.searchIconCadastro}
-            />
-            <TextInput
-              placeholder="Cliente: "
-              style={styles.inputSearch}
-              placeholderTextColor="white"
-              color="white"
-            />
 
-            <TextInput
-              placeholder="Contato: "
-              style={styles.input}
-              placeholderTextColor="white"
-              color="white"
-            />
-
-            <TextInput
-              placeholder="Tipo de Obra: "
-              style={styles.input}
-              placeholderTextColor="white"
-              color="white"
-            />
-
-            <TextInput
-              placeholder="Endereço da Obra: "
-              style={styles.input}
-              placeholderTextColor="white"
-              color="white"
-            />
-
-            <TextInputMask
-              type={"datetime"}
-              options={{
-                format: "DD/MM/YYYY",
-              }}
-              placeholder="Data de Início:"
-              style={styles.input}
-              placeholderTextColor="white"
-              color="white"
-              keyboardType="numeric"
-            />
-
-            <TextInputMask
-              type={"datetime"}
-              options={{
-                format: "DD/MM/YYYY",
-              }}
-              placeholder="Data prevista de Término:"
-              style={styles.input}
-              placeholderTextColor="white"
-              color="white"
-              keyboardType="numeric"
-            />
-
-            <TextInput
-              type={"courency"}
-              options={{
-                format: "R$9.999,99",
-              }}
-              placeholder="Orçamento: "
-              style={styles.input}
-              placeholderTextColor="white"
-              color="white"
-              keyboardType="numeric"
-            />
-
-            <TouchableOpacity
-              onPress={toggleModalCadastro}
-              style={styles.modalButton}
-            >
-              <Text style={styles.modalButtonText}>Cadastrar</Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </ModalCadastro>
     </SafeAreaView>
   );
 }
@@ -266,4 +200,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
+
+
+ 
 });

@@ -114,6 +114,7 @@ export default function CadTipoObra() {
               <TextInput
                 placeholder="Tipo de Obra"
                 style={styles.input}
+                placeholderTextColor={'grey'}
               />
 
 
@@ -143,12 +144,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "white",
     marginBottom: 20,
+    alignSelf: 'center'
   },
   input: {
     backgroundColor: "white",
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
+    marginHorizontal: 10,
   },
   button: {
     backgroundColor: "#007BFF",
@@ -156,6 +159,7 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: "center",
     marginVertical: 10,
+    marginHorizontal: 10,
   },
   buttonText: {
     fontSize: 18,
@@ -165,6 +169,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "white",
     marginBottom: 20,
+    marginLeft: 10,
   },
   cancelButton: {
     position: 'absolute',

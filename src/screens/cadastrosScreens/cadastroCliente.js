@@ -1,45 +1,176 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, KeyboardAvoidingView, Alert } from 'react-native';
 import ModalPesquisaCliente from 'react-native-modal'
 import { useNavigation } from '@react-navigation/native'; // Importe o hook de navegação
 
 export default function CadCliente() {
   const [isModalPesquisaCliente, setModalPesquisaCliente] = useState(false) // inicializa o modal oculto
-
-  //function para alterar a visibilidade do modal
-  const toggleModalPesquisaCliente = () => {
-    setModalPesquisaCliente(!isModalPesquisaCliente);
-  }
-
-  //function para pesquisar o cliente e alterar os dados
-  const togglePesquisaCliente = () => {
-    //lógica para pesquisar o cliente e trazer os dados para a tela onde tem os campos
-    toggleModalPesquisaCliente();
-  }
-
-
-
-  const navigation = useNavigation(); // Inicialize o hook de navegação
-
   const [nome, setNome] = useState('');
   const [cpfCnpj, setCpfCnpj] = useState('');
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
   const [endereco, setEndereco] = useState('');
 
+  const navigation = useNavigation(); // Inicialize o hook de navegação
+
+  //function para alterar a visibilidade do modal
+  const toggleModalPesquisaCliente = () => {
+    setModalPesquisaCliente(!isModalPesquisaCliente);
+  }
+
+  //CRUD CLIENTE
+  //function para cadastrar o cliente
   const handleCadastroCliente = () => {
 
+    //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
+    if (nome === '' && cpfCnpj === '' && telefone === '' && email === '' && endereco === '') {
+      Alert.alert(
+        'Atenção!',
+        'Preencha todos os campos para cadastrar o cliente!',
+        [
+          {
+            text: 'Ok',
+          },
+        ],
+      );
+    }
+
+    //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
+    else {
+      //buscar cliente
+      //se achar, informar que o cliente ja está cadastrado
+      //se nao achar, cadastrar o cliente
 
 
-    // Aqui você pode adicionar a lógica para enviar os dados do cliente para o servidor
-    setNome('');
-    setCpfCnpj('');
-    setTelefone('');
-    setEmail('');
-    setEndereco('');
+      // DEPOIS DE CADASTRAR
+      Alert.alert(
+        'Sucesso!',
+        'Cliente cadastrado com sucesso!',
+        [
+          {
+            text: 'Confirmar',
+            onPress: () => {
+              // LIMPAR TODOS OS CAMPOS
+              setNome('');
+              setCpfCnpj('');
+              setTelefone('');
+              setEmail('');
+              setEndereco('');
+            },
+          },
+        ],
+      );
+
+    }
   };
 
-  const handleCancelar = ()=>{
+  //function para pesquisar o cliente
+  const handlePesquisaCliente = () => {
+
+    //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
+    if (nome === '' && cpfCnpj === '') {
+      Alert.alert(
+        'Atenção!',
+        'Preencha os campos para pesquisar clientes!',
+        [
+          {
+            text: 'Ok',
+          },
+        ],
+      );
+    }
+
+    //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
+    else {
+      //buscar cliente
+      //se achar, trazer os dados do cliente (json)
+      //se nao achar, trazer uma mensagem de cliente nao cadastrado
+    }
+    toggleModalPesquisaCliente();
+  }
+
+  //function para alterar o cliente
+  const handleAlteraCliente = () => {
+
+    //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
+    if (nome === '' && cpfCnpj === '' && telefone === '' && email === '' && endereco === '') {
+      Alert.alert(
+        'Atenção!',
+        'Preencha todos os campos para cadastrar o cliente!',
+        [
+          {
+            text: 'Ok',
+          },
+        ],
+      );
+    }
+
+    //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
+    else {
+      //buscar cliente
+      //se achar, informar que o cliente ja está cadastrado
+      //se nao achar, cadastrar o cliente
+
+
+      // DEPOIS DE CADASTRAR
+      Alert.alert(
+
+      );
+
+
+      // LIMPAR TODOS OS CAMPOS
+      setNome('');
+      setCpfCnpj('');
+      setTelefone('');
+      setEmail('');
+      setEndereco('');
+    }
+
+  };
+
+  //function para deletar o cliente
+  const handleDeletaCliente = () => {
+
+    //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
+    if (nome === '' && cpfCnpj === '' && telefone === '' && email === '' && endereco === '') {
+      Alert.alert(
+        'Atenção!',
+        'Preencha todos os campos para cadastrar o cliente!',
+        [
+          {
+            text: 'Ok',
+          },
+        ],
+      );
+    }
+
+    //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
+    else {
+      //buscar cliente
+      //se achar, informar que o cliente ja está cadastrado
+      //se nao achar, cadastrar o cliente
+
+
+      // DEPOIS DE CADASTRAR
+      Alert.alert(
+
+      );
+
+
+      // LIMPAR TODOS OS CAMPOS
+      setNome('');
+      setCpfCnpj('');
+      setTelefone('');
+      setEmail('');
+      setEndereco('');
+    }
+
+  };
+
+
+
+
+  const handleCancelar = () => {
     setNome('');
     setCpfCnpj('');
     setTelefone('');
@@ -118,15 +249,17 @@ export default function CadCliente() {
               <TextInput
                 placeholder="CPF ou CNPJ"
                 style={styles.input}
+                placeholderTextColor={'grey'}
               />
 
               <TextInput
                 placeholder="Nome do Cliente"
                 style={styles.input}
+                placeholderTextColor={'grey'}
               />
 
               <TouchableOpacity
-                onPress={togglePesquisaCliente}
+                onPress={handlePesquisaCliente}
                 style={styles.button}
               >
                 <Text style={styles.buttonText}>Pesquisar</Text>
@@ -151,12 +284,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "white",
     marginBottom: 20,
+    alignSelf: 'center'
   },
   input: {
     backgroundColor: "white",
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
+    marginHorizontal: 10,
   },
   button: {
     backgroundColor: "#007BFF",
@@ -164,6 +299,7 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: "center",
     marginVertical: 10,
+    marginHorizontal: 10,
   },
   buttonText: {
     fontSize: 18,
@@ -173,6 +309,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "white",
     marginBottom: 20,
+    marginLeft: 10,
   },
   cancelButton: {
     position: 'absolute',
