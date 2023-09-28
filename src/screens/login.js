@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 
 import * as Animatable from "react-native-animatable";
@@ -18,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function Login() {
   const navigation = useNavigation();
+  const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -25,6 +27,34 @@ export default function Login() {
     setShowPassword(!showPassword);
   };
 
+
+  const loginUser = () => {
+
+    //verifica se os campos não estão vazios
+    if (user === '' || password === '') {
+      Alert.alert(
+        "Campos inválidos",
+        "Preencha todos os campos para fazer login",
+        [
+          {
+            text: "OK",
+          },
+        ],
+      );
+    }
+
+    else{
+
+      // lógica para validar usuario e senha
+
+
+      navigation.navigate("Main")
+    }
+
+  }
+
+
+  
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -51,6 +81,8 @@ export default function Login() {
                   autoCapitalize="none"
                   placeholder="Digite seu usuário"
                   style={styles.formTextInput}
+                  value={user}
+                  onChangeText={(text) => setUser(text)}
                 />
 
                 <Text style={styles.formText}>Senha:</Text>
@@ -77,7 +109,7 @@ export default function Login() {
               <View style={styles.buttons}>
                 <TouchableOpacity
                   style={styles.btnEntrar}
-                  onPress={() => navigation.navigate("Main")}
+                  onPress={loginUser}
                 >
                   <Text style={styles.btnEntrarText}>Entrar</Text>
                 </TouchableOpacity>

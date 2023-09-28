@@ -63,7 +63,6 @@ export default function User() {
         {
           text: "Cancelar",
           onPress: () => {
-            // Ação a ser executada ao cancelar
           },
           style: "cancel",
         },

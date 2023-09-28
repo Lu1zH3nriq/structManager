@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,61 +15,99 @@ import { useNavigation } from '@react-navigation/native'
 export default function RedefSenha() {
 
   const navigation = useNavigation();
+  const [email, setEmail] = useState('');
 
+
+  //function para resetar a senha
   const handleResetPassword = () => {
-    Alert.alert(
-      "Redefinir Senha",
-      "Uma nova senha foi enviada para o email cadastrado, por favor verifique e faça login novamente!",
-      [
-        {
-          text: "Fazer login com nova senha",
-          onPress: () => {
-            // Aqui adicionar a lógica para redefinir a senha
-            navigation.navigate("Login");
+
+    //verifica o campo do email
+    if (email === '') {
+      Alert.alert(
+        "Email inválido",
+        "Preencha com o email cadastrado para redefinir a senha",
+        [
+          {
+            text: "Ok",
           },
-        },
-      ],
-      { cancelable: false } // O usuário não pode fechar o alerta clicando fora dele
-    );
+        ],
+      );
+    }
+    else {
+
+      // fazer uma busca no banco de dados o usuario correspondente ao email informado
+      //se encontrar usuario
+      // gerar um numero aleatorio
+      // alterar a senha do usuario encontrado para a senha gerada aleatoria
+      // enviar um email para o email informado com o numero aleatorio
+
+      Alert.alert(
+        "Sucesso!",
+        "Uma nova senha foi enviada para o email cadastrado, por favor verifique e faça login novamente!",
+        [
+          {
+            text: "Fazer login com nova senha",
+            onPress: () => {
+              navigation.navigate("Login");
+            },
+          },
+        ],
+        { cancelable: false } // O usuário não pode fechar o alerta clicando fora dele
+      );
+
+
+      //se nao encontrar usuario com este email,
+      Alert.alert(
+        "Atenção!",
+        "Não existe usuário cadastrado com este endereço de email, verifique o email informado!",
+        [
+          {
+            text: "Ok",
+          },
+        ],
+      );
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      
-        <Animatable.View
-          animation="fadeInUp"
-        >
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Redefinir Senha</Text>
-          </View>
 
-          <View style={styles.form}>
+      <Animatable.View
+        animation="fadeInUp"
+      >
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Redefinir Senha</Text>
+        </View>
+
+        <View style={styles.form}>
           <Text style={styles.formText}>Digite seu endereço de e-mail cadastrado para enviarmos uma nova senha temporária. </Text>
-            <Text style={styles.formText}>E-mail:</Text>
-            <TextInput
-              keyboardType="email-address"
-              placeholder="example@email.com.br"
-              style={styles.formTextInput}
-              autoCapitalize="none"
-            />
-          </View>
+          <Text style={styles.formText}>E-mail:</Text>
+          <TextInput
+            keyboardType="email-address"
+            placeholder="example@email.com.br"
+            style={styles.formTextInput}
+            autoCapitalize="none"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+        </View>
 
-          <View style={styles.buttons}>
-            <TouchableOpacity 
-              style={styles.btnEnviar}
-              onPress={handleResetPassword}
-              >
-              <Text style={styles.btnEntrarText}>Enviar nova senha</Text>
-            </TouchableOpacity>
+        <View style={styles.buttons}>
+          <TouchableOpacity
+            style={styles.btnEnviar}
+            onPress={handleResetPassword}
+          >
+            <Text style={styles.btnEntrarText}>Enviar nova senha</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.btnVoltar}
-              onPress={()=>navigation.navigate('Login')}
-              >
-              <Text style={styles.btnEsqSenhaText}>Voltar para Log In</Text>
-            </TouchableOpacity>
-          </View>
-        </Animatable.View>
+          <TouchableOpacity
+            style={styles.btnVoltar}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.btnEsqSenhaText}>Voltar para Log In</Text>
+          </TouchableOpacity>
+        </View>
+      </Animatable.View>
 
     </SafeAreaView>
   );
