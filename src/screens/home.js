@@ -43,7 +43,7 @@ export default function Home() {
         <Icon name="search" size={30} color="white" style={styles.searchIcon} />
       </TouchableOpacity>
 
-      <Text style={styles.text}>Aqui as obras cadastradas serão mostradas</Text>
+      <Text style={styles.text}>Dashboard de todas as obras cadastradas</Text>
 
       <View style={styles.footer}>
         <TouchableOpacity onPress={toggleModalCadastro}>
