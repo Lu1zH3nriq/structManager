@@ -23,6 +23,7 @@ export default function Home() {
   const [nomeCliente, setNomeCliente] = useState("");
   const [tipoObra, setTipoObra] = useState("");
   const [dataInicio, setDataInicio] = useState("");
+   // setar o estado como falso para os botoes de pesquisa
 
   const toggleModalPesquisa = () => {
     setModalPesquisaVisible(!isModalPesquisaVisible);
