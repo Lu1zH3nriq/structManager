@@ -8,10 +8,17 @@ import TelaHome from './home.js';
 import TelaCadastros from './cadastros';
 import TelaRelatorios from './relatorios';
 import TelaUsuario from './user';
+import TelaGerencialObras from './gerenciarObras.js';
 
 function HomeScreen() {
   return (
     <TelaHome style={styles.container}/>
+  );
+}
+
+function GerenciarObras(){
+  return(
+    <TelaGerencialObras style={styles.container}/>
   );
 }
 
@@ -46,12 +53,14 @@ export default function Home() {
 
           if (route.name === "Início") {
             iconName = "home";
+          } else if (route.name === "Gerencial") {
+            iconName = "star"; 
           } else if (route.name === "Cadastros") {
-            iconName = "list"; // Altere o nome do ícone conforme necessário
+            iconName = "list"; 
           } else if (route.name === "Relatórios") {
-            iconName = "file-text"; // Altere o nome do ícone conforme necessário
+            iconName = "file-text"; 
           } else if (route.name === "Usuário") {
-            iconName = "user"; // Altere o nome do ícone conforme necessário
+            iconName = "user"; 
           }
 
           return <Icon name={iconName} size={size} color={color} />;
@@ -66,6 +75,7 @@ export default function Home() {
       }}
     >
       <Tab.Screen name="Início" component={HomeScreen} options={{headerShown : false}}/>
+      <Tab.Screen name="Gerencial" component={GerenciarObras} options={{headerShown : false}}/>
       <Tab.Screen name="Cadastros" component={CadastrosScreen}  options={{headerShown : false}}/>
       <Tab.Screen name="Relatórios" component={RelatoriosScreen} options={{headerShown : false}}/>
       <Tab.Screen name="Usuário" component={UsuarioScreen} options={{headerShown : false}} />

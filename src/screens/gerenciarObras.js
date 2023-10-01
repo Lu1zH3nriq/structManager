@@ -18,7 +18,7 @@ import { TextInputMask } from "react-native-masked-text";
 import { useNavigation } from '@react-navigation/native';
 
 
-export default function Home() {
+export default function GerenciarObras() {
   const [isModalPesquisaVisible, setModalPesquisaVisible] = useState(false);
   const [nomeCliente, setNomeCliente] = useState("");
   const [tipoObra, setTipoObra] = useState("");
@@ -29,7 +29,7 @@ export default function Home() {
     setModalPesquisaVisible(!isModalPesquisaVisible);
   };
 
-  //NAVEGAÇÃO PARA A TELA DE CADASTRO DE OBRAS
+  //navegação
   const navigation = useNavigation();
   const toggleCadastrarObra = () => {
     navigation.navigate('CadastraNovaObra')
