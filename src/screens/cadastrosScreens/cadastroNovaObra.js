@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     marginHorizontal: 10,
-    width: 310,
+    width: '82%',
   },
 
   label: {

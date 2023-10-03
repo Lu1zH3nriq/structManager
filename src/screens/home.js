@@ -25,9 +25,16 @@ export default function Home() {
       <View style={styles.cardContainer}>
 
         <View style={styles.card}>
-          
-          <Text style={styles.cardText}> Total de Obras cadastradas:    0</Text>
-          <Text style={styles.cardText}> Total de obras em andamento:       0</Text>
+
+
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardText}>GRÁFICO DE PIZZA</Text>
+          </View>
+
+          <View style={styles.cardFooter}>
+            <Text style={styles.cardText}>Obras cadastradas:    0</Text>
+            <Text style={styles.cardText}>Obras em andamento:   0</Text>
+          </View>
 
 
         </View>
@@ -55,20 +62,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   cardContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)", 
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     width: "90%",
-    height: "70%",
+    height: "80%",
     borderRadius: 10,
     padding: 10,
   },
   card: {
-    opacity: 1,
+    flex: 1, // Adicione esta linha
+    flexDirection: "column", // Adicione esta linha
+    justifyContent: "center", // Adicione esta linha
+  },
+  cardHeader: {
+    justifyContent: "center", // Alinhe no início do card
+    alignItems: "center",
   },
 
+  cardFooter: {
+    position: "absolute",
+    bottom: 0, 
+  },
   cardText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
     paddingBottom: 8,
-
-  }
+  },
 });
