@@ -10,6 +10,7 @@ import CadFuncionario from '../screens/cadastrosScreens/cadastroFuncionario.js';
 import CadEquipamento from '../screens/cadastrosScreens/cadastroEquipamento.js';
 import CadTipoObra from '../screens/cadastrosScreens/cadastroTipoObra.js';
 import CadNovaObra from '../screens/cadastrosScreens/cadastroNovaObra.js';
+import DetailsObra from '../screens/detailsObra/mainDetailsObra.js'
 
 
 const Stack = createNativeStackNavigator();
@@ -65,6 +66,14 @@ export default function Routes() {
             <Stack.Screen
                 name="CadastraNovaObra"
                 component={CadNovaObra}
+                options={{
+                    headerShown: false,
+                }}
+            />
+
+            <Stack.Screen
+                name="DetailsObra"
+                component={DetailsObra}
                 options={{
                     headerShown: false,
                 }}

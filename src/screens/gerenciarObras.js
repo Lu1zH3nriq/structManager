@@ -35,6 +35,10 @@ export default function GerenciarObras() {
     navigation.navigate('CadastraNovaObra')
   };
 
+  const toggleDetailObra = () => {
+    navigation.navigate('DetailsObra')
+  };
+
 
   //função para pesquisar as obras
   const handlePesquisar = () => {
@@ -67,6 +71,11 @@ export default function GerenciarObras() {
         <Icon name="search" size={30} color="white" style={styles.searchIcon} />
       </TouchableOpacity>
 
+      <TouchableOpacity onPress={ toggleDetailObra } >
+        <Text style={ {color: 'white'} }>
+          ABRIR TELA DE GERENCIAR CADA OBRA
+        </Text>
+      </TouchableOpacity>
       
       <View style={styles.footer}>
         <TouchableOpacity onPress={toggleCadastrarObra}>
