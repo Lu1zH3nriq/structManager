@@ -27,11 +27,8 @@ export default function Login() {
     setShowPassword(!showPassword);
   };
 
-
-  const loginUser = () => {
-
-    //verifica se os campos não estão vazios
-    if (user === '' || password === '') {
+  async function loginUser() {
+    if (user === "" || password === "") {
       Alert.alert(
         "Campos inválidos",
         "Preencha todos os campos para fazer login",
@@ -39,22 +36,39 @@ export default function Login() {
           {
             text: "OK",
           },
-        ],
+        ]
       );
+    } else {
+      try {
+        let response = await fetch("http://192.168.100.3:3000/login", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            usuario: user,
+            password: password,
+          }),
+        });
+
+        if (response.status === 200) {
+          // Por exemplo, você pode receber um token de autenticação do servidor
+          // e usá-lo para navegar para a tela principal
+          navigation.navigate("Main");
+        } else {
+          Alert.alert("Erro de login", "Usuário ou senha incorretos.");
+        }
+      } catch (error) {
+        console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
     }
-
-    else{
-
-      // lógica para validar usuario e senha
-
-
-      navigation.navigate("Main")
-    }
-
   }
 
-
-  
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -107,10 +121,7 @@ export default function Login() {
               </View>
 
               <View style={styles.buttons}>
-                <TouchableOpacity
-                  style={styles.btnEntrar}
-                  onPress={loginUser}
-                >
+                <TouchableOpacity style={styles.btnEntrar} onPress={loginUser}>
                   <Text style={styles.btnEntrarText}>Entrar</Text>
                 </TouchableOpacity>
 

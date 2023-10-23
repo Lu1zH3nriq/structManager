@@ -33,7 +33,7 @@ export default function CadCliente() {
 
   //CRUD CLIENTE
   //function para cadastrar o cliente
-  const handleCadastroCliente = () => {
+  const handleCadastroCliente = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (
       nome === "" &&
@@ -55,31 +55,57 @@ export default function CadCliente() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar cliente
-      //se achar, informar que o cliente ja está cadastrado
-      //se nao achar, cadastrar o cliente
+      try {
+        let response = await fetch(
+          "http://192.168.100.3:3000/cadastraCliente",
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              nome: nome,
+              cpfcnpj: cpfCnpj,
+              telefone: telefone,
+              email: email,
+              endereco: endereco,
+            }),
+          }
+        );
 
-      // DEPOIS DE CADASTRAR
-      Alert.alert("Sucesso!", "Cliente cadastrado com sucesso!", [
-        {
-          text: "Confirmar",
-          onPress: () => {
-            // LIMPAR TODOS OS CAMPOS
-            setNome("");
-            setCpfCnpj("");
-            setTelefone("");
-            setEmail("");
-            setEndereco("");
-          },
-        },
-      ]);
+        if (response.status === 200) {
+          Alert.alert("Sucesso!", "Cliente cadastrado com sucesso!", [
+            {
+              text: "Confirmar",
+              onPress: () => {
+                // LIMPAR TODOS OS CAMPOS
+                setNome("");
+                setCpfCnpj("");
+                setTelefone("");
+                setEmail("");
+                setEndereco("");
+              },
+            },
+          ]);
+        } else {
+          Alert.alert("Erro ao cadastrar usuário.");
+        }
+      } catch (error) {
+        console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
     }
   };
 
   //function para pesquisar o cliente
   const [nomeFind, setNomeFind] = useState("");
   const [cpfCnpjFind, setCpfCnpjFind] = useState("");
-  const handlePesquisaCliente = () => {
+
+  const handlePesquisaCliente = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (nomeFind === "" && cpfCnpjFind === "") {
       Alert.alert("Atenção!", "Preencha os campos para pesquisar clientes!", [
@@ -91,12 +117,34 @@ export default function CadCliente() {
 
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
-      //buscar cliente
-      //se achar, trazer os dados do cliente (json)
+      try {
+        let baseUrl = "http://192.168.100.3:3000/buscaCliente";
+        let params = {
+          nome: nomeFind,
+          cpfcnpj: cpfCnpjFind
+        };
 
-      setFind(true);
+        let url = `${baseUrl}?${Object.keys(params)
+          .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+          .join("&")}`;
 
-      //se nao achar, trazer uma mensagem de cliente nao cadastrado
+        let response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+
+        
+      } catch (error) {
+        console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
+      
     }
     toggleModalPesquisaCliente();
   };
@@ -195,120 +243,113 @@ export default function CadCliente() {
   };
 
   return (
-      <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.goBackButton}>{"< Voltar"}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>
+          <Text style={styles.cancelButtonText}>Cancelar</Text>
+        </TouchableOpacity>
+        <Text style={styles.heading}>Dados do Cliente</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome do Cliente"
+          value={nome}
+          onChangeText={(text) => setNome(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="CPF ou CNPJ"
+          value={cpfCnpj}
+          onChangeText={(text) => setCpfCnpj(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Telefone"
+          value={telefone}
+          onChangeText={(text) => setTelefone(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Endereço"
+          value={endereco}
+          onChangeText={(text) => setEndereco(text)}
+        />
+        <TouchableOpacity style={styles.button} onPress={handleCadastroCliente}>
+          <Text style={styles.buttonText}>Cadastrar Cliente</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={toggleModalPesquisaCliente}
         >
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.goBackButton}>{"< Voltar"}</Text>
-          </TouchableOpacity>
+          <Text style={styles.buttonText}>Pesquisar/Alterar Cliente</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={handleCancelar}
-          >
-            <Text style={styles.cancelButtonText}>Cancelar</Text>
-          </TouchableOpacity>
-          <Text style={styles.heading}>Dados do Cliente</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nome do Cliente"
-            value={nome}
-            onChangeText={(text) => setNome(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="CPF ou CNPJ"
-            value={cpfCnpj}
-            onChangeText={(text) => setCpfCnpj(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Telefone"
-            value={telefone}
-            onChangeText={(text) => setTelefone(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Endereço"
-            value={endereco}
-            onChangeText={(text) => setEndereco(text)}
-          />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleCadastroCliente}
-          >
-            <Text style={styles.buttonText}>Cadastrar Cliente</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={toggleModalPesquisaCliente}
-          >
-            <Text style={styles.buttonText}>Pesquisar/Alterar Cliente</Text>
-          </TouchableOpacity>
+        {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM CLIENTE */}
+        {find ? (
+          <View>
+            <TouchableOpacity style={styles.button} onPress={() => {}}>
+              <Text style={styles.buttonText}>Salvar Alterações</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => {}}>
+              <Text style={styles.buttonText}>Excluir Cadastro</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.grayBackground}></View>
+        )}
 
-          {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM CLIENTE */}
-          {find ? (
+        <ModalPesquisaCliente
+          isVisible={isModalPesquisaCliente}
+          onBackdropPress={toggleModalPesquisaCliente}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+          >
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Pesquisar Cliente</Text>
 
-            <View>
-              <TouchableOpacity style={styles.button} onPress={() => {}}>
-                <Text style={styles.buttonText}>Salvar Alterações</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => {}}>
-                <Text style={styles.buttonText}>Excluir Cadastro</Text>
+              <TextInput
+                placeholder="CPF ou CNPJ"
+                style={styles.input}
+                placeholderTextColor={"grey"}
+                value={cpfCnpjFind}
+                onChangeText={(text) => {
+                  setCpfCnpjFind(text);
+                }}
+              />
+
+              <TextInput
+                placeholder="Nome do Cliente"
+                style={styles.input}
+                placeholderTextColor={"grey"}
+                value={nomeFind}
+                onChangeText={(text) => {
+                  setNomeFind(text);
+                }}
+              />
+
+              <TouchableOpacity
+                onPress={handlePesquisaCliente}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Pesquisar</Text>
               </TouchableOpacity>
             </View>
-          ) : (
-            <View style={styles.grayBackground}></View>
-          )}
-
-          <ModalPesquisaCliente
-            isVisible={isModalPesquisaCliente}
-            onBackdropPress={toggleModalPesquisaCliente}
-          >
-            <KeyboardAvoidingView
-              behavior={Platform.OS === "ios" ? "padding" : undefined}
-            >
-              <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>Pesquisar Cliente</Text>
-
-                <TextInput
-                  placeholder="CPF ou CNPJ"
-                  style={styles.input}
-                  placeholderTextColor={"grey"}
-                  value={cpfCnpjFind}
-                  onChangeText={(text) => {
-                    setCpfCnpjFind(text);
-                  }}
-                />
-
-                <TextInput
-                  placeholder="Nome do Cliente"
-                  style={styles.input}
-                  placeholderTextColor={"grey"}
-                  value={nomeFind}
-                  onChangeText={(text) => {
-                    setNomeFind(text);
-                  }}
-                />
-
-                <TouchableOpacity
-                  onPress={handlePesquisaCliente}
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>Pesquisar</Text>
-                </TouchableOpacity>
-              </View>
-            </KeyboardAvoidingView>
-          </ModalPesquisaCliente>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
+          </KeyboardAvoidingView>
+        </ModalPesquisaCliente>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -382,7 +423,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   grayBackground: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,
   },
 });
+
+
+/* 
+if (response.status === 200) {
+          setNome(response.nome);
+          setCpfCnpj(response.cpfcnpj);
+          setTelefone(response.telefone);
+          setEmail(response.email);
+          setEndereco(response.endereco);
+          //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
+          setFind(true);
+        } else {
+          Alert.alert("Erro ao buscar usuário. Usuário não encontrado!");
+        }
+
+
+*/

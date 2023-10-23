@@ -7,12 +7,8 @@ import {
 } from "react-native";
 
 
-export default function Home() {
-
-  //FUNÇÃO PARA PEGAR O NOME DO USUÁRIO LOGADO
-  const userName = () => {
-
-  }
+export default function Home(  ) {
+  
 
   return (
     <SafeAreaView style={styles.container}>

@@ -6,23 +6,21 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-  Alert
+  Alert,
 } from "react-native";
 
 import * as Animatable from "react-native-animatable";
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation } from "@react-navigation/native";
 
 export default function RedefSenha() {
-
   const navigation = useNavigation();
-  const [email, setEmail] = useState('');
-
+  const [email, setEmail] = useState("");
+  const [user, setUser] = useState("");
 
   //function para resetar a senha
-  const handleResetPassword = () => {
-
+  const handleResetPassword = async () => {
     //verifica o campo do email
-    if (email === '') {
+    if (email === "" || user === "") {
       Alert.alert(
         "Email inválido",
         "Preencha com o email cadastrado para redefinir a senha",
@@ -30,57 +28,78 @@ export default function RedefSenha() {
           {
             text: "Ok",
           },
-        ],
+        ]
       );
-    }
-    else {
-
-      // fazer uma busca no banco de dados o usuario correspondente ao email informado
-      //se encontrar usuario
-      // gerar um numero aleatorio
-      // alterar a senha do usuario encontrado para a senha gerada aleatoria
-      // enviar um email para o email informado com o numero aleatorio
-
-      Alert.alert(
-        "Sucesso!",
-        "Uma nova senha foi enviada para o email cadastrado, por favor verifique e faça login novamente!",
-        [
-          {
-            text: "Fazer login com nova senha",
-            onPress: () => {
-              navigation.navigate("Login");
-            },
+    } else {
+      try {
+        let response = await fetch("http://192.168.100.3:3000/resetPassword", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
-        ],
-        { cancelable: false } // O usuário não pode fechar o alerta clicando fora dele
-      );
+          body: JSON.stringify({
+            usuario: user,
+            email: email,
+          }),
+        });
 
-
-      //se nao encontrar usuario com este email,
-      Alert.alert(
-        "Atenção!",
-        "Não existe usuário cadastrado com este endereço de email, verifique o email informado!",
-        [
-          {
-            text: "Ok",
-          },
-        ],
-      );
+        if (response.status === 200) {
+          Alert.alert(
+            "Sucesso!",
+            "Uma nova senha foi enviada para o email cadastrado, por favor verifique e faça login novamente!",
+            [
+              {
+                text: "Fazer login com nova senha",
+                onPress: () => {
+                  navigation.navigate("Login");
+                },
+              },
+            ],
+            { cancelable: false } // O usuário não pode fechar o alerta clicando fora dele
+          );
+        } else {
+          Alert.alert(
+            "Atenção!",
+            "Não existe usuário cadastrado com este endereço de email, verifique o email informado!",
+            [
+              {
+                text: "Ok",
+              },
+            ]
+          );
+        }
+      } catch (error) {
+        console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-
-      <Animatable.View
-        animation="fadeInUp"
-      >
+      <Animatable.View animation="fadeInUp">
         <View style={styles.header}>
           <Text style={styles.headerText}>Redefinir Senha</Text>
         </View>
 
         <View style={styles.form}>
-          <Text style={styles.formText}>Digite seu endereço de e-mail cadastrado para enviarmos uma nova senha temporária. </Text>
+          <Text style={styles.formText}>
+            Digite seu usuário e endereço de e-mail cadastrado para enviarmos
+            uma nova senha temporária.
+          </Text>
+          <Text style={styles.formText}>Usuário:</Text>
+          <TextInput
+            placeholder="Nome de Usuário"
+            style={styles.formTextInput}
+            autoCapitalize="none"
+            value={user}
+            onChangeText={(text) => setUser(text)}
+          />
+
           <Text style={styles.formText}>E-mail:</Text>
           <TextInput
             keyboardType="email-address"
@@ -102,13 +121,12 @@ export default function RedefSenha() {
 
           <TouchableOpacity
             style={styles.btnVoltar}
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate("Login")}
           >
             <Text style={styles.btnEsqSenhaText}>Voltar para Log In</Text>
           </TouchableOpacity>
         </View>
       </Animatable.View>
-
     </SafeAreaView>
   );
 }
@@ -172,3 +190,5 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 });
+
+/**/
