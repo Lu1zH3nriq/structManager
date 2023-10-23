@@ -58,7 +58,8 @@ app.post("/resetPassword", async (req, res) => {
   }
 });
 
-//endpoint para cadastros de cliente
+//----------------------------------------------------endpoint para cadastros de cliente------------------------------------------
+//CREATE
 app.post("/cadastraCliente", async (req, res) => {
   try {
     const clientCreated = await client.create({
@@ -80,6 +81,7 @@ app.post("/cadastraCliente", async (req, res) => {
     res.status(500).send();
   }
 });
+//READ
 app.get("/buscaCliente", async (req, res) => {
   try {
     const clientFinded = await client.findOne({
@@ -89,29 +91,61 @@ app.get("/buscaCliente", async (req, res) => {
       }
     });
 
-    console.log(clientFinded)
+    if(clientFinded){
+      res.status(200).json(clientFinded);
+    }
+    else{
+      res.status(422).send();
+    }
 
   } catch (error) {
     console.log("Erro ao buscar cliente: ", error);
     res.status(500).send();
   }
 });
-app.put("/alteraCliente");
+//UPDATE
+app.put("/alteraCliente", async (req, res) => {
+  try {
+    const clientUpdatedId = req.body.id;
+    const clientUpdated = await client.update({
+      nome: req.body.nome,
+      cpfcnpj: req.body.cpfcnpj,
+      telefone: req.body.telefone,
+      email: req.body.email,
+      endereco: req.body.endereco,
+    },{
+      where: {
+        id: clientUpdatedId,
+      }
+    });
+
+    if (clientUpdated) {
+      return res.status(200).send();
+    } else {
+      return res.status(400).send();
+    }
+
+  } catch (error) {
+    console.log("Erro ao atualizar cliente: ", error);
+    res.status(500).send();
+  }
+});
+//DELETE
 app.delete("/apagaCliente");
 
-//endpoint para cadastros de funcionario
+//----------------------------------------------------endpoint para cadastros de funcionario----------------------------------------
 app.post("/cadastraFuncionario");
 app.get("/buscaFuncionario");
 app.put("/alteraFuncionario");
 app.delete("/apagaFuncionario");
 
-//endpoint para cadastros de equipamentos
+//----------------------------------------------------endpoint para cadastros de equipamentos---------------------------------------
 app.post("/cadastraEquipamento");
 app.get("/buscaEquipamento");
 app.put("/alteraEquipamento");
 app.delete("/apagaEquipamento");
 
-//endpoint para cadastros de Obras
+//----------------------------------------------------endpoint para cadastros de Obras---------------------------------------------
 app.post("/cadastraObra");
 app.get("/buscaObra");
 app.put("/alteraObra");

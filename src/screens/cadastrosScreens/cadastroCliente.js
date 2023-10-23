@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import ModalPesquisaCliente from "react-native-modal";
-import { useNavigation } from "@react-navigation/native"; // Importe o hook de navegação
+import { useNavigation } from "@react-navigation/native";
 
 export default function CadCliente() {
   const [isModalPesquisaCliente, setModalPesquisaCliente] = useState(false); // inicializa o modal oculto
@@ -21,13 +21,16 @@ export default function CadCliente() {
   const [email, setEmail] = useState("");
   const [endereco, setEndereco] = useState("");
 
-  const cliente = require('../../../models/Cliente');
-
-
-
-
   //SETAR O ESTADO COMO FALSE PARA ACHAR O CLIENTE
   const [find, setFind] = useState(false);
+  const cliente = {
+    id: "",
+    nome:"",
+    cpfcnpj:"",
+    telefone:"",
+    email:"",
+    endereco:""
+  };
 
   const navigation = useNavigation(); // Inicialize o hook de navegação
 
@@ -126,7 +129,7 @@ export default function CadCliente() {
         let baseUrl = "http://192.168.100.3:3000/buscaCliente";
         let params = {
           nome: nomeFind,
-          cpfcnpj: cpfCnpjFind
+          cpfcnpj: cpfCnpjFind,
         };
 
         let url = `${baseUrl}?${Object.keys(params)
@@ -142,28 +145,30 @@ export default function CadCliente() {
         });
 
         if (response.status === 200) {
+          const data = await response.json(); // Extrair dados JSON da resposta
 
-          cliente.create({
-            nome: response.nome,
-            cpfcnpj: response.cpfcnpj,
-            telefone: response.telefone,
-            email: response.email,
-            endereco: response.endereco
-          });
-
+          //console.log(data);
+          
+          cliente.id = data.id;
+          cliente.nome = data.nome;
+          cliente.cpfcnpj = data.cpfcnpj;
+          cliente.telefone = data.telefone;
+          cliente.email = data.email;
+          cliente.endereco = data.endereco;
+            
+          //console.log(cliente);
           setNome(cliente.nome);
           setCpfCnpj(cliente.cpfcnpj);
           setTelefone(cliente.telefone);
           setEmail(cliente.email);
           setEndereco(cliente.endereco);
+
+
           //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
           setFind(true);
         } else {
           Alert.alert("Erro ao buscar este cliente ou cliente não cadastrado!");
         }
-
-
-
       } catch (error) {
         console.error("Erro na requisição: ", error);
         Alert.alert(
@@ -171,7 +176,6 @@ export default function CadCliente() {
           "Houve um problema na requisição. Tente novamente mais tarde."
         );
       }
-
     }
     toggleModalPesquisaCliente();
   };
@@ -199,52 +203,18 @@ export default function CadCliente() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      let clienteAlterado = require('../../../models/Cliente');
-      clienteAlterado.create({
-        nome: nome,
-        cpfcnpj: cpfCnpj,
-        telefone: telefone,
-        email: email,
-        endereco: endereco,
-      });
-      //VERIIFICA SE FOI ALTERADO ALGUM CAMPO DO CLIENTE
-      if (clienteAlterado.nome != cliente.nome || clienteAlterado.cpfcnpj != cliente.cpfcnpj || clienteAlterado.telefone != cliente.telefone || clienteAlterado.email != cliente.email || clienteAlterado.endereco != cliente.endereco) {
-        //FAZER UPDATE DA ALTERAÇÃO DESTE CLIENTE
-        try {
-            
+      const clienteAlterado = {
+        id: cliente.id,
+        nomeAlterado: nome,
+        cpfcnpjAlterado: cpfCnpj,
+        telefoneAlterado: telefone,
+        emailAlterado: email,
+        enderecoAlterado: endereco,
+      };
 
+      
 
-
-
-        } catch (error) {
-          console.error("Erro na requisição: ", error);
-          Alert.alert(
-            "Erro de rede",
-            "Houve um problema na requisição. Tente novamente mais tarde."
-          );
-        }
-      }else{
-        Alert.alert(
-          "Atenção!",
-          "Nehum dado deste cliente foi alterado, portanto não há nada a ser salvo!",
-          [
-            {
-              text: "Ok",
-            },
-          ]
-        );
-      }
-
-
-      // DEPOIS DE CADASTRAR
-      Alert.alert();
-
-      // LIMPAR TODOS OS CAMPOS
-      setNome("");
-      setCpfCnpj("");
-      setTelefone("");
-      setEmail("");
-      setEndereco("");
+      console.log("cliente  : ",clienteAlterado);
     }
   };
 
@@ -358,10 +328,10 @@ export default function CadCliente() {
         {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM CLIENTE */}
         {find ? (
           <View>
-            <TouchableOpacity style={styles.button} onPress={() => { }}>
+            <TouchableOpacity style={styles.button} onPress={handleAlteraCliente}>
               <Text style={styles.buttonText}>Salvar Alterações</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => { }}>
+            <TouchableOpacity style={styles.button} onPress={() => {}}>
               <Text style={styles.buttonText}>Excluir Cadastro</Text>
             </TouchableOpacity>
           </View>
@@ -488,8 +458,59 @@ const styles = StyleSheet.create({
   },
 });
 
-
 /* 
+if (
+        clienteAlterado.nomeAlterado != cliente.nome ||
+        clienteAlterado.cpfcnpjAlterado != cliente.cpfcnpj ||
+        clienteAlterado.telefoneAlterado != cliente.telefone ||
+        clienteAlterado.emailAlterado != cliente.email ||
+        clienteAlterado.enderecoAlterado != cliente.endereco
+      ) {
+        try {
+          let response = await fetch(
+            "http://192.168.100.3:3000/alteraCliente",
+            {
+              method: "PUT",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(clienteAlterado),
+            }
+          );
 
+          if (response.status === 200) {
+            Alert.alert("Sucesso!", "Cliente alterado com sucesso!", [
+              {
+                text: "Confirmar",
+                onPress: () => {
+                  // LIMPAR TODOS OS CAMPOS
+                  setNome("");
+                  setCpfCnpj("");
+                  setTelefone("");
+                  setEmail("");
+                  setEndereco("");
+
+                  setFind(false);
+                },
+              },
+            ]);
+          } else {
+            Alert.alert("Erro ao atualizar cliente.");
+          }
+        } catch (error) {
+          console.error("Erro na requisição: ", error);
+          Alert.alert(
+            "Erro de rede",
+            "Houve um problema na requisição. Tente novamente mais tarde."
+          );
+        }
+      } else {
+        Alert.alert("Atenção!", "Nenhum campo alterado, nada para salvar!", [
+          {
+            text: "OK",
+          },
+        ]);
+      }
 
 */
