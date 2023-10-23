@@ -21,6 +21,11 @@ export default function CadCliente() {
   const [email, setEmail] = useState("");
   const [endereco, setEndereco] = useState("");
 
+  const cliente = require('../../../models/Cliente');
+
+
+
+
   //SETAR O ESTADO COMO FALSE PARA ACHAR O CLIENTE
   const [find, setFind] = useState(false);
 
@@ -89,7 +94,7 @@ export default function CadCliente() {
             },
           ]);
         } else {
-          Alert.alert("Erro ao cadastrar usuário.");
+          Alert.alert("Erro ao cadastrar cliente.");
         }
       } catch (error) {
         console.error("Erro na requisição: ", error);
@@ -108,7 +113,7 @@ export default function CadCliente() {
   const handlePesquisaCliente = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (nomeFind === "" && cpfCnpjFind === "") {
-      Alert.alert("Atenção!", "Preencha os campos para pesquisar clientes!", [
+      Alert.alert("Atenção!", "Preencha os campos para pesquisar um cliente!", [
         {
           text: "Ok",
         },
@@ -136,7 +141,29 @@ export default function CadCliente() {
           },
         });
 
-        
+        if (response.status === 200) {
+
+          cliente.create({
+            nome: response.nome,
+            cpfcnpj: response.cpfcnpj,
+            telefone: response.telefone,
+            email: response.email,
+            endereco: response.endereco
+          });
+
+          setNome(cliente.nome);
+          setCpfCnpj(cliente.cpfcnpj);
+          setTelefone(cliente.telefone);
+          setEmail(cliente.email);
+          setEndereco(cliente.endereco);
+          //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
+          setFind(true);
+        } else {
+          Alert.alert("Erro ao buscar este cliente ou cliente não cadastrado!");
+        }
+
+
+
       } catch (error) {
         console.error("Erro na requisição: ", error);
         Alert.alert(
@@ -144,13 +171,13 @@ export default function CadCliente() {
           "Houve um problema na requisição. Tente novamente mais tarde."
         );
       }
-      
+
     }
     toggleModalPesquisaCliente();
   };
 
   //function para alterar o cliente
-  const handleAlteraCliente = () => {
+  const handleAlteraCliente = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (
       nome === "" &&
@@ -161,7 +188,7 @@ export default function CadCliente() {
     ) {
       Alert.alert(
         "Atenção!",
-        "Preencha todos os campos para cadastrar o cliente!",
+        "Preencha todos os campos para alterar este cliente!",
         [
           {
             text: "Ok",
@@ -172,9 +199,42 @@ export default function CadCliente() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar cliente
-      //se achar, informar que o cliente ja está cadastrado
-      //se nao achar, cadastrar o cliente
+      let clienteAlterado = require('../../../models/Cliente');
+      clienteAlterado.create({
+        nome: nome,
+        cpfcnpj: cpfCnpj,
+        telefone: telefone,
+        email: email,
+        endereco: endereco,
+      });
+      //VERIIFICA SE FOI ALTERADO ALGUM CAMPO DO CLIENTE
+      if (clienteAlterado.nome != cliente.nome || clienteAlterado.cpfcnpj != cliente.cpfcnpj || clienteAlterado.telefone != cliente.telefone || clienteAlterado.email != cliente.email || clienteAlterado.endereco != cliente.endereco) {
+        //FAZER UPDATE DA ALTERAÇÃO DESTE CLIENTE
+        try {
+            
+
+
+
+
+        } catch (error) {
+          console.error("Erro na requisição: ", error);
+          Alert.alert(
+            "Erro de rede",
+            "Houve um problema na requisição. Tente novamente mais tarde."
+          );
+        }
+      }else{
+        Alert.alert(
+          "Atenção!",
+          "Nehum dado deste cliente foi alterado, portanto não há nada a ser salvo!",
+          [
+            {
+              text: "Ok",
+            },
+          ]
+        );
+      }
+
 
       // DEPOIS DE CADASTRAR
       Alert.alert();
@@ -298,10 +358,10 @@ export default function CadCliente() {
         {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM CLIENTE */}
         {find ? (
           <View>
-            <TouchableOpacity style={styles.button} onPress={() => {}}>
+            <TouchableOpacity style={styles.button} onPress={() => { }}>
               <Text style={styles.buttonText}>Salvar Alterações</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => {}}>
+            <TouchableOpacity style={styles.button} onPress={() => { }}>
               <Text style={styles.buttonText}>Excluir Cadastro</Text>
             </TouchableOpacity>
           </View>
@@ -430,17 +490,6 @@ const styles = StyleSheet.create({
 
 
 /* 
-if (response.status === 200) {
-          setNome(response.nome);
-          setCpfCnpj(response.cpfcnpj);
-          setTelefone(response.telefone);
-          setEmail(response.email);
-          setEndereco(response.endereco);
-          //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
-          setFind(true);
-        } else {
-          Alert.alert("Erro ao buscar usuário. Usuário não encontrado!");
-        }
 
 
 */
