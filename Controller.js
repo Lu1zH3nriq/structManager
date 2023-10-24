@@ -131,7 +131,7 @@ app.put("/alteraCliente", async (req, res) => {
   }
 });
 //DELETE
-app.delete("/apagaCliente");
+app.delete("/deletaCliente");
 
 //----------------------------------------------------endpoint para cadastros de funcionario----------------------------------------
 app.post("/cadastraFuncionario");
