@@ -23,6 +23,13 @@ export default function CadastroFuncionario() {
   //SETAR O ESTADO COMO FALSE PARA ACHAR O Funcionário
   const [find, setFind] = useState(false);
 
+  const [idFor, setIdFor] = useState("");
+  const [nomeFor, setNomeFor] = useState("");
+  const [cpfCnpjFor, setCpfCnpjFor] = useState("");
+  const [telefoneFor, setTelefoneFor] = useState("");
+  const [emailFor, setEmailFor] = useState("");
+  const [enderecoFor, setEnderecoFor] = useState("");
+
   const navigation = useNavigation(); // Inicialize o hook de navegação
 
   //function para alterar a visibilidade do modal de pesquisa
@@ -32,7 +39,7 @@ export default function CadastroFuncionario() {
 
   //CRUD Funcionário
   //function para cadastrar o Funcionário
-  const handleCadastro = () => {
+  const handleCadastro = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (
       nome === "" &&
@@ -54,33 +61,56 @@ export default function CadastroFuncionario() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar Funcionário
-      //se achar, informar que o Funcionário ja está cadastrado
-      //se nao achar, cadastrar o Funcionário
+      try {
+        let response = await fetch(
+          "http://192.168.100.3:3000/cadastraFuncionario",
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              nome: nome,
+              cpfcnpj: cpfCnpj,
+              telefone: telefone,
+              email: email,
+              endereco: endereco,
+            }),
+          }
+        );
 
-      // DEPOIS DE CADASTRAR
-      Alert.alert("Sucesso!", "Funcionário cadastrado com sucesso!", [
-        {
-          text: "Confirmar",
-          onPress: () => {
-            // LIMPAR TODOS OS CAMPOS
-            setNome("");
-            setCpfCnpj("");
-            setTelefone("");
-            setEmail("");
-            setEndereco("");
-            setNomeFind("");
-            setCpfCnpjFind("");
-          },
-        },
-      ]);
+        if (response.status === 200) {
+          Alert.alert("Sucesso!", "Funcionario cadastrado com sucesso!", [
+            {
+              text: "Confirmar",
+              onPress: () => {
+                // LIMPAR TODOS OS CAMPOS
+                setNome("");
+                setCpfCnpj("");
+                setTelefone("");
+                setEmail("");
+                setEndereco("");
+              },
+            },
+          ]);
+        } else {
+          Alert.alert("Erro ao cadastrar Funcionario.");
+        }
+      } catch (error) {
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
     }
   };
 
   //function para pesquisar o Funcionário
   const [nomeFind, setNomeFind] = useState("");
   const [cpfCnpjFind, setCpfCnpjFind] = useState("");
-  const handlePesquisa = () => {
+
+  const handlePesquisa = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (nomeFind === "" && cpfCnpjFind === "") {
       Alert.alert(
@@ -96,18 +126,62 @@ export default function CadastroFuncionario() {
 
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
-      //buscar Funcionário
-      //se achar, trazer os dados do Funcionário (json)
+      try {
+        let baseUrl = "http://192.168.100.3:3000/buscaFuncionario";
+        let params = {
+          nome: nomeFind,
+          cpfcnpj: cpfCnpjFind,
+        };
 
-      setFind(true);
+        let url = `${baseUrl}?${Object.keys(params)
+          .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+          .join("&")}`;
 
-      //se nao achar, trazer uma mensagem de Funcionário nao cadastrado
+        let response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.status === 200) {
+          const data = await response.json(); // Extrair dados JSON da resposta
+
+          //console.log(data);
+          setNome(data.nome);
+          setCpfCnpj(data.cpfcnpj);
+          setTelefone(data.telefone);
+          setEmail(data.email);
+          setEndereco(data.endereco);
+
+          setIdFor(data.id);
+          setNomeFor(data.nome);
+          setCpfCnpjFor(data.cpfcnpj);
+          setTelefoneFor(data.telefone);
+          setEmailFor(data.email);
+          setEnderecoFor(data.endereco);
+
+          //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
+          setFind(true);
+        } else {
+          Alert.alert(
+            "Erro ao buscar este funcionario ou funcionario não cadastrado!"
+          );
+        }
+      } catch (error) {
+        console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
     }
     toggleModalPesquisa();
   };
 
   //function para alterar o Funcionário
-  const handleAltera = () => {
+  const handleAltera = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (
       nome === "" &&
@@ -120,21 +194,82 @@ export default function CadastroFuncionario() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar Funcionário
-      //se achar, informar que o Funcionário ja está cadastrado
-      //se nao achar, cadastrar o Funcionário
+      const funcionarioBuscado = {
+        id: idFor,
+        nome: nomeFor,
+        cpfcnpj: cpfCnpjFor,
+        telefone: telefoneFor,
+        email: emailFor,
+        endereco: enderecoFor,
+      };
 
-      // DEPOIS DE ALTERAR
-      Alert.alert();
+      if (
+        funcionarioBuscado.nome != nome ||
+        funcionarioBuscado.cpfcnpj != cpfCnpj ||
+        funcionarioBuscado.telefone != telefone ||
+        funcionarioBuscado.email != email ||
+        funcionarioBuscado.endereco != endereco
+      ) {
+        (funcionarioBuscado.nome = nome),
+          (funcionarioBuscado.cpfcnpj = cpfCnpj),
+          (funcionarioBuscado.telefone = telefone),
+          (funcionarioBuscado.email = email),
+          (funcionarioBuscado.endereco = endereco);
+        try {
+          const response = await fetch(
+            "http://192.168.100.3:3000/alteraFuncionario",
+            {
+              method: "PUT",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(funcionarioBuscado),
+            }
+          );
 
-      // LIMPAR TODOS OS CAMPOS
-      setNome("");
-      setCpfCnpj("");
-      setTelefone("");
-      setEmail("");
-      setEndereco("");
-      setNomeFind("");
-      setCpfCnpjFind("");
+          if (response.status === 200) {
+            Alert.alert("Sucesso!", "Funcionario alterado com sucesso!", [
+              {
+                text: "Confirmar",
+                onPress: () => {
+                  // LIMPAR TODOS OS CAMPOS
+                  setNome("");
+                  setCpfCnpj("");
+                  setTelefone("");
+                  setEmail("");
+                  setEndereco("");
+
+                  //LIMPA O ESTADO DO FUNCIONARIO ENCONTRADO
+                  setIdFor("");
+                  setNomeFor("");
+                  setCpfCnpjFor("");
+                  setTelefoneFor("");
+                  setEmailFor("");
+                  setEnderecoFor("");
+
+                  //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
+                  setFind(false);
+                },
+              },
+            ]);
+          } else {
+            Alert.alert("Erro ao atualizar funcionario.");
+          }
+        } catch (error) {
+          console.error("Erro na requisição: ", error);
+          Alert.alert(
+            "Erro de rede",
+            "Houve um problema na requisição. Tente novamente mais tarde."
+          );
+        }
+      } else {
+        Alert.alert("Atenção!", "Nenhum campo alterado, nada para salvar!", [
+          {
+            text: "OK",
+          },
+        ]);
+      }
     }
   };
 
@@ -152,20 +287,68 @@ export default function CadastroFuncionario() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar Funcionário
-      //se achar, informar que o Funcionário ja está cadastrado
-      //se nao achar, cadastrar o Funcionário
+      var confirm_delete = false;
+      Alert.alert(
+        "Atenção!",
+        "Deseja realmente deletar o registro deste funcionario? ",
+        [
+          {
+            text: "Deletar Funcionario",
+            onPress: async () => {
+              try {
+                let response = await fetch(
+                  "http://192.168.100.3:3000/deletaFuncionario",
+                  {
+                    method: "DELETE",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      id: idFor,
+                    }),
+                  }
+                );
 
-      // DEPOIS DE DELETAR
+                if (response.status === 200) {
+                  Alert.alert("Sucesso!", "Funcionario deletado com sucesso!", [
+                    {
+                      text: "Confirmar",
+                      onPress: () => {
+                        // LIMPAR TODOS OS CAMPOS
+                        setNome("");
+                        setCpfCnpj("");
+                        setTelefone("");
+                        setEmail("");
+                        setEndereco("");
 
-      // LIMPAR TODOS OS CAMPOS
-      setNome("");
-      setCpfCnpj("");
-      setTelefone("");
-      setEmail("");
-      setEndereco("");
-      setNomeFind("");
-      setCpfCnpjFind("");
+                        //LIMPA O ESTADO DO CLIENTE ENCONTRADO
+                        setIdFor("");
+                        setNomeFor("");
+                        setCpfCnpjFor("");
+                        setTelefoneFor("");
+                        setEmailFor("");
+                        setEnderecoFor("");
+
+                        //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
+                        setFind(false);
+                      },
+                    },
+                  ]);
+                } else {
+                  Alert.alert("Erro ao deletar Funcionario.");
+                }
+              } catch (error) {
+                console.error("Erro na requisição: ", error);
+                Alert.alert(
+                  "Erro de rede",
+                  "Houve um problema na requisição. Tente novamente mais tarde."
+                );
+              }
+            },
+          },
+        ]
+      );
     }
   };
 
@@ -230,20 +413,17 @@ export default function CadastroFuncionario() {
         <TouchableOpacity style={styles.button} onPress={handleCadastro}>
           <Text style={styles.buttonText}>Cadastrar Funcionário</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={toggleModalPesquisa}
-        >
+        <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
           <Text style={styles.buttonText}>Pesquisar/Alterar Funcionário</Text>
         </TouchableOpacity>
 
         {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Funcionário */}
         {find ? (
           <View>
-            <TouchableOpacity style={styles.button} onPress={() => {}}>
+            <TouchableOpacity style={styles.button} onPress={handleAltera}>
               <Text style={styles.buttonText}>Salvar Alterações</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => {}}>
+            <TouchableOpacity style={styles.button} onPress={handleDelet}>
               <Text style={styles.buttonText}>Excluir Cadastro</Text>
             </TouchableOpacity>
           </View>
@@ -281,10 +461,7 @@ export default function CadastroFuncionario() {
                 }}
               />
 
-              <TouchableOpacity
-                onPress={handlePesquisa}
-                style={styles.button}
-              >
+              <TouchableOpacity onPress={handlePesquisa} style={styles.button}>
                 <Text style={styles.buttonText}>Pesquisar</Text>
               </TouchableOpacity>
             </View>

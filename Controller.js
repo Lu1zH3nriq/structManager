@@ -8,6 +8,7 @@ app.use(express.json());
 
 let user = models.Usuario;
 let client = models.Cliente;
+let func = models.Funcionario;
 
 app.post("/login", async (req, res) => {
   try {
@@ -75,7 +76,6 @@ app.post("/cadastraCliente", async (req, res) => {
     } else {
       return res.status(400).send("Falha ao cadastrar o cliente.");
     }
-
   } catch (error) {
     console.log("Erro ao cadastrar cliente: ", error);
     res.status(500).send();
@@ -85,19 +85,17 @@ app.post("/cadastraCliente", async (req, res) => {
 app.get("/buscaCliente", async (req, res) => {
   try {
     const clientFinded = await client.findOne({
-      where:{
+      where: {
         nome: req.query.nome,
-        cpfcnpj: req.query.cpfcnpj
-      }
+        cpfcnpj: req.query.cpfcnpj,
+      },
     });
 
-    if(clientFinded){
+    if (clientFinded) {
       res.status(200).json(clientFinded);
-    }
-    else{
+    } else {
       res.status(422).send();
     }
-
   } catch (error) {
     console.log("Erro ao buscar cliente: ", error);
     res.status(500).send();
@@ -106,23 +104,46 @@ app.get("/buscaCliente", async (req, res) => {
 //UPDATE
 app.put("/alteraCliente", async (req, res) => {
   try {
-    const clientUpdatedId = req.body.id;
-    const clientUpdated = await client.update({
-      nome: req.body.nome,
-      cpfcnpj: req.body.cpfcnpj,
-      telefone: req.body.telefone,
-      email: req.body.email,
-      endereco: req.body.endereco,
-    },{
-      where: {
-        id: clientUpdatedId,
+    const clientId = req.body.id;
+    const clientUpdated = await client.update(
+      {
+        nome: req.body.nome,
+        cpfcnpj: req.body.cpfcnpj,
+        telefone: req.body.telefone,
+        email: req.body.email,
+        endereco: req.body.endereco,
+      },
+      {
+        where: {
+          id: clientId,
+        },
       }
-    });
+    );
 
     if (clientUpdated) {
       return res.status(200).send();
     } else {
       return res.status(400).send();
+    }
+  } catch (error) {
+    console.log("Erro ao atualizar cliente: ", error);
+    res.status(500).send();
+  }
+});
+//DELETE
+app.delete("/deletaCliente", async (req, res) => {
+  try {
+    const clientDeleted =  await client.destroy({
+      where: {
+        id: req.body.id,
+      }
+    });
+
+    if(clientDeleted){
+      res.status(200).send();
+    }
+    else{
+      res.status(400).send();
     }
 
   } catch (error) {
@@ -130,14 +151,94 @@ app.put("/alteraCliente", async (req, res) => {
     res.status(500).send();
   }
 });
-//DELETE
-app.delete("/deletaCliente");
 
 //----------------------------------------------------endpoint para cadastros de funcionario----------------------------------------
-app.post("/cadastraFuncionario");
-app.get("/buscaFuncionario");
-app.put("/alteraFuncionario");
-app.delete("/apagaFuncionario");
+app.post("/cadastraFuncionario", async (req, res) => {
+  try {
+    const funcCreated = await func.create({
+      nome: req.body.nome,
+      cpfcnpj: req.body.cpfcnpj,
+      telefone: req.body.telefone,
+      email: req.body.email,
+      endereco: req.body.endereco,
+    });
+
+    if (funcCreated) {
+      return res.status(200).send();
+    } else {
+      return res.status(400).send();
+    }
+  } catch (error) {
+    res.status(500).send();
+  }
+});
+//READ
+app.get("/buscaFuncionario", async (req, res) => {
+  try {
+    const funcFinded = await func.findOne({
+      where: {
+        nome: req.query.nome,
+        cpfcnpj: req.query.cpfcnpj,
+      },
+    });
+
+    if (funcFinded) {
+      res.status(200).json(funcFinded);
+    } else {
+      res.status(422).send();
+    }
+  } catch (error) {
+    res.status(500).send();
+  }
+});
+//UPDATE
+app.put("/alteraFuncionario", async (req, res) => {
+  try {
+    const funcId = req.body.id;
+    const funcUpdated = await func.update(
+      {
+        nome: req.body.nome,
+        cpfcnpj: req.body.cpfcnpj,
+        telefone: req.body.telefone,
+        email: req.body.email,
+        endereco: req.body.endereco,
+      },
+      {
+        where: {
+          id: funcId,
+        },
+      }
+    );
+
+    if (funcUpdated) {
+      return res.status(200).send();
+    } else {
+      return res.status(400).send();
+    }
+  } catch (error) {
+    res.status(500).send();
+  }
+});
+//DELETE
+app.delete("/deletaFuncionario", async (req, res) => {
+  try {
+    const funcDeleted =  await func.destroy({
+      where: {
+        id: req.body.id,
+      }
+    });
+
+    if(funcDeleted){
+      res.status(200).send();
+    }
+    else{
+      res.status(400).send();
+    }
+
+  } catch (error) {
+    res.status(500).send();
+  }
+});
 
 //----------------------------------------------------endpoint para cadastros de equipamentos---------------------------------------
 app.post("/cadastraEquipamento");
@@ -157,9 +258,5 @@ app.listen(port, () => {
 });
 
 /*
-if (clientFinded) {
-      return res.status(200).send(clientFinded);
-    } else {
-      return res.status(400).send();
-    }
+
 */

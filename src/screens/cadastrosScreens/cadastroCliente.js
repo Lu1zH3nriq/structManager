@@ -8,11 +8,9 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
-  ScrollView,
 } from "react-native";
 import ModalPesquisaCliente from "react-native-modal";
 import { useNavigation } from "@react-navigation/native";
-import { ConfigError } from "expo/config";
 
 export default function CadCliente() {
   const [isModalPesquisaCliente, setModalPesquisaCliente] = useState(false); // inicializa o modal oculto
@@ -205,22 +203,27 @@ export default function CadCliente() {
     else {
       const clienteAlterado = {
         id: idCli,
-        nomeAlterado: nomeCli,
-        cpfcnpjAlterado: cpfCnpjCli,
-        telefoneAlterado: telefoneCli,
-        emailAlterado: emailCli,
-        enderecoAlterado: enderecoCli,
+        nome: nomeCli,
+        cpfcnpj: cpfCnpjCli,
+        telefone: telefoneCli,
+        email: emailCli,
+        endereco: enderecoCli,
       };
 
       if (
-        clienteAlterado.nomeAlterado != nome ||
-        clienteAlterado.cpfcnpjAlterado != cpfCnpj ||
-        clienteAlterado.telefoneAlterado != telefone ||
-        clienteAlterado.emailAlterado != email ||
-        clienteAlterado.enderecoAlterado != endereco
+        clienteAlterado.nome != nome ||
+        clienteAlterado.cpfcnpj != cpfCnpj ||
+        clienteAlterado.telefone != telefone ||
+        clienteAlterado.email != email ||
+        clienteAlterado.endereco != endereco
       ) {
+        clienteAlterado.nome = nome,
+        clienteAlterado.cpfcnpj = cpfCnpj,
+        clienteAlterado.telefone = telefone,
+        clienteAlterado.email = email,
+        clienteAlterado.endereco = endereco
         try {
-          let response = await fetch(
+          const response = await fetch(
             "http://192.168.100.3:3000/alteraCliente",
             {
               method: "PUT",
@@ -290,7 +293,7 @@ export default function CadCliente() {
     ) {
       Alert.alert(
         "Atenção!",
-        "Preencha todos os campos para cadastrar o cliente!",
+        "Preencha todos os campos para deletar o cliente!",
         [
           {
             text: "Ok",
@@ -301,69 +304,65 @@ export default function CadCliente() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      let confirm_delete;
+      var confirm_delete = false;
       Alert.alert("Atenção!", "Deseja realmente deletar o registro deste cliente? ", [
         {
           text: "Deletar Cliente",
-          onPress: confirm_delete = true,
+          onPress: async ()=>{
+            try {
+              let response = await fetch(
+                "http://192.168.100.3:3000/deletaCliente",
+                {
+                  method: "DELETE",
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    id: idCli,
+                  })
+                }
+              );
+    
+              if (response.status === 200) {
+                Alert.alert("Sucesso!", "Cliente deletado com sucesso!", [
+                  {
+                    text: "Confirmar",
+                    onPress: () => {
+                      // LIMPAR TODOS OS CAMPOS
+                      setNome("");
+                      setCpfCnpj("");
+                      setTelefone("");
+                      setEmail("");
+                      setEndereco("");
+    
+                      //LIMPA O ESTADO DO CLIENTE ENCONTRADO
+                      setIdCli("");
+                      setNomeCli("");
+                      setCpfCnpjCli("");
+                      setTelefoneCli("");
+                      setEmailCli("");
+                      setEnderecoCli("");
+    
+                      //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
+                      setFind(false);
+                    },
+                  },
+                ]);
+              } else {
+                Alert.alert("Erro ao deletar cliente.");
+              }
+            } catch (error) {
+              console.error("Erro na requisição: ", error);
+              Alert.alert(
+                "Erro de rede",
+                "Houve um problema na requisição. Tente novamente mais tarde."
+              );
+            }
+          },
         }
       ]);
-      if (confirm_delete === true) {
-        try {
-          let response = await fetch(
-            "http://192.168.100.3:3000/deletaCliente",
-            {
-              method: "DELETE",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                id: idCli,
-              })
-            }
-          );
-
-          if (response.status === 200) {
-            Alert.alert("Sucesso!", "Cliente deletado com sucesso!", [
-              {
-                text: "Confirmar",
-                onPress: () => {
-                  // LIMPAR TODOS OS CAMPOS
-                  setNome("");
-                  setCpfCnpj("");
-                  setTelefone("");
-                  setEmail("");
-                  setEndereco("");
-
-                  //LIMPA O ESTADO DO CLIENTE ENCONTRADO
-                  setIdCli("");
-                  setNomeCli("");
-                  setCpfCnpjCli("");
-                  setTelefoneCli("");
-                  setEmailCli("");
-                  setEnderecoCli("");
-
-                  //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
-                  setFind(false);
-                },
-              },
-            ]);
-          } else {
-            Alert.alert("Erro ao deletar cliente.");
-          }
-        } catch (error) {
-          console.error("Erro na requisição: ", error);
-          Alert.alert(
-            "Erro de rede",
-            "Houve um problema na requisição. Tente novamente mais tarde."
-          );
-        }
-      }
-      else{
-        
-      }
-
+      
     }
   };
 
@@ -441,7 +440,7 @@ export default function CadCliente() {
             <TouchableOpacity style={styles.button} onPress={handleAlteraCliente}>
               <Text style={styles.buttonText}>Salvar Alterações</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => { }}>
+            <TouchableOpacity style={styles.button} onPress={handleDeletaCliente}>
               <Text style={styles.buttonText}>Excluir Cadastro</Text>
             </TouchableOpacity>
           </View>
