@@ -25,12 +25,12 @@ app.post("/login", async (req, res) => {
     if (!findedUser)
       return res
         .status(422)
-        .send("Usuário não encontrado ou credenciais inválidas!");
+        .json({ message: "Usuário não encontrado ou credenciais inválidas!" });
 
     return res.status(200).send(findedUser);
   } catch (error) {
-    console.error("Erro ao autenticar usuário:", error);
-    res.status(500).send("Erro ao autenticar usuário.");
+    //console.error("Erro ao autenticar usuário:", error);
+    res.status(500).json({ message: "Erro ao autenticar usuário. Erro de requisição. " });
   }
 });
 
@@ -47,15 +47,18 @@ app.post("/resetPassword", async (req, res) => {
       },
     });
 
-    if (!findedUser) return res.status(422).send();
+    if (!findedUser) 
+      return res.status(422).json({ message: "Usuário não encontrado com este email ou nome de usuário!" });
 
-    return res.status(200).send();
+    
     //const resetPass = async () => {
     //sistema para enviar email de reset de senha;
     //}
+
+    return res.status(200).json({ message: "Sua senha foi redefinida com sucesso! Faça login novamente com a nova senha enviada para seu email. "});
   } catch (error) {
-    console.log("Erro ao buscar usuario: ", error);
-    res.status(500).send("Erro ao autenticar usuário.");
+    //console.log("Erro ao buscar usuario: ", error);
+    res.status(500).json({message: "Erro ao redefinir senha do usuário." });
   }
 });
 
@@ -133,16 +136,16 @@ app.put("/alteraCliente", async (req, res) => {
 //DELETE
 app.delete("/deletaCliente", async (req, res) => {
   try {
-    const clientDeleted =  await client.destroy({
+    const clientDeleted = await client.destroy({
       where: {
         id: req.body.id,
       }
     });
 
-    if(clientDeleted){
+    if (clientDeleted) {
       res.status(200).send();
     }
-    else{
+    else {
       res.status(400).send();
     }
 
@@ -222,16 +225,16 @@ app.put("/alteraFuncionario", async (req, res) => {
 //DELETE
 app.delete("/deletaFuncionario", async (req, res) => {
   try {
-    const funcDeleted =  await func.destroy({
+    const funcDeleted = await func.destroy({
       where: {
         id: req.body.id,
       }
     });
 
-    if(funcDeleted){
+    if (funcDeleted) {
       res.status(200).send();
     }
-    else{
+    else {
       res.status(400).send();
     }
 

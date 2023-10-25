@@ -10,7 +10,7 @@ import CadFuncionario from '../screens/cadastrosScreens/cadastroFuncionario.js';
 import CadEquipamento from '../screens/cadastrosScreens/cadastroEquipamento.js';
 import CadTipoObra from '../screens/cadastrosScreens/cadastroTipoObra.js';
 import CadNovaObra from '../screens/cadastrosScreens/cadastroNovaObra.js';
-import DetailsObra from '../screens/detailsObra/mainDetailsObra.js'
+import DetailsObra from '../screens/detailsObra/geralScreen.js'
 
 
 const Stack = createNativeStackNavigator();

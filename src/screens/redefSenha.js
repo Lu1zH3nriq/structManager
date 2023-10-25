@@ -22,8 +22,8 @@ export default function RedefSenha() {
     //verifica o campo do email
     if (email === "" || user === "") {
       Alert.alert(
-        "Email inválido",
-        "Preencha com o email cadastrado para redefinir a senha",
+        "Email ou usuário inválido",
+        "Preencha com o nome de usuário e o email cadastrado para redefinir a senha! ",
         [
           {
             text: "Ok",
@@ -47,7 +47,7 @@ export default function RedefSenha() {
         if (response.status === 200) {
           Alert.alert(
             "Sucesso!",
-            "Uma nova senha foi enviada para o email cadastrado, por favor verifique e faça login novamente!",
+            response.message,
             [
               {
                 text: "Fazer login com nova senha",
@@ -61,7 +61,7 @@ export default function RedefSenha() {
         } else {
           Alert.alert(
             "Atenção!",
-            "Não existe usuário cadastrado com este endereço de email, verifique o email informado!",
+            response.message,
             [
               {
                 text: "Ok",
@@ -70,10 +70,10 @@ export default function RedefSenha() {
           );
         }
       } catch (error) {
-        console.error("Erro na requisição: ", error);
+        //console.error("Erro na requisição: ", error);
         Alert.alert(
           "Erro de rede",
-          "Houve um problema na requisição. Tente novamente mais tarde."
+          response.message
         );
       }
     }

@@ -53,17 +53,19 @@ export default function Login() {
         });
 
         if (response.status === 200) {
-          // Por exemplo, você pode receber um token de autenticação do servidor
-          // e usá-lo para navegar para a tela principal
+          const user_logado = response.data;
+          //  COLOCAR O USER_LOGADO NO ASYNC STORAGE PARA CONTROLE DE LOGIN
+
+
           navigation.navigate("Main");
         } else {
-          Alert.alert("Erro de login", "Usuário ou senha incorretos.");
+          Alert.alert("Erro de login", response.message );
         }
       } catch (error) {
-        console.error("Erro na requisição: ", error);
+        //console.error("Erro na requisição: ", error);
         Alert.alert(
           "Erro de rede",
-          "Houve um problema na requisição. Tente novamente mais tarde."
+          response.message
         );
       }
     }
