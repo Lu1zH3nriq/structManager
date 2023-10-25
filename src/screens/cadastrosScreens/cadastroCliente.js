@@ -81,11 +81,11 @@ export default function CadCliente() {
             }),
           }
         );
-        
-        const data = await response.json(); 
-        console.log(data) 
+
+        const data = await response.json();
+        console.log(data)
         if (response.status === 200) {
-          Alert.alert("Sucesso!", data.message , [
+          Alert.alert("Sucesso!", data.message, [
             {
               text: "Confirmar",
               onPress: () => {
@@ -99,7 +99,7 @@ export default function CadCliente() {
             },
           ]);
         } else {
-          Alert.alert("Atenção!", data.message );
+          Alert.alert("Atenção!", data.message);
         }
       } catch (error) {
         //console.error("Erro na requisição: ", error);
@@ -145,9 +145,8 @@ export default function CadCliente() {
             "Content-Type": "application/json",
           },
         });
-
+        const data = await response.json();
         if (response.status === 200) {
-          const data = await response.json(); // Extrair dados JSON da resposta
 
           //console.log(data);
           setNome(data.nome);
@@ -167,10 +166,10 @@ export default function CadCliente() {
           //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
           setFind(true);
         } else {
-          Alert.alert("Erro ao buscar este cliente ou cliente não cadastrado!");
+          Alert.alert("Atenção!", data.message);
         }
       } catch (error) {
-        console.error("Erro na requisição: ", error);
+        //console.error("Erro na requisição: ", error);
         Alert.alert(
           "Erro de rede",
           "Houve um problema na requisição. Tente novamente mais tarde."
@@ -220,10 +219,10 @@ export default function CadCliente() {
         clienteAlterado.endereco != endereco
       ) {
         clienteAlterado.nome = nome,
-        clienteAlterado.cpfcnpj = cpfCnpj,
-        clienteAlterado.telefone = telefone,
-        clienteAlterado.email = email,
-        clienteAlterado.endereco = endereco
+          clienteAlterado.cpfcnpj = cpfCnpj,
+          clienteAlterado.telefone = telefone,
+          clienteAlterado.email = email,
+          clienteAlterado.endereco = endereco
         try {
           const response = await fetch(
             "http://192.168.100.3:3000/alteraCliente",
@@ -236,9 +235,9 @@ export default function CadCliente() {
               body: JSON.stringify(clienteAlterado),
             }
           );
-
+          const data = await response.json();
           if (response.status === 200) {
-            Alert.alert("Sucesso!", "Cliente alterado com sucesso!", [
+            Alert.alert("Sucesso!", data.message, [
               {
                 text: "Confirmar",
                 onPress: () => {
@@ -263,7 +262,7 @@ export default function CadCliente() {
               },
             ]);
           } else {
-            Alert.alert("Erro ao atualizar cliente.");
+            Alert.alert("Atenção!", data.message);
           }
         } catch (error) {
           console.error("Erro na requisição: ", error);
@@ -310,7 +309,7 @@ export default function CadCliente() {
       Alert.alert("Atenção!", "Deseja realmente deletar o registro deste cliente? ", [
         {
           text: "Deletar Cliente",
-          onPress: async ()=>{
+          onPress: async () => {
             try {
               let response = await fetch(
                 "http://192.168.100.3:3000/deletaCliente",
@@ -325,9 +324,9 @@ export default function CadCliente() {
                   })
                 }
               );
-    
+              const data = await response.json();
               if (response.status === 200) {
-                Alert.alert("Sucesso!", "Cliente deletado com sucesso!", [
+                Alert.alert("Sucesso!", data.response , [
                   {
                     text: "Confirmar",
                     onPress: () => {
@@ -337,7 +336,7 @@ export default function CadCliente() {
                       setTelefone("");
                       setEmail("");
                       setEndereco("");
-    
+
                       //LIMPA O ESTADO DO CLIENTE ENCONTRADO
                       setIdCli("");
                       setNomeCli("");
@@ -345,14 +344,14 @@ export default function CadCliente() {
                       setTelefoneCli("");
                       setEmailCli("");
                       setEnderecoCli("");
-    
+
                       //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
                       setFind(false);
                     },
                   },
                 ]);
               } else {
-                Alert.alert("Erro ao deletar cliente.");
+                Alert.alert("Atenção!", data.message);
               }
             } catch (error) {
               console.error("Erro na requisição: ", error);
@@ -364,7 +363,7 @@ export default function CadCliente() {
           },
         }
       ]);
-      
+
     }
   };
 

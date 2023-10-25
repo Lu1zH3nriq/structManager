@@ -9,6 +9,7 @@ app.use(express.json());
 let user = models.Usuario;
 let client = models.Cliente;
 let func = models.Funcionario;
+let equip = models.Equipamento;
 
 app.post("/login", async (req, res) => {
   try {
@@ -85,7 +86,7 @@ app.post("/cadastraCliente", async (req, res) => {
     if (clientFind) {
       return res
         .status(422)
-        .json({ message: "Cliente já cadastrado no sistema! " }).send();
+        .json({ message: "Cliente já cadastrado no sistema! " });
     } else {
       const clientCreated = await client.create({
         nome: req.body.nome,
@@ -96,9 +97,9 @@ app.post("/cadastraCliente", async (req, res) => {
       });
 
       if (clientCreated) {
-        return res.status(200).json({ message: "Cliente cadastrado com sucesso." }).send();
+        return res.status(200).json({ message: "Cliente cadastrado com sucesso." });
       } else {
-        return res.status(400).send({ message: "Falha ao cadastrar o cliente." }).send();
+        return res.status(400).send({ message: "Falha ao cadastrar o cliente." });
       }
     }
   } catch (error) {
@@ -119,11 +120,11 @@ app.get("/buscaCliente", async (req, res) => {
     if (clientFinded) {
       res.status(200).json(clientFinded);
     } else {
-      res.status(422).send();
+      res.status(422).json({ message: "Cliente não encontrado!" });
     }
   } catch (error) {
-    console.log("Erro ao buscar cliente: ", error);
-    res.status(500).send();
+    //console.log("Erro ao buscar cliente: ", error);
+    res.status(500).json({ message: "Erro de requisição ao buscar cliente!" });
   }
 });
 //UPDATE
@@ -146,13 +147,13 @@ app.put("/alteraCliente", async (req, res) => {
     );
 
     if (clientUpdated) {
-      return res.status(200).send();
+      return res.status(200).json({ message: "Cliente alterado com sucesso!" });
     } else {
-      return res.status(400).send();
+      return res.status(400).json({ message: "Erro ao alterar cliente!" });
     }
   } catch (error) {
-    console.log("Erro ao atualizar cliente: ", error);
-    res.status(500).send();
+    //console.log("Erro ao atualizar cliente: ", error);
+    res.status(500).json({ message: "Erro de requisição ao alterar cliente."});
   }
 });
 //DELETE
@@ -165,19 +166,30 @@ app.delete("/deletaCliente", async (req, res) => {
     });
 
     if (clientDeleted) {
-      res.status(200).send();
+      res.status(200).json({ message: "Cliente deletado com sucesso!" });
     } else {
-      res.status(400).send();
+      res.status(400).json({ message: "Erro ao deletar cliente!" });
     }
   } catch (error) {
     console.log("Erro ao atualizar cliente: ", error);
-    res.status(500).send();
+    res.status(500).json({ message: "Erro de requisição ao deletar cliente!" });
   }
 });
 
 //----------------------------------------------------endpoint para cadastros de funcionario----------------------------------------
+//CREATE
 app.post("/cadastraFuncionario", async (req, res) => {
   try {
+
+    const findFunc = await func.findOne({
+      where: {
+        cpfcnpj: req.body.cpfcnpj,
+      }
+    });
+
+    if(findFunc){
+      return res.status(422).json({ message: "Funcionário já cadastrado no sistema!" });
+    }
     const funcCreated = await func.create({
       nome: req.body.nome,
       cpfcnpj: req.body.cpfcnpj,
@@ -187,12 +199,12 @@ app.post("/cadastraFuncionario", async (req, res) => {
     });
 
     if (funcCreated) {
-      return res.status(200).send();
+      return res.status(200).json({ message: "Funcionário criado com sucesso!" });
     } else {
-      return res.status(400).send();
+      return res.status(400).json({ message: "Erro ao cadastrar funcionário!" });
     }
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json({ message: "Erro de requisição ao cadastrar funcionário!" });
   }
 });
 //READ
@@ -208,10 +220,10 @@ app.get("/buscaFuncionario", async (req, res) => {
     if (funcFinded) {
       res.status(200).json(funcFinded);
     } else {
-      res.status(422).send();
+      res.status(422).json({ message: "Funcionário não encontrado!" });
     }
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json({ message: "Erro de requisição ao buscar funcionário!" });
   }
 });
 //UPDATE
@@ -234,12 +246,12 @@ app.put("/alteraFuncionario", async (req, res) => {
     );
 
     if (funcUpdated) {
-      return res.status(200).send();
+      return res.status(200).json({ message: "Fucionário alterado com sucesso!" });
     } else {
-      return res.status(400).send();
+      return res.status(400).json({ message: "Erro ao alterar funcionário!" });
     }
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json({ message: "Erro de requisição ao alterar funcionário!" });
   }
 });
 //DELETE
@@ -252,20 +264,109 @@ app.delete("/deletaFuncionario", async (req, res) => {
     });
 
     if (funcDeleted) {
-      res.status(200).send();
+      res.status(200).json({ message: "Funcionário deletado com sucesso!" });
     } else {
-      res.status(400).send();
+      res.status(400).json({ message: "Erro ao deletar Funcionário!" });
     }
   } catch (error) {
-    res.status(500).send();
+    res.status(500).json({ message: "Erro de requisição ao deletar funcionário!" });
   }
 });
 
 //----------------------------------------------------endpoint para cadastros de equipamentos---------------------------------------
-app.post("/cadastraEquipamento");
-app.get("/buscaEquipamento");
-app.put("/alteraEquipamento");
-app.delete("/apagaEquipamento");
+//CREATE
+app.post("/cadastraEquipamento", async (req, res)=> {
+  try {
+    const findEquip = await equip.findOne({ 
+      where: {
+        codigo: req.body.codigo,
+      }
+    });
+
+    if (findEquip){
+      return res.status(422).json({ message: "Equipamento já cadastrado no sistema!" });
+    }
+
+    const createdEquip = await equip.create({
+      nome: req.body.nome,
+      codigo: req.body.codigo,
+      marca: req.body.marca,
+      modelo: req.body.modelo,
+      etiqueta: req.body.etiqueta
+    })
+
+    if(createdEquip){
+      return res.status(200).json({ message: "Equipamento cadastrado com sucesso!" });
+    }else{
+      return res.status(400).json({ message: "Erro ao cadastrar equipamento!" });
+    }
+  } catch (error) {
+    console.log("Erro ao cadstrar equipamento" + error);
+    return res.status(500).json({ message: "Erro de requisição ao cadastrar equipamento!"})
+  }
+});
+//READ
+app.get("/buscaEquipamento", async (req, res)=> {
+  try {
+    const findedEquip = await equip.findOne({
+      nome: req.query.nome,
+      codigo: req.query.codigo
+    })
+
+    if(findedEquip){
+      return res.status(200).json(findedEquip);
+    }else{
+      return res.status(422).json({ message: "Erro ao buscar equipamento!" });
+    }
+  } catch (error) {
+    console.log("Erro ao buscar equipamento: " + error);
+    return res.status(500).json({ message: "erro de requisição ao buscar equipamento!" });
+  }
+});
+//UPDATE
+app.put("/alteraEquipamento", async (req, res) => {
+  try {
+    const updatedEquip = await equip.update({
+      nome: req.body.nome,
+      codigo: req.body.codigo,
+      marca: req.body.marca,
+      modelo: req.body.modelo,
+      etiqueta: req.body.etiqueta
+    }, {
+      where:{
+        id: req.body.id
+      }
+    });
+
+    if(updatedEquip){
+      return res.status(200).json({ message: "Equipamento alterado com sucesso!" });
+    }else{
+      return res.status(422).json({ message: "Erro ao alterar equipamento!" });
+    }
+  } catch (error) {
+    console.log("Erro ao alterar equipamento: "+ error);
+    return res.status(500).json({ message: "Erro de requisição ao alterar equipamento! "});
+  }
+});
+//DELETE
+app.delete("/apagaEquipamento" , async (req, res) => {
+  try {
+    const deletedEquip = await equip.destroy({
+      where: {
+        id: req.body.id
+      }
+    });
+
+    if(deletedEquip){
+      return res.status(200).json({ message: "Equipamento deletado com sucesso!" });
+    }else{
+      return res.status(422).json({ message: "Erro ao deletar equipamento!" });
+    }
+  } catch (error) {
+    console.log("erro ao excluir equipamento: " + error);
+    return res.status(500).json({ message: "Erro de requisição ao deletar equipamento! "});
+  }
+});
 
 //----------------------------------------------------endpoint para cadastros de Obras---------------------------------------------
 app.post("/cadastraObra");

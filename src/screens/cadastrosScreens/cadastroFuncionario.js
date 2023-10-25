@@ -79,9 +79,9 @@ export default function CadastroFuncionario() {
             }),
           }
         );
-
+        const data = await response.json();
         if (response.status === 200) {
-          Alert.alert("Sucesso!", "Funcionario cadastrado com sucesso!", [
+          Alert.alert("Sucesso!", data.message, [
             {
               text: "Confirmar",
               onPress: () => {
@@ -95,7 +95,7 @@ export default function CadastroFuncionario() {
             },
           ]);
         } else {
-          Alert.alert("Erro ao cadastrar Funcionario.");
+          Alert.alert("Atenção!", data.message);
         }
       } catch (error) {
         Alert.alert(
@@ -144,9 +144,9 @@ export default function CadastroFuncionario() {
             "Content-Type": "application/json",
           },
         });
-
+        const data = await response.json();
         if (response.status === 200) {
-          const data = await response.json(); // Extrair dados JSON da resposta
+           // Extrair dados JSON da resposta
 
           //console.log(data);
           setNome(data.nome);
@@ -166,7 +166,7 @@ export default function CadastroFuncionario() {
           setFind(true);
         } else {
           Alert.alert(
-            "Erro ao buscar este funcionario ou funcionario não cadastrado!"
+            "Atenção!", data.message
           );
         }
       } catch (error) {
@@ -227,9 +227,9 @@ export default function CadastroFuncionario() {
               body: JSON.stringify(funcionarioBuscado),
             }
           );
-
+          const data = await response.json();
           if (response.status === 200) {
-            Alert.alert("Sucesso!", "Funcionario alterado com sucesso!", [
+            Alert.alert("Sucesso!", data.message, [
               {
                 text: "Confirmar",
                 onPress: () => {
@@ -254,7 +254,7 @@ export default function CadastroFuncionario() {
               },
             ]);
           } else {
-            Alert.alert("Erro ao atualizar funcionario.");
+            Alert.alert("Atenção1", data.message );
           }
         } catch (error) {
           console.error("Erro na requisição: ", error);
@@ -309,9 +309,9 @@ export default function CadastroFuncionario() {
                     }),
                   }
                 );
-
+                const data = await response.json();
                 if (response.status === 200) {
-                  Alert.alert("Sucesso!", "Funcionario deletado com sucesso!", [
+                  Alert.alert("Sucesso!", data.message, [
                     {
                       text: "Confirmar",
                       onPress: () => {
@@ -336,7 +336,7 @@ export default function CadastroFuncionario() {
                     },
                   ]);
                 } else {
-                  Alert.alert("Erro ao deletar Funcionario.");
+                  Alert.alert("Atenção!", data.message );
                 }
               } catch (error) {
                 console.error("Erro na requisição: ", error);

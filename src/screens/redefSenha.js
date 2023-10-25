@@ -43,11 +43,11 @@ export default function RedefSenha() {
             email: email,
           }),
         });
-
+        const data = response.json();
         if (response.status === 200) {
           Alert.alert(
             "Sucesso!",
-            response.message,
+            data.message,
             [
               {
                 text: "Fazer login com nova senha",
@@ -61,7 +61,7 @@ export default function RedefSenha() {
         } else {
           Alert.alert(
             "Atenção!",
-            response.message,
+            data.message,
             [
               {
                 text: "Ok",

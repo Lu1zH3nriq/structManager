@@ -52,14 +52,17 @@ export default function Login() {
           }),
         });
 
+        const data = await response.json();
+
         if (response.status === 200) {
+          
           const user_logado = response.data;
           //  COLOCAR O USER_LOGADO NO ASYNC STORAGE PARA CONTROLE DE LOGIN
 
 
           navigation.navigate("Main");
         } else {
-          Alert.alert("Erro de login", response.message );
+          Alert.alert("Erro de login", data.message );
         }
       } catch (error) {
         //console.error("Erro na requisição: ", error);
