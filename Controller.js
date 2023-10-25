@@ -30,7 +30,9 @@ app.post("/login", async (req, res) => {
     return res.status(200).send(findedUser);
   } catch (error) {
     //console.error("Erro ao autenticar usuário:", error);
-    res.status(500).json({ message: "Erro ao autenticar usuário. Erro de requisição. " });
+    res
+      .status(500)
+      .json({ message: "Erro ao autenticar usuário. Erro de requisição. " });
   }
 });
 
@@ -47,18 +49,26 @@ app.post("/resetPassword", async (req, res) => {
       },
     });
 
-    if (!findedUser) 
-      return res.status(422).json({ message: "Usuário não encontrado com este email ou nome de usuário!" });
+    if (!findedUser)
+      return res
+        .status(422)
+        .json({
+          message: "Usuário não encontrado com este email ou nome de usuário!",
+        });
 
-    
     //const resetPass = async () => {
     //sistema para enviar email de reset de senha;
     //}
 
-    return res.status(200).json({ message: "Sua senha foi redefinida com sucesso! Faça login novamente com a nova senha enviada para seu email. "});
+    return res
+      .status(200)
+      .json({
+        message:
+          "Sua senha foi redefinida com sucesso! Faça login novamente com a nova senha enviada para seu email. ",
+      });
   } catch (error) {
     //console.log("Erro ao buscar usuario: ", error);
-    res.status(500).json({message: "Erro ao redefinir senha do usuário." });
+    res.status(500).json({ message: "Erro ao redefinir senha do usuário." });
   }
 });
 
@@ -66,22 +76,34 @@ app.post("/resetPassword", async (req, res) => {
 //CREATE
 app.post("/cadastraCliente", async (req, res) => {
   try {
-    const clientCreated = await client.create({
-      nome: req.body.nome,
-      cpfcnpj: req.body.cpfcnpj,
-      telefone: req.body.telefone,
-      email: req.body.email,
-      endereco: req.body.endereco,
+    const clientFind = await client.findOne({
+      where: {
+        cpfcnpj: req.body.cpfcnpj,
+      },
     });
 
-    if (clientCreated) {
-      return res.status(200).send("Cliente cadastrado com sucesso.");
+    if (clientFind) {
+      return res
+        .status(422)
+        .json({ message: "Cliente já cadastrado no sistema! " }).send();
     } else {
-      return res.status(400).send("Falha ao cadastrar o cliente.");
+      const clientCreated = await client.create({
+        nome: req.body.nome,
+        cpfcnpj: req.body.cpfcnpj,
+        telefone: req.body.telefone,
+        email: req.body.email,
+        endereco: req.body.endereco,
+      });
+
+      if (clientCreated) {
+        return res.status(200).json({ message: "Cliente cadastrado com sucesso." }).send();
+      } else {
+        return res.status(400).send({ message: "Falha ao cadastrar o cliente." }).send();
+      }
     }
   } catch (error) {
-    console.log("Erro ao cadastrar cliente: ", error);
-    res.status(500).send();
+    //console.log("Erro ao cadastrar cliente: ", error);
+    res.status(500).json({ message: "Erro de requisição ao cadastrar cliente." });
   }
 });
 //READ
@@ -139,16 +161,14 @@ app.delete("/deletaCliente", async (req, res) => {
     const clientDeleted = await client.destroy({
       where: {
         id: req.body.id,
-      }
+      },
     });
 
     if (clientDeleted) {
       res.status(200).send();
-    }
-    else {
+    } else {
       res.status(400).send();
     }
-
   } catch (error) {
     console.log("Erro ao atualizar cliente: ", error);
     res.status(500).send();
@@ -228,16 +248,14 @@ app.delete("/deletaFuncionario", async (req, res) => {
     const funcDeleted = await func.destroy({
       where: {
         id: req.body.id,
-      }
+      },
     });
 
     if (funcDeleted) {
       res.status(200).send();
-    }
-    else {
+    } else {
       res.status(400).send();
     }
-
   } catch (error) {
     res.status(500).send();
   }

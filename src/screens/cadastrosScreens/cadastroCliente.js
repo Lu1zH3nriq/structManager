@@ -81,9 +81,11 @@ export default function CadCliente() {
             }),
           }
         );
-
+        
+        const data = await response.json(); 
+        console.log(data) 
         if (response.status === 200) {
-          Alert.alert("Sucesso!", "Cliente cadastrado com sucesso!", [
+          Alert.alert("Sucesso!", data.message , [
             {
               text: "Confirmar",
               onPress: () => {
@@ -97,10 +99,10 @@ export default function CadCliente() {
             },
           ]);
         } else {
-          Alert.alert("Erro ao cadastrar cliente.");
+          Alert.alert("Atenção!", data.message );
         }
       } catch (error) {
-        console.error("Erro na requisição: ", error);
+        //console.error("Erro na requisição: ", error);
         Alert.alert(
           "Erro de rede",
           "Houve um problema na requisição. Tente novamente mais tarde."

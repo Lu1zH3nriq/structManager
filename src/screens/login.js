@@ -65,7 +65,7 @@ export default function Login() {
         //console.error("Erro na requisição: ", error);
         Alert.alert(
           "Erro de rede",
-          response.message
+          "Houve um problema na requisição. Tente novamente mais tarde."
         );
       }
     }
