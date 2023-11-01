@@ -24,6 +24,15 @@ module.exports = {
       endereco: {
         type: Sequelize.STRING
       },
+      obraId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'obras',
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -29,7 +29,7 @@ export default function CadastroTipodeObra() {
 
   //CRUD Tipo de Obra
   //function para cadastrar o Tipo de Obra
-  const handleCadastro = () => {
+  const handleCadastro = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (tipo === "" && codigo === "") {
       Alert.alert(
@@ -45,31 +45,54 @@ export default function CadastroTipodeObra() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar Tipo de Obra
-      //se achar, informar que o Tipo de Obra ja está cadastrado
-      //se nao achar, cadastrar o Tipo de Obra
-
-      // DEPOIS DE CADASTRAR
-      Alert.alert("Sucesso!", "Tipo de Obra cadastrado com sucesso!", [
-        {
-          text: "Confirmar",
-          onPress: () => {
-            // LIMPAR TODOS OS CAMPOS
-            setTipo("");
-            setCodigo("");
-
-            setTipoFind("");
-            setCodigoFind("");
+      try {
+        let response = await fetch("http://192.168.100.3:3000/cadastraTpO", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
-        },
-      ]);
+          body: JSON.stringify({
+            tipo: tipo,
+            codigo: codigo,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 200) {
+          Alert.alert("Sucesso!", data.message, [
+            {
+              text: "Confirmar",
+              onPress: () => {
+                // LIMPAR TODOS OS CAMPOS
+                setTipo("");
+                setCodigo("");
+              },
+            },
+          ]);
+        } else {
+          Alert.alert("Atenção!", data.message);
+        }
+      } catch (error) {
+        //console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
     }
   };
 
   //function para pesquisar o Tipo de Obra
   const [tipoFind, setTipoFind] = useState("");
   const [codigoFind, setCodigoFind] = useState("");
-  const handlePesquisa = () => {
+
+  const [idBuscado, setIdBuscado] = useState("");
+  const [tipoBuscado, setTipoBuscado] = useState("");
+  const [codigoBuscado, setCodigoBuscado] = useState("");
+
+  const handlePesquisa = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (tipoFind === "" && codigoFind === "") {
       Alert.alert(
@@ -85,60 +108,193 @@ export default function CadastroTipodeObra() {
 
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
-      //buscar Tipo de Obra
-      //se achar, trazer os dados do Tipo de Obra (json)
+      try {
+        let baseUrl = "http://192.168.100.3:3000/buscaTpO";
+        let params = {
+          tipo: tipoFind,
+          codigo: codigoFind,
+        };
 
-      setFind(true);
+        let url = `${baseUrl}?${Object.keys(params)
+          .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+          .join("&")}`;
 
-      //se nao achar, trazer uma mensagem de Tipo de Obra nao cadastrado
+        let response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          //console.log(data);
+          setTipo(data.tipo);
+          setCodigo(data.codigo);
+
+          setIdBuscado(data.id);
+          setTipoBuscado(data.tipo);
+          setCodigoBuscado(data.codigo);
+
+          //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
+          setFind(true);
+        } else {
+          Alert.alert("Atenção!", data.message);
+        }
+      } catch (error) {
+        //console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
     }
     toggleModalPesquisa();
   };
 
   //function para alterar o Tipo de Obra
-  const handleAltera = () => {
+  const handleAltera = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (tipo === "" && codigo === "") {
+      Alert.alert("Atenção!", "Preencha os campos para alterar Tipo de Obra!", [
+        {
+          text: "Ok",
+        },
+      ]);
     }
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar Tipo de Obra
-      //se achar, informar que o Tipo de Obra ja está cadastrado
-      //se nao achar, cadastrar o Tipo de Obra
+      
 
-      // DEPOIS DE ALTERAR
-      Alert.alert();
+      if (tipoBuscado != tipo || codigoBuscado != codigo) {
 
-      // LIMPAR TODOS OS CAMPOS
-      setTipo("");
-      setCodigo("");
 
-      setTipoFind("");
-      setCodigoFind("");
+        const tipoAlterado = {
+          id: idBuscado,
+          tipo: tipo,
+          codigo: codigo
+        };
+
+        try {
+          const response = await fetch("http://192.168.100.3:3000/alteraTpO", {
+            method: "PUT",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(tipoAlterado),
+          });
+
+          const data = await response.json();
+
+          if (response.status === 200) {
+            Alert.alert("Sucesso!", data.message, [
+              {
+                text: "Confirmar",
+                onPress: () => {
+                  // LIMPAR TODOS OS CAMPOS
+                  setTipo("");
+                  setCodigo("");
+
+                  //LIMPA O ESTADO DO CLIENTE ENCONTRADO
+                  setIdBuscado("");
+                  setTipoBuscado("");
+                  setCodigoBuscado("");
+
+                  //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
+                  setFind(false);
+                },
+              },
+            ]);
+          } else {
+            Alert.alert("Atenção!", data.message);
+          }
+        } catch (error) {
+          //console.error("Erro na requisição: ", error);
+          Alert.alert(
+            "Erro de rede",
+            "Houve um problema na requisição. Tente novamente mais tarde."
+          );
+        }
+      } else {
+        Alert.alert("Atenção!", "Nenhum campo alterado, nada para salvar!", [
+          {
+            text: "OK",
+          },
+        ]);
+      }
     }
   };
 
   //function para deletar o Tipo de Obra
-  const handleDelet = () => {
+  const handleDelet = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (tipo === "" && codigo === "") {
+      Alert.alert("Atenção!", "Preencha os campos para deletar Tipo de Obra!", [
+        {
+          text: "Ok",
+        },
+      ]);
     }
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar Tipo de Obra
-      //se achar, informar que o Tipo de Obra ja está cadastrado
-      //se nao achar, cadastrar o Tipo de Obra
+      Alert.alert(
+        "Atenção!",
+        "Deseja realmente deletar o registro deste Tipo de Obra? ",
+        [
+          {
+            text: "Deletar Tipo de Obra",
+            onPress: async () => {
+              try {
+                let response = await fetch(
+                  "http://192.168.100.3:3000/deletaTpO",
+                  {
+                    method: "DELETE",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      id: idBuscado,
+                    }),
+                  }
+                );
+                const data = await response.json();
+                if (response.status === 200) {
+                  Alert.alert("Sucesso!", data.message, [
+                    {
+                      text: "Confirmar",
+                      onPress: () => {
+                        // LIMPAR TODOS OS CAMPOS
+                        setTipo("");
+                        setCodigo("");
 
-      // DEPOIS DE DELETAR
+                        //LIMPA O ESTADO DO CLIENTE ENCONTRADO
+                        setIdBuscado("");
+                        setTipoBuscado("");
+                        setCodigoBuscado("");
 
-      // LIMPAR TODOS OS CAMPOS
-      setTipo("");
-      setCodigo("");
-
-      setTipoFind("");
-      setCodigoFind("");
+                        //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
+                        setFind(false);
+                      },
+                    },
+                  ]);
+                } else {
+                  Alert.alert("Atenção!", data.message);
+                }
+              } catch (error) {
+                //console.error("Erro na requisição: ", error);
+                Alert.alert(
+                  "Erro de rede",
+                  "Houve um problema na requisição. Tente novamente mais tarde."
+                );
+              }
+            },
+          },
+        ]
+      );
     }
   };
 
@@ -155,102 +311,90 @@ export default function CadastroTipodeObra() {
   };
 
   return (
-    
-        <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.goBackButton}>{"< Voltar"}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>
+          <Text style={styles.cancelButtonText}>Cancelar</Text>
+        </TouchableOpacity>
+        <Text style={styles.heading}>Dados do Tipo de Obra</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome do Tipo de Obra"
+          value={tipo}
+          onChangeText={(text) => setTipo(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Código"
+          value={codigo}
+          onChangeText={(text) => setCodigo(text)}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+          <Text style={styles.buttonText}>Cadastrar Tipo de Obra</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
+          <Text style={styles.buttonText}>Pesquisar/Alterar Tipo de Obra</Text>
+        </TouchableOpacity>
+
+        {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Tipo de Obra */}
+        {find ? (
+          <View>
+            <TouchableOpacity style={styles.button} onPress={handleAltera}>
+              <Text style={styles.buttonText}>Salvar Alterações</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleDelet}>
+              <Text style={styles.buttonText}>Excluir Cadastro</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.grayBackground}></View>
+        )}
+
+        <ModalPesquisa
+          isVisible={isModalPesquisa}
+          onBackdropPress={toggleModalPesquisa}
+        >
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Text style={styles.goBackButton}>{"< Voltar"}</Text>
-            </TouchableOpacity>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Pesquisar Tipo de Obra</Text>
 
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleCancelar}
-            >
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <Text style={styles.heading}>Dados do Tipo de Obra</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Nome do Tipo de Obra"
-              value={tipo}
-              onChangeText={(text) => setTipo(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Código"
-              value={codigo}
-              onChangeText={(text) => setCodigo(text)}
-            />
+              <TextInput
+                placeholder="Código"
+                style={styles.input}
+                placeholderTextColor={"grey"}
+                value={codigoFind}
+                onChangeText={(text) => {
+                  setCodigoFind(text);
+                }}
+              />
 
-            <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-              <Text style={styles.buttonText}>Cadastrar Tipo de Obra</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={toggleModalPesquisa}
-            >
-              <Text style={styles.buttonText}>
-                Pesquisar/Alterar Tipo de Obra
-              </Text>
-            </TouchableOpacity>
+              <TextInput
+                placeholder="Nome do Tipo de Obra"
+                style={styles.input}
+                placeholderTextColor={"grey"}
+                value={tipoFind}
+                onChangeText={(text) => {
+                  setTipoFind(text);
+                }}
+              />
 
-            {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Tipo de Obra */}
-            {find ? (
-              <View>
-                <TouchableOpacity style={styles.button} onPress={() => {}}>
-                  <Text style={styles.buttonText}>Salvar Alterações</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => {}}>
-                  <Text style={styles.buttonText}>Excluir Cadastro</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={styles.grayBackground}></View>
-            )}
-
-            <ModalPesquisa
-              isVisible={isModalPesquisa}
-              onBackdropPress={toggleModalPesquisa}
-            >
-              <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : undefined}
-              >
-                <View style={styles.modalContainer}>
-                  <Text style={styles.modalTitle}>Pesquisar Tipo de Obra</Text>
-
-                  <TextInput
-                    placeholder="Código"
-                    style={styles.input}
-                    placeholderTextColor={"grey"}
-                    value={codigoFind}
-                    onChangeText={(text) => {
-                      setCodigoFind(text);
-                    }}
-                  />
-
-                  <TextInput
-                    placeholder="Nome do Tipo de Obra"
-                    style={styles.input}
-                    placeholderTextColor={"grey"}
-                    value={tipoFind}
-                    onChangeText={(text) => {
-                      setTipoFind(text);
-                    }}
-                  />
-
-                  <TouchableOpacity
-                    onPress={handlePesquisa}
-                    style={styles.button}
-                  >
-                    <Text style={styles.buttonText}>Pesquisar</Text>
-                  </TouchableOpacity>
-                </View>
-              </KeyboardAvoidingView>
-            </ModalPesquisa>
+              <TouchableOpacity onPress={handlePesquisa} style={styles.button}>
+                <Text style={styles.buttonText}>Pesquisar</Text>
+              </TouchableOpacity>
+            </View>
           </KeyboardAvoidingView>
-        </SafeAreaView>
+        </ModalPesquisa>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

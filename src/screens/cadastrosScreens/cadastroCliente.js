@@ -83,7 +83,6 @@ export default function CadCliente() {
         );
 
         const data = await response.json();
-        console.log(data)
         if (response.status === 200) {
           Alert.alert("Sucesso!", data.message, [
             {
@@ -265,7 +264,7 @@ export default function CadCliente() {
             Alert.alert("Atenção!", data.message);
           }
         } catch (error) {
-          console.error("Erro na requisição: ", error);
+          //console.error("Erro na requisição: ", error);
           Alert.alert(
             "Erro de rede",
             "Houve um problema na requisição. Tente novamente mais tarde."
@@ -305,7 +304,6 @@ export default function CadCliente() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      var confirm_delete = false;
       Alert.alert("Atenção!", "Deseja realmente deletar o registro deste cliente? ", [
         {
           text: "Deletar Cliente",
@@ -326,7 +324,7 @@ export default function CadCliente() {
               );
               const data = await response.json();
               if (response.status === 200) {
-                Alert.alert("Sucesso!", data.response , [
+                Alert.alert("Sucesso!", data.message , [
                   {
                     text: "Confirmar",
                     onPress: () => {
@@ -354,7 +352,7 @@ export default function CadCliente() {
                 Alert.alert("Atenção!", data.message);
               }
             } catch (error) {
-              console.error("Erro na requisição: ", error);
+              //console.error("Erro na requisição: ", error);
               Alert.alert(
                 "Erro de rede",
                 "Houve um problema na requisição. Tente novamente mais tarde."

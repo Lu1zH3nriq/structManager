@@ -43,7 +43,7 @@ export default function RedefSenha() {
             email: email,
           }),
         });
-        const data = response.json();
+        const data = await response.json();
         if (response.status === 200) {
           Alert.alert(
             "Sucesso!",

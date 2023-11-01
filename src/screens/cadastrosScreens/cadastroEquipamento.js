@@ -22,7 +22,6 @@ export default function CadastroEquipamento() {
 
   //SETAR O ESTADO COMO FALSE PARA ACHAR O Equipamento
   const [find, setFind] = useState(false);
-
   const navigation = useNavigation(); // Inicialize o hook de navegação
 
   //function para alterar a visibilidade do modal de pesquisa
@@ -32,7 +31,7 @@ export default function CadastroEquipamento() {
 
   //CRUD Equipamento
   //function para cadastrar o Equipamento
-  const handleCadastro = () => {
+  const handleCadastro = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (
       nome === "" &&
@@ -54,33 +53,66 @@ export default function CadastroEquipamento() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar Equipamento
-      //se achar, informar que o Equipamento ja está cadastrado
-      //se nao achar, cadastrar o Equipamento
+      try {
+        let response = await fetch(
+          "http://192.168.100.3:3000/cadastraEquipamento",
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              nome: nome,
+              codigo: codigo,
+              marca: marca,
+              modelo: modelo,
+              etiqueta: etiqueta,
+            }),
+          }
+        );
 
-      // DEPOIS DE CADASTRAR
-      Alert.alert("Sucesso!", "Equipamento cadastrado com sucesso!", [
-        {
-          text: "Confirmar",
-          onPress: () => {
-            // LIMPAR TODOS OS CAMPOS
-            setNome("");
-            setCodigo("");
-            setMarca("");
-            setModelo("");
-            setEtiqueta("");
-            setNomeFind("");
-            setCodigoFind("");
-          },
-        },
-      ]);
+        const data = await response.json();
+
+        if (response.status === 200) {
+          Alert.alert("Sucesso!", data.message, [
+            {
+              text: "Confirmar",
+              onPress: () => {
+                // LIMPAR TODOS OS CAMPOS
+                setNome("");
+                setCodigo("");
+                setMarca("");
+                setModelo("");
+                setEtiqueta("");
+              },
+            },
+          ]);
+        } else {
+          Alert.alert("Atenção!", data.message);
+        }
+      } catch (error) {
+        //console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
     }
   };
 
   //function para pesquisar o Equipamento
   const [nomeFind, setNomeFind] = useState("");
   const [codigoFind, setCodigoFind] = useState("");
-  const handlePesquisa = () => {
+
+  const [idBuscado, setIdBuscado] = useState("");
+  const [nomeBuscado, setNomeBuscado] = useState("");
+  const [codigoBuscado, setCodigoBuscado] = useState("");
+  const [marcaBuscado, setMarcaBuscado] = useState("");
+  const [modeloBuscado, setModeloBuscado] = useState("");
+  const [etiquetaBuscado, setEtiquetaBuscado] = useState("");
+
+  const handlePesquisa = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (nomeFind === "" && codigoFind === "") {
       Alert.alert(
@@ -96,18 +128,59 @@ export default function CadastroEquipamento() {
 
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
-      //buscar Equipamento
-      //se achar, trazer os dados do Equipamento (json)
+      try {
+        let baseUrl = "http://192.168.100.3:3000/buscaEquipamento";
+        let params = {
+          nome: nomeFind,
+          codigo: codigoFind,
+        };
 
-      setFind(true);
+        let url = `${baseUrl}?${Object.keys(params)
+          .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+          .join("&")}`;
 
-      //se nao achar, trazer uma mensagem de Equipamento nao cadastrado
+        let response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          //console.log(data);
+          setNome(data.nome);
+          setCodigo(data.codigo);
+          setMarca(data.marca);
+          setModelo(data.modelo);
+          setEtiqueta(data.etiqueta);
+
+          setIdBuscado(data.id);
+          setNomeBuscado(data.nome);
+          setCodigoBuscado(data.codigo);
+          setMarcaBuscado(data.marca);
+          setModeloBuscado(data.modelo);
+          setEtiquetaBuscado(data.etiqueta);
+
+          //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
+          setFind(true);
+        } else {
+          Alert.alert("Atenção!", data.message);
+        }
+      } catch (error) {
+        //console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
     }
+
     toggleModalPesquisa();
   };
 
   //function para alterar o Equipamento
-  const handleAltera = () => {
+  const handleAltera = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (
       nome === "" &&
@@ -120,52 +193,167 @@ export default function CadastroEquipamento() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar Equipamento
-      //se achar, informar que o Equipamento ja está cadastrado
-      //se nao achar, cadastrar o Equipamento
+      const equipAlterado = {
+        id: idBuscado,
+        nome: nomeBuscado,
+        codigo: codigoBuscado,
+        marca: marcaBuscado,
+        modelo: modeloBuscado,
+        etiqueta: etiquetaBuscado,
+      };
 
-      // DEPOIS DE ALTERAR
-      Alert.alert();
+      if (
+        equipAlterado.nome != nome ||
+        equipAlterado.codigo != codigo ||
+        equipAlterado.marca != marca ||
+        equipAlterado.modelo != modelo ||
+        equipAlterado.etiqueta != etiqueta
+      ) {
+        (equipAlterado.nome = nome),
+          (equipAlterado.codigo = codigo),
+          (equipAlterado.marca = marca),
+          (equipAlterado.modelo = modelo),
+          (equipAlterado.etiqueta = etiqueta);
+        try {
+          const response = await fetch(
+            "http://192.168.100.3:3000/alteraEquipamento",
+            {
+              method: "PUT",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(equipAlterado),
+            }
+          );
 
-      // LIMPAR TODOS OS CAMPOS
-      setNome("");
-      setCodigo("");
-      setMarca("");
-      setModelo("");
-      setEtiqueta("");
-      setNomeFind("");
-      setCodigoFind("");
+          const data = await response.json();
+
+          if (response.status === 200) {
+            Alert.alert("Sucesso!", data.message, [
+              {
+                text: "Confirmar",
+                onPress: () => {
+                  // LIMPAR TODOS OS CAMPOS
+                  setNome("");
+                  setCodigo("");
+                  setMarca("");
+                  setModelo("");
+                  setEtiqueta("");
+
+                  //LIMPA O ESTADO DO CLIENTE ENCONTRADO
+                  setIdBuscado("");
+                  setNomeBuscado("");
+                  setCodigoBuscado("");
+                  setMarcaBuscado("");
+                  setModeloBuscado("");
+                  setEtiquetaBuscado("");
+
+                  //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
+                  setFind(false);
+                },
+              },
+            ]);
+          } else {
+            Alert.alert("Atenção!", data.message);
+          }
+        } catch (error) {
+          //console.error("Erro na requisição: ", error);
+          Alert.alert(
+            "Erro de rede",
+            "Houve um problema na requisição. Tente novamente mais tarde."
+          );
+        }
+      } else {
+        Alert.alert("Atenção!", "Nenhum campo alterado, nada para salvar!", [
+          {
+            text: "OK",
+          },
+        ]);
+      }
     }
   };
 
   //function para deletar o Equipamento
-  const handleDelet = () => {
+  const handleDelet = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (
       nome === "" &&
-      cpfCnpj === "" &&
-      telefone === "" &&
-      email === "" &&
-      endereco === ""
+      codigo === "" &&
+      marca === "" &&
+      modelo === "" &&
+      etiqueta === ""
     ) {
+      Alert.alert("Atenção!", "Preencha os campos para deletar Equipamento!", [
+        {
+          text: "Ok",
+        },
+      ]);
     }
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      //buscar Equipamento
-      //se achar, informar que o Equipamento ja está cadastrado
-      //se nao achar, cadastrar o Equipamento
+      Alert.alert(
+        "Atenção!",
+        "Deseja realmente deletar o registro deste equipamento? ",
+        [
+          {
+            text: "Deletar Equipamento",
+            onPress: async () => {
+              try {
+                let response = await fetch(
+                  "http://192.168.100.3:3000/apagaEquipamento",
+                  {
+                    method: "DELETE",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      id: idBuscado,
+                    }),
+                  }
+                );
+                const data = await response.json();
+                if (response.status === 200) {
+                  Alert.alert("Sucesso!", data.message, [
+                    {
+                      text: "Confirmar",
+                      onPress: () => {
+                        // LIMPAR TODOS OS CAMPOS
+                        setNome("");
+                        setCodigo("");
+                        setMarca("");
+                        setModelo("");
+                        setEtiqueta("");
 
-      // DEPOIS DE DELETAR
+                        //LIMPA O ESTADO DO CLIENTE ENCONTRADO
+                        setIdBuscado("");
+                        setNomeBuscado("");
+                        setCodigoBuscado("");
+                        setMarcaBuscado("");
+                        setModeloBuscado("");
+                        setEtiquetaBuscado("");
 
-      // LIMPAR TODOS OS CAMPOS
-      setNome("");
-      setCodigo("");
-      setMarca("");
-      setModelo("");
-      setEtiqueta("");
-      setNomeFind("");
-      setCodigoFind("");
+                        //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
+                        setFind(false);
+                      },
+                    },
+                  ]);
+                } else {
+                  Alert.alert("Atenção!", data.message);
+                }
+              } catch (error) {
+                console.error("Erro na requisição: ", error);
+                Alert.alert(
+                  "Erro de rede",
+                  "Houve um problema na requisição. Tente novamente mais tarde."
+                );
+              }
+            },
+          },
+        ]
+      );
     }
   };
 
@@ -236,10 +424,10 @@ export default function CadastroEquipamento() {
         {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Equipamento */}
         {find ? (
           <View>
-            <TouchableOpacity style={styles.button} onPress={() => {}}>
+            <TouchableOpacity style={styles.button} onPress={handleAltera}>
               <Text style={styles.buttonText}>Salvar Alterações</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => {}}>
+            <TouchableOpacity style={styles.button} onPress={handleDelet}>
               <Text style={styles.buttonText}>Excluir Cadastro</Text>
             </TouchableOpacity>
           </View>

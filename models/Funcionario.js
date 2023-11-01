@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Funcionario.belongsTo(models.Obra);
     }
   }
   Funcionario.init({
@@ -18,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     cpfcnpj: DataTypes.STRING,
     telefone: DataTypes.STRING,
     email: DataTypes.STRING,
-    endereco: DataTypes.STRING
+    endereco: DataTypes.STRING,
+    obraId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Funcionario',

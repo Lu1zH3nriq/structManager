@@ -11,27 +11,24 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Obra.belongsTo(models.Cliente)
-      Obra.hasMany(models.Funcionario)
-      Obra.hasMany(models.Equipamento)
+      Obra.belongsTo(models.Cliente);
+      Obra.belongsTo(models.TipoObra);
+      Obra.hasMany(models.Funcionario);
+      Obra.hasMany(models.Equipamento);
     }
   }
   Obra.init({
     codigo: DataTypes.STRING,
     nome: DataTypes.STRING,
-    clienteId: DataTypes.INTEGER,
-    telefone: DataTypes.STRING,
     endereco: DataTypes.STRING,
     numContrato: DataTypes.STRING,
     numAlvara: DataTypes.STRING,
-    RTProjeto: DataTypes.STRING,
-    RTExec: DataTypes.STRING,
+    rtProjeto: DataTypes.STRING,
+    rtExec: DataTypes.STRING,
     dataInicio: DataTypes.DATE,
     dataFim: DataTypes.DATE,
     orcamento: DataTypes.FLOAT,
-    funcionarioId: DataTypes.INTEGER,
-    equipamentoId: DataTypes.INTEGER,
-    tipoObraId: DataTypes.INTEGER
+    clienteId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Obra',
