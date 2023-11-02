@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       password: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      fotoPerfil: {
+        type: DataTypes.STRING,
+        allowNull: true
       }
     },
     {

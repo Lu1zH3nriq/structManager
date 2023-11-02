@@ -16,6 +16,8 @@ import {
 
 import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export default function Login() {
   const navigation = useNavigation();
@@ -56,10 +58,12 @@ export default function Login() {
 
         if (response.status === 200) {
           
-          const user_logado = response.data;
+          const user_logado = data;
           //  COLOCAR O USER_LOGADO NO ASYNC STORAGE PARA CONTROLE DE LOGIN
-
-
+          await AsyncStorage.setItem('userData', JSON.stringify(user_logado));
+            
+          setUser("");
+          setPassword("");
           navigation.navigate("Main");
         } else {
           Alert.alert("Erro de login", data.message );

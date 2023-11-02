@@ -18,13 +18,32 @@ import ModalSenha from "react-native-modal";
 import ModalEmail from "react-native-modal";
 import * as ImagePicker from "expo-image-picker";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function User() {
   const navigation = useNavigation();
   const [isModaSenhaVisible, setModalSenhaVisible] = useState(false);
   const [emailSenha, setEmailSeha] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [avatarSource, setAvatarSource] = useState(null);
-  const [photoChanged, setPhotoChanged] = useState(false); // Estado para rastrear se a foto foi alterada
+  const [photoChanged, setPhotoChanged] = useState(false);
+
+  const [userLogadoID, setUserLogadoID] = useState(null);
+  const [userLogadoUsuario, setUserLogadoUsuario] = useState(null);
+  const [userLogadoEmail, setUserLogadoEmail] = useState(null);
+
+  useEffect(() => {
+    async function getUser() {
+      let response = await AsyncStorage.getItem("userData");
+      let user = JSON.parse(response);
+      setUserLogadoID(user.id);
+      setAvatarSource(user.fotoPerfil);
+      setUserLogadoUsuario(user.usuario);
+      setUserLogadoEmail(user.email);
+    }
+
+    getUser();
+  }, []);
 
   const selectImageFromGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -40,19 +59,44 @@ export default function User() {
     }
   };
 
-  const handleSavePhoto = () => {
+  const handleSavePhoto = async () => {
     // Lógica para salvar a foto
-    Alert.alert(
-      "Foto salva com sucesso!",
-      "A foto foi salva com sucesso!",
-      [
+    
+    try {
+      
+      let response = await fetch(
+        "http://192.168.100.3:3000/uploadFoto",
         {
-          text: "OK",
-        },
-      ],
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: userLogadoID,
+            fotoPerfil: avatarSource
+          }),
+        }
+      );
 
-      setPhotoChanged(false)
-    );
+      const data = await response.json();
+      if (response.status === 200) {
+        Alert.alert("Foto salva com sucesso!", data.message, [{ text: "OK" }]);
+
+        setPhotoChanged(false);
+      } else {
+        Alert.alert(
+          "Erro no servidor",
+          data.message
+        );
+      }
+    } catch (error) {
+      console.error("Erro na requisição: ", error);
+      Alert.alert(
+        "Erro de rede",
+        "Houve um problema na requisição. Tente novamente mais tarde."
+      );
+    }
   };
 
   const handleLogout = () => {
@@ -62,15 +106,12 @@ export default function User() {
       [
         {
           text: "Cancelar",
-          onPress: () => {
-          },
           style: "cancel",
         },
         {
           text: "Sair",
-          onPress: () => {
-            // Lógica de logout do usuário, remover token ou limpar o estado
-
+          onPress: async () => {
+            await AsyncStorage.clear();
             // Após encerrar sessão
             navigation.navigate("Login");
           },
@@ -154,8 +195,8 @@ export default function User() {
         )}
 
         <View style={styles.userData}>
-          <Text style={styles.userDataText}>Usuário: userName</Text>
-          <Text style={styles.userDataText}>E-mail: example@email.com</Text>
+          <Text style={styles.userDataText}>Usuário: {userLogadoUsuario}</Text>
+          <Text style={styles.userDataText}>e-mail: {userLogadoEmail}</Text>
         </View>
       </View>
 
@@ -177,7 +218,10 @@ export default function User() {
         />
       </View>
 
-      <ModalSenha isVisible={isModaSenhaVisible} onBackdropPress={toggleModalSenha}>
+      <ModalSenha
+        isVisible={isModaSenhaVisible}
+        onBackdropPress={toggleModalSenha}
+      >
         <KeyboardAvoidingView
           style={styles.keyboardAvoidingView}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -219,7 +263,10 @@ export default function User() {
         </KeyboardAvoidingView>
       </ModalSenha>
 
-      <ModalEmail isVisible={isModaEmailVisible} onBackdropPress={toggleModalEmail}>
+      <ModalEmail
+        isVisible={isModaEmailVisible}
+        onBackdropPress={toggleModalEmail}
+      >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
@@ -287,11 +334,11 @@ const styles = StyleSheet.create({
   },
   userDataText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 24,
   },
   userData: {
     marginTop: 15,
-    alignItems: 'center'
+    alignItems: "flex-start",
   },
   buttonContainer: {
     alignItems: "center",

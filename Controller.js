@@ -57,11 +57,9 @@ app.post("/resetPassword", async (req, res) => {
     });
 
     if (!findedUser)
-      return res
-        .status(422)
-        .json({
-          message: "Usuário não encontrado com este email ou nome de usuário!",
-        });
+      return res.status(422).json({
+        message: "Usuário não encontrado com este email ou nome de usuário!",
+      });
 
     //const resetPass = async () => {
     //sistema para enviar email de reset de senha;
@@ -88,11 +86,9 @@ app.post("/cadastraCliente", async (req, res) => {
     });
 
     if (clientFind) {
-      return res
-        .status(422)
-        .json({
-          message: "Cliente com este CPF/CNPJ já cadastrado no sistema! ",
-        });
+      return res.status(422).json({
+        message: "Cliente com este CPF/CNPJ já cadastrado no sistema! ",
+      });
     } else {
       const clientCreated = await client.create({
         nome: req.body.nome,
@@ -199,11 +195,9 @@ app.post("/cadastraFuncionario", async (req, res) => {
     });
 
     if (findFunc) {
-      return res
-        .status(422)
-        .json({
-          message: "Funcionário com este CPF/CNPJ já cadastrado no sistema!",
-        });
+      return res.status(422).json({
+        message: "Funcionário com este CPF/CNPJ já cadastrado no sistema!",
+      });
     }
     const funcCreated = await func.create({
       nome: req.body.nome,
@@ -538,6 +532,40 @@ app.post("/cadastraObra");
 app.get("/buscaObra");
 app.put("/alteraObra");
 app.delete("/apagaObra");
+
+//-----------------------------------------------------------USUARIO CONTROLLER -------------------------------------------------
+
+app.put("/uploadFoto", async (req, res) => {
+  try {
+
+    const uri = req.body.fotoPerfil;
+    const userId = req.body.id;
+
+    const updatedFoto = user.update(
+      {
+        fotoPerfil: uri,
+      },
+      {
+        where: {
+          id: userId,
+        },
+      }
+    );
+
+    if (updatedFoto)
+      return res.status(200).json({ message: "Imagem alterada com sucesso!" });
+    else {
+      return res
+        .status(400)
+        .json({ message: "Erro ao alterar imagem do usuário!" });
+    }
+  } catch (error) {
+    console.log("erro ao alterar imagem de usuario : " + error);
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao alterar imagem de usuario!" });
+  }
+});
 
 /*
 

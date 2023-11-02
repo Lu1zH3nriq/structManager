@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import {
   View,
   Text,
@@ -6,16 +6,28 @@ import {
   SafeAreaView,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export default function Home(  ) {
-  
+  const [ user, setUser ] = useState(null);
+
+  useEffect( ()=>{
+    async function getUserName(){
+      let response = await AsyncStorage.getItem('userData');
+      let user = JSON.parse(response);
+      setUser(user.usuario);
+    }
+
+    getUserName();
+  }, [] );
 
   return (
     <SafeAreaView style={styles.container}>
 
       <View style={styles.header}>
         <Text style={styles.headerText}>Bem vindo(a) de volta</Text>
-        <Text style={styles.headerText}>userName</Text>
+        <Text style={styles.headerText}>{user}</Text>
       </View>
 
       <View style={styles.cardContainer}>
