@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const models = require("./models");
+const {
+  id,
+} = require("deprecated-react-native-prop-types/DeprecatedTextPropTypes");
 
 const app = express();
 app.use(cors());
@@ -535,9 +538,9 @@ app.delete("/apagaObra");
 
 //-----------------------------------------------------------USUARIO CONTROLLER -------------------------------------------------
 
+// ALTERAR FOTO DO USUARIO
 app.put("/uploadFoto", async (req, res) => {
   try {
-
     const uri = req.body.fotoPerfil;
     const userId = req.body.id;
 
@@ -560,13 +563,86 @@ app.put("/uploadFoto", async (req, res) => {
         .json({ message: "Erro ao alterar imagem do usuário!" });
     }
   } catch (error) {
-    console.log("erro ao alterar imagem de usuario : " + error);
+    //console.log("erro ao alterar imagem de usuario : " + error);
     return res
       .status(500)
       .json({ message: "Erro de requisição ao alterar imagem de usuario!" });
   }
 });
 
+//ALTERAR A SENHA DO USUÁRIO
+app.put("/updateSenha", async (req, res) => {
+  try {
+    const _user = {
+      id: req.body.id,
+      password: req.body.password,
+    };
+
+
+    const updatedPass = user.update(
+      {
+        password: _user.password,
+      },
+      {
+        where: {
+          id: _user.id,
+        },
+      }
+    );
+
+    if (updatedPass)
+      return res
+        .status(200)
+        .json({ message: "Senha alterada com sucesso!" });
+    else {
+      return res
+        .status(400)
+        .json({ message: "Erro ao alterar a senha !" });
+    }
+  } catch (error) {
+    console.log("erro ao alterar senha: " + error);
+    return res
+      .status(500)
+      .json({ message: "Erro ao alterar senha! " });
+  }
+});
+
+// ALTERAR O EMAIL DO USUÁRIO
+app.put("/updateEmail", async (req, res) => {
+  try {
+    const _user = {
+      id: req.body.id,
+      email: req.body.email,
+    };
+
+
+    const updatedEmail = user.update(
+      {
+        email: _user.email,
+      },
+      {
+        where: {
+          id: _user.id,
+        },
+      }
+    );
+
+    if (updatedEmail)
+      return res
+        .status(200)
+        .json({ message: "Email alterado com sucesso!" });
+    else {
+      return res
+        .status(400)
+        .json({ message: "Erro ao alterar email !" });
+    }
+  } catch (error) {
+    console.log("erro ao alterar email: " + error);
+    return res
+      .status(500)
+      .json({ message: "Erro ao alterar email! " });
+  }
+});
 /*
 
 */

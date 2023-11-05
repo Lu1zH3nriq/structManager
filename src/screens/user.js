@@ -23,14 +23,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function User() {
   const navigation = useNavigation();
   const [isModaSenhaVisible, setModalSenhaVisible] = useState(false);
-  const [emailSenha, setEmailSeha] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+
   const [avatarSource, setAvatarSource] = useState(null);
   const [photoChanged, setPhotoChanged] = useState(false);
 
   const [userLogadoID, setUserLogadoID] = useState(null);
   const [userLogadoUsuario, setUserLogadoUsuario] = useState(null);
   const [userLogadoEmail, setUserLogadoEmail] = useState(null);
+  const [userLogadoPass, setUserLogadoPass] = useState(null);
 
   useEffect(() => {
     async function getUser() {
@@ -40,6 +40,7 @@ export default function User() {
       setAvatarSource(user.fotoPerfil);
       setUserLogadoUsuario(user.usuario);
       setUserLogadoEmail(user.email);
+      setUserLogadoPass(user.password);
     }
 
     getUser();
@@ -61,23 +62,19 @@ export default function User() {
 
   const handleSavePhoto = async () => {
     // Lógica para salvar a foto
-    
+
     try {
-      
-      let response = await fetch(
-        "http://192.168.100.3:3000/uploadFoto",
-        {
-          method: "PUT",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: userLogadoID,
-            fotoPerfil: avatarSource
-          }),
-        }
-      );
+      let response = await fetch("http://192.168.100.3:3000/uploadFoto", {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: userLogadoID,
+          fotoPerfil: avatarSource,
+        }),
+      });
 
       const data = await response.json();
       if (response.status === 200) {
@@ -85,10 +82,7 @@ export default function User() {
 
         setPhotoChanged(false);
       } else {
-        Alert.alert(
-          "Erro no servidor",
-          data.message
-        );
+        Alert.alert("Erro no servidor", data.message);
       }
     } catch (error) {
       console.error("Erro na requisição: ", error);
@@ -122,33 +116,67 @@ export default function User() {
   };
 
   //estrutura de modal para redefinir senha
+  const [emailAtual, setEmailAtual] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
   const toggleModalSenha = () => {
     setModalSenhaVisible(!isModaSenhaVisible);
   };
 
-  const handleSavePassword = () => {
-    // Lógica para salvar a nova senha
-
-    Alert.alert(
-      "Senha redefinida com sucesso!",
-      "Uma confirmação foi enviada para o email informado!",
-      [
+  const handleSavePassword = async () => {
+    // VERIFICAR SE OS CAMPOS NÃO ESTÃO VAZIOS
+    if (emailAtual === "" || newPassword === "") {
+      Alert.alert("Atenção!", "Para redefinir a senha, preencha todos os campos!", [
         {
-          text: "Confirmar e fazer login",
-          onPress: () => {
-            // Lógica de logout do usuário, remover token ou limpar o estado
-
-            // Após encerrar sessão
-            navigation.navigate("Login");
-          },
+          text: "Confirmar",
         },
-      ]
-    );
-    // Feche o modal após salvar
-    toggleModalSenha();
+      ]);
+    } else if (newPassword === userLogadoPass) {
+      Alert.alert("Atenção!", "A nova senha não pode ser igual à senha anterior!", [
+        {
+          text: "Confirmar",
+        },
+      ]);
+    } else if (userLogadoEmail !== emailAtual) {
+      Alert.alert("Atenção!", "O email digitado não pertence a este usuário!", [
+        {
+          text: "Confirmar",
+        },
+      ]);
+    } else {
+      try {
+        let response = await fetch("http://192.168.100.3:3000/updateSenha", {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: userLogadoID,
+            password: newPassword,
+          }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.status === 200) {
+          Alert.alert("Sucesso!", data.message);
+          toggleModalSenha();
+          setEmailAtual("");
+          setNewPassword("");
+        } else {
+          Alert.alert("Erro!", data.message);
+        }
+      } catch (error) {
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
+    }
   };
 
-  // estrutura de moral para redefinir email
+  // estrutura de modal para redefinir email
   const [isModaEmailVisible, setModalEmailVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
@@ -157,21 +185,56 @@ export default function User() {
     setModalEmailVisible(!isModaEmailVisible);
   };
 
-  const handleSaveEmail = () => {
-    Alert.alert(
-      "Email redefinido com sucesso!",
-      "Uma confirmação foi enviada para o novo email informado!",
-      [
+  const handleSaveEmail = async () => {
+    if (email === "" || newEmail === "") {
+      Alert.alert("Atenção!", "Para redefinir o email, preencha todos os campos!", [
         {
           text: "Confirmar",
-          onPress: () => {},
         },
-      ]
-    );
-    // Lógica para salvar o novo email
-
-    // Feche o modal após salvar
-    toggleModalEmail();
+      ]);
+    } else if (newEmail === userLogadoEmail) {
+      Alert.alert("Atenção!", "O novo email não pode ser igual ao anterior!", [
+        {
+          text: "Confirmar",
+        },
+      ]);
+    } else if (userLogadoEmail !== email) {
+      Alert.alert("Atenção!", "O email anterior digitado não pertence a este usuário!", [
+        {
+          text: "Confirmar",
+        },
+      ]);
+    } else {
+      try {
+        let response = await fetch("http://192.168.100.3:3000/updateEmail", {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: userLogadoID,
+            email: newEmail,
+          }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.status === 200) {
+          Alert.alert("Sucesso!", data.message);
+          toggleModalEmail();
+          setEmail("");
+          setNewEmail("");
+        } else {
+          Alert.alert("Erro!", data.message);
+        }
+      } catch (error) {
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
+    }
   };
 
   return (
@@ -232,8 +295,8 @@ export default function User() {
               <TextInput
                 placeholder="Email atual"
                 style={styles.input}
-                value={emailSenha}
-                onChangeText={(text) => setEmailSeha(text)}
+                value={emailAtual}
+                onChangeText={(text) => setEmailAtual(text)}
                 placeholderTextColor="white"
                 color="white"
               />

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   View,
   Text,
@@ -13,128 +14,143 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import ModalPesquisa from "react-native-modal";
 import { TextInputMask } from "react-native-masked-text";
+import { useNavigation } from "@react-navigation/native";
+import { FlatList } from "react-native-gesture-handler";
 
-//importar navegção
-import { useNavigation } from '@react-navigation/native';
+// Suponha que você tenha uma função que recupera as obras do banco de dados
+// Substitua esta função pela lógica real de busca no banco de dados
+const getObrasFromDatabase = async () => {
+  // Aqui você deve fazer a busca real no banco de dados
+  // e retornar os dados das obras
+  return [
+    { id: 1, nome: "Obra 1", tipo: "Tipo 1", dataInicio: "01/01/2023" },
+    { id: 2, nome: "Obra 2", tipo: "Tipo 2", dataInicio: "02/01/2023" },
+    // Adicione mais obras conforme necessário
+  ];
+};
 
+function ObraCard({ obra, navigation }) {
+  const navigateToDetails = () => {
+    navigation.navigate("DetailsObra", { obra });
+  };
+
+  return (
+    <TouchableOpacity onPress={navigateToDetails}>
+      <View style={styles.obraCard}>
+        <Text>ID: {obra.id}</Text>
+        <Text>Nome: {obra.nome}</Text>
+        <Text>Tipo: {obra.tipo}</Text>
+        <Text>Data de Início: {obra.dataInicio}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
 
 export default function GerenciarObras() {
   const [isModalPesquisaVisible, setModalPesquisaVisible] = useState(false);
   const [nomeCliente, setNomeCliente] = useState("");
   const [tipoObra, setTipoObra] = useState("");
   const [dataInicio, setDataInicio] = useState("");
-   // setar o estado como falso para os botoes de pesquisa
+  const [obras, setObras] = useState([]);
 
   const toggleModalPesquisa = () => {
     setModalPesquisaVisible(!isModalPesquisaVisible);
   };
 
-  //navegação
   const navigation = useNavigation();
+
   const toggleCadastrarObra = () => {
-    navigation.navigate('CadastraNovaObra')
+    navigation.navigate("CadastraNovaObra");
   };
 
-  const toggleDetailObra = () => {
-    navigation.navigate('DetailsObra')
-  };
+  const handlePesquisar = async () => {
+    // Verifica se os campos estão vazios
+    if (nomeCliente === "" && tipoObra === "" && dataInicio === "") {
+      Alert.alert("Atenção!", "Preencha algum dos campos para pesquisar obras.", [
+        { text: "Ok" },
+      ]);
+    } else {
+      // Aqui você pode chamar a função que busca as obras no banco de dados
+      const obrasEncontradas = await getObrasFromDatabase();
 
-
-  //função para pesquisar as obras
-  const handlePesquisar = () => {
-
-    // verifica se os campos estão vazios
-    if( nomeCliente === '' && tipoObra === '' && dataInicio === ''){
-      Alert.alert(
-        'Atenção!',
-        'Preencha algum dos campos para pesquisar obras.',
-        [
-          {
-            text: "Ok",
-          },
-        ],
-      );
-    }
-    else{
-
-      //pesquisar no banco de dados as obras de acordo com os filtros;
-
+      // Atualize o estado com as obras encontradas
+      setObras(obrasEncontradas);
     }
 
-    //ao final fechar o modal de pesquisa
     toggleModalPesquisa();
   };
 
+  useEffect(() => {
+    // Carregue as obras ao entrar na tela
+    getObrasFromDatabase().then((obrasEncontradas) => setObras(obrasEncontradas));
+  }, []);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.header} onPress={toggleModalPesquisa}>
-        <Icon name="search" size={30} color="white" style={styles.searchIcon} />
-      </TouchableOpacity>
+    <GestureHandlerRootView style={styles.container}>
+      <SafeAreaView>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={toggleModalPesquisa}>
+            <Icon name="search" size={30} color="white" style={styles.searchIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleCadastrarObra}>
+            <Icon name="plus" size={30} color="white" style={styles.addIcon} />
+          </TouchableOpacity>
+        </View>
 
-      <TouchableOpacity onPress={ toggleDetailObra } >
-        <Text style={ {color: 'white'} }>
-          ABRIR TELA DE GERENCIAR CADA OBRA
-        </Text>
-      </TouchableOpacity>
-      
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={toggleCadastrarObra}>
-          <Icon name="plus" size={30} color="white" style={styles.addIcon} />
-        </TouchableOpacity>
-      </View>
+        <FlatList
+          data={obras}
+          renderItem={({ item }) => <ObraCard obra={item} navigation={navigation} />}
+          keyExtractor={(item) => item.id.toString()}
+        />
 
-      <ModalPesquisa
-        isVisible={isModalPesquisaVisible}
-        onBackdropPress={toggleModalPesquisa}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        <ModalPesquisa
+          isVisible={isModalPesquisaVisible}
+          onBackdropPress={toggleModalPesquisa}
         >
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Pesquisar obras</Text>
-            <TextInput
-              placeholder="Nome do Cliente"
-              style={styles.input}
-              placeholderTextColor="white"
-              color="white"
-              value={nomeCliente}
-              onChangeText={(text) => setNomeCliente(text)}
-            />
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+          >
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Pesquisar obras</Text>
+              <TextInput
+                placeholder="Nome do Cliente"
+                style={styles.input}
+                placeholderTextColor="white"
+                color="white"
+                value={nomeCliente}
+                onChangeText={(text) => setNomeCliente(text)}
+              />
 
-            <TextInput
-              placeholder="Tipo de Obra"
-              style={styles.input}
-              placeholderTextColor="white"
-              color="white"
-              value={tipoObra}
-              onChangeText={(text) => setTipoObra(text)}
-            />
-            <TextInputMask
-              type={"datetime"}
-              options={{
-                format: "DD/MM/YYYY",
-              }}
-              placeholder="Data de Início"
-              style={styles.input}
-              placeholderTextColor="white"
-              color="white"
-              value={dataInicio}
-              onChangeText={(text) => setDataInicio(text)}
-              keyboardType="numeric"
-            />
+              <TextInput
+                placeholder="Tipo de Obra"
+                style={styles.input}
+                placeholderTextColor="white"
+                color="white"
+                value={tipoObra}
+                onChangeText={(text) => setTipoObra(text)}
+              />
+              <TextInputMask
+                type={"datetime"}
+                options={{
+                  format: "DD/MM/YYYY",
+                }}
+                placeholder="Data de Início"
+                style={styles.input}
+                placeholderTextColor="white"
+                color="white"
+                value={dataInicio}
+                onChangeText={(text) => setDataInicio(text)}
+                keyboardType="numeric"
+              />
 
-            <TouchableOpacity
-              onPress={handlePesquisar}
-              style={styles.modalButton}
-            >
-              <Text style={styles.modalButtonText}>Pesquisar</Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </ModalPesquisa>
-
-
-    </SafeAreaView>
+              <TouchableOpacity onPress={handlePesquisar} style={styles.modalButton}>
+                <Text style={styles.modalButtonText}>Pesquisar</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </ModalPesquisa>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 
@@ -142,36 +158,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#454A50",
-    alignItems: "center",
-    justifyContent: "center",
+    paddingHorizontal: 10
   },
   header: {
-    position: "absolute",
-    top: "5%",
-    left: '3%',
-    zIndex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
   },
   searchIcon: {
     padding: 10,
   },
-  searchIconCadastro: {
-    position: "absolute",
-    right: "10%",
-    top: "13.5%",
-    zIndex: 1,
-  },
-  text: {
-    fontSize: 20,
-    color: "white",
-  },
-  footer: {
-    position: "absolute",
-    bottom: '3%',
-    right: '5%',
-    zIndex: 1,
-  },
   addIcon: {
     padding: 10,
+  },
+  obraCard: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 8,
   },
   modalContainer: {
     backgroundColor: "#454A50",
@@ -192,14 +196,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 10,
   },
-  inputSearch: {
-    borderColor: "#FFF",
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-    width: "80%",
-  },
   modalButton: {
     backgroundColor: "grey",
     borderRadius: 5,
@@ -210,7 +206,4 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
-
-
- 
 });
