@@ -20,7 +20,7 @@ module.exports = {
       },
       fotoPerfil: {
         allowNull: true,
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,

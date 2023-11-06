@@ -37,10 +37,15 @@ export default function User() {
       let response = await AsyncStorage.getItem("userData");
       let user = JSON.parse(response);
       setUserLogadoID(user.id);
-      setAvatarSource(user.fotoPerfil);
       setUserLogadoUsuario(user.usuario);
       setUserLogadoEmail(user.email);
       setUserLogadoPass(user.password);
+
+      if(user.fotoPerfil){
+        setAvatarSource(user.fotoPerfil);
+      }else{
+        setAvatarSource(require("../../assets/undefinedUser.jpg"));
+      }
     }
 
     getUser();
@@ -54,7 +59,7 @@ export default function User() {
       quality: 1,
     });
 
-    if (!result.canceled) {
+    if (!result.cancelled) {
       setAvatarSource(result.assets[0].uri);
       setPhotoChanged(true); // Marcar a foto como alterada
     }

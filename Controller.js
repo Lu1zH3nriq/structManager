@@ -1,9 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const models = require("./models");
-const {
-  id,
-} = require("deprecated-react-native-prop-types/DeprecatedTextPropTypes");
+const fs = require("fs");
 
 const app = express();
 app.use(cors());
@@ -542,11 +540,22 @@ app.delete("/apagaObra");
 app.put("/uploadFoto", async (req, res) => {
   try {
     const uri = req.body.fotoPerfil;
+    const imageBuffer = fs.readFileSync(uri);
+    const imageBase64 = imageBuffer.toString("base64");
+
+    /*try {
+      const imageBuffer = fs.readFileSync(uri);
+    } catch (error) {
+      // Lidar com erros de leitura do arquivo
+      console.error("Erro ao ler o arquivo de imagem: " + error);
+      return res.status(500).json({ message: "Erro ao ler a imagem do usuário." });
+    }*/
+
     const userId = req.body.id;
 
     const updatedFoto = user.update(
       {
-        fotoPerfil: uri,
+        fotoPerfil: imageBase64,
       },
       {
         where: {
@@ -643,6 +652,8 @@ app.put("/updateEmail", async (req, res) => {
       .json({ message: "Erro ao alterar email! " });
   }
 });
+
+
 /*
 
 */
