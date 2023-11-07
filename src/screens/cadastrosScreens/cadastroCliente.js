@@ -386,7 +386,7 @@ export default function CadCliente() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.goBackButton}>{"< Voltar"}</Text>
+          <Text style={styles.goBackButton}>Voltar</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>

@@ -19,6 +19,7 @@ let client = models.Cliente;
 let func = models.Funcionario;
 let equip = models.Equipamento;
 let tpO = models.TipoObra;
+let obra = models.Obra;
 
 //LOGIN DO USUARIO
 app.post("/login", async (req, res) => {
@@ -47,10 +48,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
 // REDEFINIR SENHA DO USUARIO
 function generateRandomPassword(length) {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let password = "";
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
@@ -60,16 +61,16 @@ function generateRandomPassword(length) {
 }
 // Configurar o transporte de email com Nodemailer
 const transporter = nodemailer.createTransport({
-  service: "seu_servico_de_email", // Por exemplo, "Gmail", "Outlook", etc.
+  service: "Gmail", // Por exemplo, "Gmail", "Outlook", etc.
   auth: {
-    user: "seu_email",
-    pass: "sua_senha",
+    user: "struct.engenharias@gmail.com",
+    pass: "structEngenharia21",
   },
 });
 // Função para enviar o email
 const sendEmail = (recipient, newPassword) => {
   const mailOptions = {
-    from: "seu_email",
+    from: "struct.engenharias@gmail.com",
     to: recipient,
     subject: "Redefinição de senha",
     text: `Sua nova senha temporária é: ${newPassword}, use ela para logar no aplicativo e depois redefina para uma nova senha!`,
@@ -89,7 +90,7 @@ app.post("/resetPassword", async (req, res) => {
 
     const foundUser = await user.findOne({
       where: {
-        username: usuario,
+        usuario: usuario,
         email: email,
       },
     });
@@ -110,11 +111,13 @@ app.post("/resetPassword", async (req, res) => {
     );
 
     if (updatedUser) {
-      
       // Envie um email com a nova senha para o endereço de email
       sendEmail(email, newPassword);
 
-      return res.status(200).json({ message: "Nova senha enviada para o email. Faça login com a nova senha." });
+      return res.status(200).json({
+        message:
+          "Nova senha enviada para o email. Faça login com a nova senha.",
+      });
     } else {
       return res.status(400).json({ message: "Erro ao redefinir a senha." });
     }
@@ -123,7 +126,6 @@ app.post("/resetPassword", async (req, res) => {
     return res.status(500).json({ message: "Erro na redefinição de senha." });
   }
 });
-
 
 //----------------------------------------------------endpoint para cadastros de cliente------------------------------------------
 //CREATE
@@ -523,6 +525,21 @@ app.get("/buscaTpO", async (req, res) => {
       .json({ message: "Erro de requisição ao buscar tipo de obra!" });
   }
 });
+
+app.get("/tiposObras", async (req, res) => {
+  try {
+    const tiposObras = await tpO.findAll();
+
+    const tipos = tiposObras.map((obra) => obra.tipo);
+
+    return res.status(200).json(tipos);
+  } catch (error) {
+    console.log("Erro ao buscar tipo de obra: " + error);
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao buscar tipo de obra!" });
+  }
+});
 //UPDATE
 app.put("/alteraTpO", async (req, res) => {
   try {
@@ -580,6 +597,19 @@ app.delete("/deletaTpO", async (req, res) => {
 //----------------------------------------------------endpoint para cadastros de Obras---------------------------------------------
 app.post("/cadastraObra");
 app.get("/buscaObra");
+app.get("/allObras", async (req, res) => {
+  try {
+
+    let response = await obra.findAll();
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log("Erro ao buscar tipo de obra: " + error);
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao buscar tipo de obra!" });
+  }
+});
 app.put("/alteraObra");
 app.delete("/apagaObra");
 
@@ -589,22 +619,13 @@ app.delete("/apagaObra");
 app.put("/uploadFoto", async (req, res) => {
   try {
     const uri = req.body.fotoPerfil;
-    const imageBuffer = fs.readFileSync(uri);
-    const imageBase64 = imageBuffer.toString("base64");
-
-    /*try {
-      const imageBuffer = fs.readFileSync(uri);
-    } catch (error) {
-      // Lidar com erros de leitura do arquivo
-      console.error("Erro ao ler o arquivo de imagem: " + error);
-      return res.status(500).json({ message: "Erro ao ler a imagem do usuário." });
-    }*/
+    //const imageBuffer = fs.readFileSync(uri);
+    //const imageBase64 = imageBuffer.toString("base64");
 
     const userId = req.body.id;
-
     const updatedFoto = user.update(
       {
-        fotoPerfil: imageBase64,
+        fotoPerfil: uri,
       },
       {
         where: {
@@ -636,7 +657,6 @@ app.put("/updateSenha", async (req, res) => {
       password: req.body.password,
     };
 
-
     const updatedPass = user.update(
       {
         password: _user.password,
@@ -649,19 +669,13 @@ app.put("/updateSenha", async (req, res) => {
     );
 
     if (updatedPass)
-      return res
-        .status(200)
-        .json({ message: "Senha alterada com sucesso!" });
+      return res.status(200).json({ message: "Senha alterada com sucesso!" });
     else {
-      return res
-        .status(400)
-        .json({ message: "Erro ao alterar a senha !" });
+      return res.status(400).json({ message: "Erro ao alterar a senha !" });
     }
   } catch (error) {
     console.log("erro ao alterar senha: " + error);
-    return res
-      .status(500)
-      .json({ message: "Erro ao alterar senha! " });
+    return res.status(500).json({ message: "Erro ao alterar senha! " });
   }
 });
 
@@ -672,7 +686,6 @@ app.put("/updateEmail", async (req, res) => {
       id: req.body.id,
       email: req.body.email,
     };
-
 
     const updatedEmail = user.update(
       {
@@ -686,23 +699,15 @@ app.put("/updateEmail", async (req, res) => {
     );
 
     if (updatedEmail)
-      return res
-        .status(200)
-        .json({ message: "Email alterado com sucesso!" });
+      return res.status(200).json({ message: "Email alterado com sucesso!" });
     else {
-      return res
-        .status(400)
-        .json({ message: "Erro ao alterar email !" });
+      return res.status(400).json({ message: "Erro ao alterar email !" });
     }
   } catch (error) {
     console.log("erro ao alterar email: " + error);
-    return res
-      .status(500)
-      .json({ message: "Erro ao alterar email! " });
+    return res.status(500).json({ message: "Erro ao alterar email! " });
   }
 });
-
-
 
 /*
 

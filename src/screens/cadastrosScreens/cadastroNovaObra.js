@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -43,7 +43,6 @@ export default function CadastroNovaObra() {
   const [nomeFind, setNomeFind] = useState("");
   const [codFind, setCodFind] = useState("");
 
-
   //function para alterar a visibilidade do modal de pesquisa
   const toggleModalPesquisa = () => {
     setModalPesquisa(!isModalPesquisa);
@@ -63,7 +62,6 @@ export default function CadastroNovaObra() {
       dataInicio === ""
 
       //SE TIVER MAIS CAMPOS OBRIGATÓRIOS, COLOCAR AQUI
-
     ) {
       return 0;
     }
@@ -72,8 +70,7 @@ export default function CadastroNovaObra() {
     else {
       return 1;
     }
-
-  }
+  };
 
   //FUNCTION PARA VALIDAR CAMPOS VAZIOS DA PESQUISA
   const handleValidaPesquisa = () => {
@@ -85,8 +82,7 @@ export default function CadastroNovaObra() {
     else {
       return 1;
     }
-
-  }
+  };
 
   //LIMPAR OS CAMPOS
   const handleCancelar = () => {
@@ -106,9 +102,7 @@ export default function CadastroNovaObra() {
     setNomeFind("");
     setCodFind("");
     setFind(false);
-
   };
-
 
   //CRUD DE OBRAS
   //function para cadastrar o Nova Obra
@@ -121,12 +115,7 @@ export default function CadastroNovaObra() {
           text: "Ok",
         },
       ]);
-    }
-
-
-    else {
-
-
+    } else {
       // REALIZAR CADASTRO NO BANCO DE DADOS DA NOVA OBRA
 
       Alert.alert("Sucesso!", "Obra cadastrada com sucesso!", [
@@ -136,7 +125,6 @@ export default function CadastroNovaObra() {
       ]);
       handleCancelar();
     }
-
   };
 
   //FUNCTIO PARA PESQUISAR OBRAS CADASTRADAS
@@ -149,12 +137,7 @@ export default function CadastroNovaObra() {
           text: "Ok",
         },
       ]);
-    }
-
-
-    else {
-
-
+    } else {
       // REALIZAR PESQUISA NO BANCO DE DADOS DE ACORDO COM OS CAMPOS INFORMADOS
 
       setFind(true);
@@ -226,14 +209,27 @@ export default function CadastroNovaObra() {
   };
 
   // Simulação de busca das opções de tipo de obra no banco de dados
-  const getTiposDeObra = () => {
-    // Simulação de busca no banco de dados (substitua por chamadas reais)
-    const tipos = ["Tipo 1", "Tipo 2", "Tipo 3", "Tipo 4"];
-    setTiposDeObra(tipos);
+  const getTiposDeObra = async () => {
+    try {
+      // Fazer uma solicitação GET ao servidor para buscar os tipos de obras
+      const response = await fetch("http://192.168.100.3:3000/tiposObras", {
+        method: "GET",
+      });
+
+      if (response.status===200) {
+        // Se a solicitação for bem-sucedida, obtenha os tipos de obras da resposta
+        const tipos = await response.json();
+        setTipoObra(tipos);
+      } else {
+        console.error("Erro ao buscar tipos de obras do servidor.");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar tipos de obras: " + error);
+    }
   };
 
   useEffect(() => {
-    getTiposDeObra(); // Chamada simulada para buscar opções de tipo de obra
+    getTiposDeObra(); 
   }, []);
 
   return (
@@ -273,7 +269,7 @@ export default function CadastroNovaObra() {
               value={cliente}
               onChangeText={(text) => setCliente(text)}
             />
-            <TouchableOpacity onPress={() => { }}>
+            <TouchableOpacity onPress={() => {}}>
               <Icon
                 sytle={styles.iconCliente}
                 name="search"
@@ -328,10 +324,12 @@ export default function CadastroNovaObra() {
           <Text style={styles.label}>Escolha o tipo de obra:</Text>
           <Picker
             selectedValue={selectedValue}
-            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedValue(itemValue)
+            }
             style={styles.dropdown}
           >
-            {tiposDeObra.map((tipo, index) => (
+            {tipoObra.map((tipo, index) => (
               <Picker.Item label={tipo} value={tipo} key={index} />
             ))}
           </Picker>
@@ -377,7 +375,9 @@ export default function CadastroNovaObra() {
             }}
             style={styles.input}
             value={orcamento}
-            onChangeText={(text) => { setOrcamento(text) }}
+            onChangeText={(text) => {
+              setOrcamento(text);
+            }}
           />
 
           <TouchableOpacity style={styles.button} onPress={handleCadastro}>
@@ -387,15 +387,13 @@ export default function CadastroNovaObra() {
             <Text style={styles.buttonText}>Pesquisar/Alterar Nova Obra</Text>
           </TouchableOpacity>
 
-
-
           {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Nova Obra */}
           {find ? (
             <View>
-              <TouchableOpacity style={styles.button} onPress={() => { }}>
+              <TouchableOpacity style={styles.button} onPress={() => {}}>
                 <Text style={styles.buttonText}>Salvar Alterações</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => { }}>
+              <TouchableOpacity style={styles.button} onPress={() => {}}>
                 <Text style={styles.buttonText}>Excluir Cadastro</Text>
               </TouchableOpacity>
             </View>
@@ -443,15 +441,8 @@ export default function CadastroNovaObra() {
               </View>
             </KeyboardAvoidingView>
           </ModalPesquisa>
-
-
-
         </KeyboardAvoidingView>
-
-
       </SafeAreaView>
-
-
     </ScrollView>
   );
 }
@@ -540,7 +531,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     marginHorizontal: 10,
-    width: '82%',
+    width: "82%",
   },
 
   label: {

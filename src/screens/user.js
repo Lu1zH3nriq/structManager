@@ -59,7 +59,7 @@ export default function User() {
       quality: 1,
     });
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       setAvatarSource(result.assets[0].uri);
       setPhotoChanged(true); // Marcar a foto como alterada
     }
