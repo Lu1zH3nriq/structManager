@@ -3,6 +3,8 @@ const cors = require("cors");
 const models = require("./models");
 const fs = require("fs");
 
+const nodemailer = require("nodemailer");
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -18,6 +20,7 @@ let func = models.Funcionario;
 let equip = models.Equipamento;
 let tpO = models.TipoObra;
 
+//LOGIN DO USUARIO
 app.post("/login", async (req, res) => {
   try {
     const usuario = req.body.usuario;
@@ -44,37 +47,83 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/resetPassword", async (req, res) => {
-  //console.log(req.body);
-  try {
-    const usuario = req.body.usuario;
-    const email = req.body.email;
 
-    const findedUser = await user.findOne({
+// REDEFINIR SENHA DO USUARIO
+function generateRandomPassword(length) {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    password += characters.charAt(randomIndex);
+  }
+  return password;
+}
+// Configurar o transporte de email com Nodemailer
+const transporter = nodemailer.createTransport({
+  service: "seu_servico_de_email", // Por exemplo, "Gmail", "Outlook", etc.
+  auth: {
+    user: "seu_email",
+    pass: "sua_senha",
+  },
+});
+// Função para enviar o email
+const sendEmail = (recipient, newPassword) => {
+  const mailOptions = {
+    from: "seu_email",
+    to: recipient,
+    subject: "Redefinição de senha",
+    text: `Sua nova senha temporária é: ${newPassword}, use ela para logar no aplicativo e depois redefina para uma nova senha!`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Erro ao enviar o email: ", error);
+    } else {
+      console.log("Email enviado: " + info.response);
+    }
+  });
+};
+app.post("/resetPassword", async (req, res) => {
+  try {
+    const { usuario, email } = req.body;
+
+    const foundUser = await user.findOne({
       where: {
-        usuario: usuario,
+        username: usuario,
         email: email,
       },
     });
 
-    if (!findedUser)
-      return res.status(422).json({
-        message: "Usuário não encontrado com este email ou nome de usuário!",
-      });
+    if (!foundUser) {
+      return res.status(400).json({ message: "Usuário não encontrado." });
+    }
 
-    //const resetPass = async () => {
-    //sistema para enviar email de reset de senha;
-    //}
+    const newPassword = generateRandomPassword(6);
 
-    return res.status(200).json({
-      message:
-        "Sua senha foi redefinida com sucesso! Faça login novamente com a nova senha enviada para seu email. ",
-    });
+    const updatedUser = await user.update(
+      { password: newPassword },
+      {
+        where: {
+          id: foundUser.id,
+        },
+      }
+    );
+
+    if (updatedUser) {
+      
+      // Envie um email com a nova senha para o endereço de email
+      sendEmail(email, newPassword);
+
+      return res.status(200).json({ message: "Nova senha enviada para o email. Faça login com a nova senha." });
+    } else {
+      return res.status(400).json({ message: "Erro ao redefinir a senha." });
+    }
   } catch (error) {
-    //console.log("Erro ao buscar usuario: ", error);
-    res.status(500).json({ message: "Erro ao redefinir senha do usuário." });
+    console.error("Erro na redefinição de senha: ", error);
+    return res.status(500).json({ message: "Erro na redefinição de senha." });
   }
 });
+
 
 //----------------------------------------------------endpoint para cadastros de cliente------------------------------------------
 //CREATE
@@ -652,6 +701,7 @@ app.put("/updateEmail", async (req, res) => {
       .json({ message: "Erro ao alterar email! " });
   }
 });
+
 
 
 /*

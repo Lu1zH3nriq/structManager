@@ -32,14 +32,17 @@ export default function CadastroNovaObra() {
   const [dataInicio, setDataInicio] = useState("");
   const [dataTermino, setDataTermino] = useState("");
   const [orcamento, setOrcamento] = useState("");
+
   //SELECT OPTION DO DROPDOWN DE TIPO DE OBRA
-  const [selectedValue, setSelectedValue] = useState("option1");
+  const [selectedValue, setSelectedValue] = useState("");
+  const [tipoObra, setTipoObra] = useState([]);
+
   //SETAR O ESTADO COMO FALSE PARA ACHAR a Nova Obra
   const [find, setFind] = useState(false);
   //function para pesquisar o Nova Obra
   const [nomeFind, setNomeFind] = useState("");
   const [codFind, setCodFind] = useState("");
-  
+
 
   //function para alterar a visibilidade do modal de pesquisa
   const toggleModalPesquisa = () => {
@@ -47,7 +50,7 @@ export default function CadastroNovaObra() {
   };
 
   //FUNCTION PARA VALIDAR CAMPOS VAZIOS DO CADASTRO
-  const handleValidaCadastro = ()=>{
+  const handleValidaCadastro = () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (
       codigo === "" &&
@@ -57,7 +60,7 @@ export default function CadastroNovaObra() {
       endereco === "" &&
       numContrato === "" &&
       numAlvara === "" &&
-      dataInicio === "" 
+      dataInicio === ""
 
       //SE TIVER MAIS CAMPOS OBRIGATÓRIOS, COLOCAR AQUI
 
@@ -66,14 +69,14 @@ export default function CadastroNovaObra() {
     }
 
     // SE OS CAMPOS NÃO ESTIVEREM VAZIOS
-    else{
+    else {
       return 1;
     }
 
   }
-  
+
   //FUNCTION PARA VALIDAR CAMPOS VAZIOS DA PESQUISA
-  const handleValidaPesquisa = ()=>{
+  const handleValidaPesquisa = () => {
     //VERIFICA SE OS CAMPOS ESTÃO VAZIOS
     if (nomeFind === "" && codFind === "") {
       return 0;
@@ -82,7 +85,7 @@ export default function CadastroNovaObra() {
     else {
       return 1;
     }
-    
+
   }
 
   //LIMPAR OS CAMPOS
@@ -110,9 +113,9 @@ export default function CadastroNovaObra() {
   //CRUD DE OBRAS
   //function para cadastrar o Nova Obra
   const handleCadastro = () => {
-    const validaCampos = handleValidaCadastro ();
+    const validaCampos = handleValidaCadastro();
 
-    if (validaCampos === 0 ){
+    if (validaCampos === 0) {
       Alert.alert("Atenção!", "Preencha os campos para cadastrar nova obra!", [
         {
           text: "Ok",
@@ -121,7 +124,7 @@ export default function CadastroNovaObra() {
     }
 
 
-    else{
+    else {
 
 
       // REALIZAR CADASTRO NO BANCO DE DADOS DA NOVA OBRA
@@ -138,9 +141,9 @@ export default function CadastroNovaObra() {
 
   //FUNCTIO PARA PESQUISAR OBRAS CADASTRADAS
   const handlePesquisa = () => {
-    const validaCampos = handleValidaPesquisa ();
+    const validaCampos = handleValidaPesquisa();
 
-    if (validaCampos === 0 ){
+    if (validaCampos === 0) {
       Alert.alert("Atenção!", "Preencha os campos para pesquisar Obras!", [
         {
           text: "Ok",
@@ -149,7 +152,7 @@ export default function CadastroNovaObra() {
     }
 
 
-    else{
+    else {
 
 
       // REALIZAR PESQUISA NO BANCO DE DADOS DE ACORDO COM OS CAMPOS INFORMADOS
@@ -222,7 +225,16 @@ export default function CadastroNovaObra() {
     }
   };
 
-  
+  // Simulação de busca das opções de tipo de obra no banco de dados
+  const getTiposDeObra = () => {
+    // Simulação de busca no banco de dados (substitua por chamadas reais)
+    const tipos = ["Tipo 1", "Tipo 2", "Tipo 3", "Tipo 4"];
+    setTiposDeObra(tipos);
+  };
+
+  useEffect(() => {
+    getTiposDeObra(); // Chamada simulada para buscar opções de tipo de obra
+  }, []);
 
   return (
     <ScrollView>
@@ -231,7 +243,7 @@ export default function CadastroNovaObra() {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.goBackButton}>{"< Voltar"}</Text>
+            <Text style={styles.goBackButton}>Voltar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -261,7 +273,7 @@ export default function CadastroNovaObra() {
               value={cliente}
               onChangeText={(text) => setCliente(text)}
             />
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => { }}>
               <Icon
                 sytle={styles.iconCliente}
                 name="search"
@@ -316,15 +328,12 @@ export default function CadastroNovaObra() {
           <Text style={styles.label}>Escolha o tipo de obra:</Text>
           <Picker
             selectedValue={selectedValue}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedValue(itemValue)
-            }
+            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
             style={styles.dropdown}
           >
-            <Picker.Item label="Opção 1" value="option1" />
-            <Picker.Item label="Opção 2" value="option2" />
-            <Picker.Item label="Opção 3" value="option3" />
-            <Picker.Item label="Opção 4" value="option4" />
+            {tiposDeObra.map((tipo, index) => (
+              <Picker.Item label={tipo} value={tipo} key={index} />
+            ))}
           </Picker>
 
           <TextInputMask
@@ -368,7 +377,7 @@ export default function CadastroNovaObra() {
             }}
             style={styles.input}
             value={orcamento}
-            onChangeText={ (text) => { setOrcamento(text) } }
+            onChangeText={(text) => { setOrcamento(text) }}
           />
 
           <TouchableOpacity style={styles.button} onPress={handleCadastro}>
@@ -383,10 +392,10 @@ export default function CadastroNovaObra() {
           {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Nova Obra */}
           {find ? (
             <View>
-              <TouchableOpacity style={styles.button} onPress={() => {}}>
+              <TouchableOpacity style={styles.button} onPress={() => { }}>
                 <Text style={styles.buttonText}>Salvar Alterações</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => {}}>
+              <TouchableOpacity style={styles.button} onPress={() => { }}>
                 <Text style={styles.buttonText}>Excluir Cadastro</Text>
               </TouchableOpacity>
             </View>
