@@ -11,16 +11,16 @@ import {
   ScrollView,
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
-import { useNavigation } from "@react-navigation/native"; // Importe o hook de navegação
+import { useNavigation } from "@react-navigation/native"; 
 import { Icon } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import { TextInputMask } from "react-native-masked-text";
 
 export default function CadastroNovaObra() {
-  const navigation = useNavigation(); // Inicialize o hook de navegação
+  const navigation = useNavigation(); 
 
   const [isModalPesquisa, setModalPesquisa] = useState(false);
-  const [codigo, setCodigo] = useState(""); // inicializa o modal oculto
+  const [codigo, setCodigo] = useState(""); 
   const [nomeObra, setNomeObra] = useState("");
   const [cliente, setCliente] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -208,7 +208,7 @@ export default function CadastroNovaObra() {
     }
   };
 
-  // Simulação de busca das opções de tipo de obra no banco de dados
+  //BUSCA TODAS AS OBRAS CADASTRADAS NO BANCO DE DADOS
   const getTiposDeObra = async () => {
     try {
       // Fazer uma solicitação GET ao servidor para buscar os tipos de obras
