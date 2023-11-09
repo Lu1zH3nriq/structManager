@@ -11,16 +11,16 @@ import {
   ScrollView,
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
-import { useNavigation } from "@react-navigation/native"; 
+import { useNavigation } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import { TextInputMask } from "react-native-masked-text";
 
 export default function CadastroNovaObra() {
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
 
   const [isModalPesquisa, setModalPesquisa] = useState(false);
-  const [codigo, setCodigo] = useState(""); 
+  const [codigo, setCodigo] = useState("");
   const [nomeObra, setNomeObra] = useState("");
   const [cliente, setCliente] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -91,7 +91,6 @@ export default function CadastroNovaObra() {
     setCliente("");
     setTelefone("");
     setEndereco("");
-    setEndereco("");
     setNumContrato("");
     setNumAlvara("");
     setRTProjeto("");
@@ -102,11 +101,15 @@ export default function CadastroNovaObra() {
     setNomeFind("");
     setCodFind("");
     setFind(false);
+    setSelectedValue("");
+    setIdClienteBuscado("");
+    setNomeClienteBuscado("");
+    setTelefoneClienteBuscado("");
   };
 
   //CRUD DE OBRAS
   //function para cadastrar o Nova Obra
-  const handleCadastro = () => {
+  const handleCadastro = async () => {
     const validaCampos = handleValidaCadastro();
 
     if (validaCampos === 0) {
@@ -116,14 +119,56 @@ export default function CadastroNovaObra() {
         },
       ]);
     } else {
-      // REALIZAR CADASTRO NO BANCO DE DADOS DA NOVA OBRA
+      const novaObra = {
+        codigo: codigo,
+        nome: nomeObra,
+        cliente: idClienteBuscado,
+        endereco: endereco,
+        numContrato: numContrato,
+        numAlvara: numAlvara,
+        RTProjeto: RTProjeto,
+        RTExec: RTExec,
+        dataInicio: dataInicio,
+        dataFim: dataTermino,
+        orcamento: orcamento,
+      };
 
-      Alert.alert("Sucesso!", "Obra cadastrada com sucesso!", [
-        {
-          text: "Confirmar",
-        },
-      ]);
-      handleCancelar();
+      try {
+        const response = await fetch("http://192.168.100.3:3000/cadastraObra", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(novaObra),
+        });
+
+        const data = await response.json();
+        if (response.status === 200) {
+          Alert.alert("Sucesso!", data.message, [
+            {
+              text: "Confirmar",
+              onPress: () => {
+                // LIMPAR TODOS OS CAMPOS
+                handleCancelar();
+              },
+            },
+          ]);
+        } else {
+          Alert.alert("Atenção!", data.message, [
+            {
+              text: "Ok",
+            },
+          ]);
+        }
+      } catch (error) {
+        Alert.alert("Atenção!", "Erro ao cadastrar nova obra!", [
+          {
+            text: "Ok",
+          },
+        ]);
+        console.error("Erro ao cadastrar nova obra: " + error);
+      }
     }
   };
 
@@ -208,6 +253,53 @@ export default function CadastroNovaObra() {
     }
   };
 
+  //BUSCAR CLIENTE PARA CADASTRAR A OBRA
+  const [idClienteBuscado, setIdClienteBuscado] = useState("");
+  const [nomeClienteBuscado, setNomeClienteBuscado] = useState("");
+  const [telefoneClienteBuscado, setTelefoneClienteBuscado] = useState("");
+  const getCliente = async () => {
+    try {
+      let baseUrl = "http://192.168.100.3:3000/pesquisaCliente";
+      let params = {
+        cpfcnpj: cliente,
+      };
+
+      let url = `${baseUrl}?${Object.keys(params)
+        .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+        .join("&")}`;
+
+      let response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+
+      if (response.status === 200) {
+        setIdClienteBuscado(data.id);
+        setNomeClienteBuscado(data.nome);
+        setTelefoneClienteBuscado(data.telefone);
+
+        setCliente(nomeClienteBuscado);
+        setTelefone(telefoneClienteBuscado);
+      } else {
+        Alert.alert("Atenção!", data.message, [
+          {
+            text: "Ok",
+          },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert("Atenção!", "Erro ao buscar cliente!", [
+        {
+          text: "Ok",
+        },
+      ]);
+      //console.error("Erro ao buscar cliente: " + error);
+    }
+  };
   //BUSCA TODAS AS OBRAS CADASTRADAS NO BANCO DE DADOS
   const getTiposDeObra = async () => {
     try {
@@ -216,7 +308,7 @@ export default function CadastroNovaObra() {
         method: "GET",
       });
 
-      if (response.status===200) {
+      if (response.status === 200) {
         // Se a solicitação for bem-sucedida, obtenha os tipos de obras da resposta
         const tipos = await response.json();
         setTipoObra(tipos);
@@ -229,7 +321,7 @@ export default function CadastroNovaObra() {
   };
 
   useEffect(() => {
-    getTiposDeObra(); 
+    getTiposDeObra();
   }, []);
 
   return (
@@ -265,13 +357,13 @@ export default function CadastroNovaObra() {
           <View style={styles.clienteContainer}>
             <TextInput
               style={styles.inputCliente}
-              placeholder="Cliente da Obra  (NOME OU CPF/CNPJ)"
+              placeholder="Cliente da Obra  (CPF/CNPJ)"
               value={cliente}
               onChangeText={(text) => setCliente(text)}
             />
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={getCliente}>
               <Icon
-                sytle={styles.iconCliente}
+                style={styles.iconCliente}
                 name="search"
                 size={24}
                 color="white"

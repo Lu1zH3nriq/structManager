@@ -187,6 +187,25 @@ app.get("/buscaCliente", async (req, res) => {
     res.status(500).json({ message: "Erro de requisição ao buscar cliente!" });
   }
 });
+
+app.get("/pesquisaCliente", async (req, res) => {
+  try {
+    const clientFinded = await client.findOne({
+      where: {
+        cpfcnpj: req.query.cpfcnpj,
+      },
+    });
+
+    if (clientFinded) {
+      res.status(200).json(clientFinded);
+    } else {
+      res.status(422).json({ message: "Cliente não encontrado!" });
+    }
+  } catch (error) {
+    //console.log("Erro ao buscar cliente: ", error);
+    res.status(500).json({ message: "Erro de requisição ao buscar cliente!" });
+  }
+});
 //UPDATE
 app.put("/alteraCliente", async (req, res) => {
   try {
