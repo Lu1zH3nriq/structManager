@@ -66,7 +66,7 @@ export default function GerenciarObras() {
           <Text>Endereço: {obra.endereco}</Text>
           <Text>Contrato: {obra.numContrato}</Text>
           <Text>Data de Início: {dataInicioFormatada}</Text>
-          <Text>Data de Término: {dataFimFormatada }</Text>
+          <Text>Data de Término: {dataFimFormatada}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -76,8 +76,20 @@ export default function GerenciarObras() {
     setModalPesquisaVisible(!isModalPesquisaVisible);
   };
 
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      getObrasFromDatabase();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
   const toggleCadastrarObra = () => {
+    navigation.setOptions({
+      onGoBack: getObrasFromDatabase,
+    });
     navigation.navigate("CadastraNovaObra");
+    
   };
 
   const handlePesquisar = async () => {

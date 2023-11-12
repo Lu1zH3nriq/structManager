@@ -28,7 +28,8 @@ module.exports = (sequelize, DataTypes) => {
     dataInicio: DataTypes.DATE,
     dataFim: DataTypes.DATE,
     orcamento: DataTypes.FLOAT,
-    clienteId: DataTypes.INTEGER
+    clienteId: DataTypes.INTEGER,
+    tipoObraId: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'Obra',

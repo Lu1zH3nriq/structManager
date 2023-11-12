@@ -548,10 +548,10 @@ app.get("/buscaTpO", async (req, res) => {
 app.get("/tiposObras", async (req, res) => {
   try {
     const tiposObras = await tpO.findAll();
-
-    const tipos = tiposObras.map((obra) => obra.tipo);
-
-    return res.status(200).json(tipos);
+    const data = tiposObras.map( ({ id, tipo }) => ({ id, tipo }));
+    //const tipos = tiposObras.map((obra) => obra.tipo);
+    
+    return res.status(200).json(data);
   } catch (error) {
     console.log("Erro ao buscar tipo de obra: " + error);
     return res
@@ -614,11 +614,55 @@ app.delete("/deletaTpO", async (req, res) => {
   }
 });
 //----------------------------------------------------endpoint para cadastros de Obras---------------------------------------------
-app.post("/cadastraObra");
+app.post("/cadastraObra", async (req, res) => {
+  try {
+    const obraFinded = await obra.findOne({
+      where: {
+        codigo: req.body.codigo,
+        numContrato: req.body.numContrato,
+      },
+    });
+
+    if (obraFinded)
+      return res
+        .status(422)
+        .json({
+          message:
+            "Obra ja cadastrada no sistema com este código e/ou numero de contrato! ",
+        });
+
+    const createObra = {
+      codigo: req.body.codigo,
+      nome: req.body.nome,
+      endereco: req.body.endereco,
+      numContrato: req.body.numContrato,
+      numAlvara: req.body.numAlvara,
+      rtProjeto: req.body.rtProjeto,
+      rtExec: req.body.rtExec,
+      dataInicio: req.body.dataInicio,
+      dataFim: req.body.dataFim,
+      orcamento: req.body.orcamento,
+      clienteId: req.body.clienteId,
+      tipoObraId: req.body.tipoObraId,
+    };
+
+    console.log(createObra);
+
+    let response = await obra.create(createObra);
+
+    if(response){
+      return res.status(200).json({message: "Obra cadastrada com sucesso!"});
+    }else{
+      return res.status(400).json({message: "Falha ao cadastrar obra!"});
+    }
+  } catch (error) {
+    console.log("Erro ao cadastrar Obra: ", error);
+    res.status(500).json({ message: "Erro de requisição ao cadastrar Obra." });
+  }
+});
 app.get("/buscaObra");
 app.get("/allObras", async (req, res) => {
   try {
-
     let response = await obra.findAll();
 
     return res.status(200).json(response);

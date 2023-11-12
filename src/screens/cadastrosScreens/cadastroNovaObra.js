@@ -16,8 +16,9 @@ import { Icon } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import { TextInputMask } from "react-native-masked-text";
 
-export default function CadastroNovaObra() {
-  const navigation = useNavigation();
+export default function CadastroNovaObra({ navigation, route }) {
+  const { onGoBack } = route.params || {};
+  //const navigation = useNavigation();
 
   const [isModalPesquisa, setModalPesquisa] = useState(false);
   const [codigo, setCodigo] = useState("");
@@ -119,20 +120,29 @@ export default function CadastroNovaObra() {
         },
       ]);
     } else {
+
       const novaObra = {
         codigo: codigo,
         nome: nomeObra,
-        cliente: idClienteBuscado,
+        clienteId: idClienteBuscado,
         endereco: endereco,
         numContrato: numContrato,
         numAlvara: numAlvara,
-        RTProjeto: RTProjeto,
-        RTExec: RTExec,
-        dataInicio: dataInicio,
-        dataFim: dataTermino,
-        orcamento: orcamento,
+        rtProjeto: RTProjeto,
+        rtExec: RTExec,
+        dataInicio: formatarData(dataInicio),
+        dataFim: formatarData(dataTermino),
+        orcamento: parseFloat(
+          orcamento.replace(/[^\d.,]/g, "").replace(",", ".")
+        ),
+        tipoObraId: selectedValue,
       };
 
+      // Função para formatar a data
+      function formatarData(dataString) {
+        const [dia, mes, ano] = dataString.split("/");
+        return `${ano}-${mes}-${dia}`;
+      }
       try {
         const response = await fetch("http://192.168.100.3:3000/cadastraObra", {
           method: "POST",
@@ -151,6 +161,12 @@ export default function CadastroNovaObra() {
               onPress: () => {
                 // LIMPAR TODOS OS CAMPOS
                 handleCancelar();
+
+                if(onGoBack){
+                  onGoBack();
+                }
+
+                navigation.goBack();
               },
             },
           ]);
@@ -257,6 +273,7 @@ export default function CadastroNovaObra() {
   const [idClienteBuscado, setIdClienteBuscado] = useState("");
   const [nomeClienteBuscado, setNomeClienteBuscado] = useState("");
   const [telefoneClienteBuscado, setTelefoneClienteBuscado] = useState("");
+
   const getCliente = async () => {
     try {
       let baseUrl = "http://192.168.100.3:3000/pesquisaCliente";
@@ -311,6 +328,7 @@ export default function CadastroNovaObra() {
       if (response.status === 200) {
         // Se a solicitação for bem-sucedida, obtenha os tipos de obras da resposta
         const tipos = await response.json();
+
         setTipoObra(tipos);
       } else {
         console.error("Erro ao buscar tipos de obras do servidor.");
@@ -421,8 +439,8 @@ export default function CadastroNovaObra() {
             }
             style={styles.dropdown}
           >
-            {tipoObra.map((tipo, index) => (
-              <Picker.Item label={tipo} value={tipo} key={index} />
+            {tipoObra.map((tipo) => (
+              <Picker.Item label={tipo.tipo} value={tipo.id} key={tipo.id} />
             ))}
           </Picker>
 
