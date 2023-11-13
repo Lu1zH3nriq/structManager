@@ -19,10 +19,13 @@ import { format } from "date-fns";
 
 export default function GerenciarObras() {
   const [isModalPesquisaVisible, setModalPesquisaVisible] = useState(false);
+
   const [nomeCliente, setNomeCliente] = useState("");
-  const [tipoObra, setTipoObra] = useState("");
-  const [dataInicio, setDataInicio] = useState("");
+  const [cpfCliente, setCpfCliente] = useState("");
+  const [numContrato, setNumContrato] = useState("");
+
   const [obras, setObras] = useState([]);
+  const [filteredObras, setFilteredObras] = useState([]);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -41,6 +44,7 @@ export default function GerenciarObras() {
         // Se a solicitação for bem-sucedida, obtenha as obras da resposta
         const obras = await response.json();
         setObras(obras);
+        setFilteredObras(obras);
       } else {
         console.error("Erro ao buscar obras do servidor.");
       }
@@ -62,7 +66,7 @@ export default function GerenciarObras() {
         <View style={styles.obraCard}>
           <Text>Código: {obra.codigo}</Text>
           <Text>Nome: {obra.nome}</Text>
-          <Text>Tipo: {obra.tipo}</Text>
+          <Text>Tipo: {obra.TipoObra.tipo}</Text>
           <Text>Endereço: {obra.endereco}</Text>
           <Text>Contrato: {obra.numContrato}</Text>
           <Text>Data de Início: {dataInicioFormatada}</Text>
@@ -76,7 +80,6 @@ export default function GerenciarObras() {
     setModalPesquisaVisible(!isModalPesquisaVisible);
   };
 
-
   React.useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       getObrasFromDatabase();
@@ -89,7 +92,6 @@ export default function GerenciarObras() {
       onGoBack: getObrasFromDatabase,
     });
     navigation.navigate("CadastraNovaObra");
-    
   };
 
   const handlePesquisar = async () => {
@@ -101,11 +103,52 @@ export default function GerenciarObras() {
         [{ text: "Ok" }]
       );
     } else {
-      // Você pode chamar a função que busca as obras no banco de dados aqui
-      getObrasFromDatabase();
-    }
+      try {
+        let baseUrl = "http://192.168.100.3:3000/buscaObra";
+        let params = {
+          nomeCliente: nomeCliente,
+          cpfCliente: cpfCliente,
+          numContrato: numContrato,
+        };
 
-    toggleModalPesquisa();
+        let url = `${baseUrl}?${Object.keys(params)
+          .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+          .join("&")}`;
+
+        let response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.status === 200) {
+          setFilteredObras(data);
+          toggleModalPesquisa();
+
+          setNumContrato("");
+          setCpfCliente("");
+          setNomeCliente("");
+
+        } else {
+          Alert.alert("Atenção", data.message, [
+            {
+              text: "Ok",
+            },
+          ]);
+        }
+      } catch (error) {
+        console.log("Erro ao buscar obra: " + error);
+        Alert.alert("Atenção!", "Erro de requisição ao buscar obras!", [
+          {
+            text: "Ok",
+          },
+        ]);
+      }
+    }
   };
 
   return (
@@ -125,7 +168,7 @@ export default function GerenciarObras() {
       </View>
 
       <FlatList
-        data={obras}
+        data={filteredObras} // Renderiza as obras filtradas
         renderItem={({ item }) => <ObraCard obra={item} />}
         keyExtractor={(item) => item.id.toString()}
       />
@@ -146,24 +189,20 @@ export default function GerenciarObras() {
               value={nomeCliente}
               onChangeText={(text) => setNomeCliente(text)}
             />
+            <TextInput
+              placeholder="CPF/CNPJ do Cliente"
+              style={styles.input}
+              placeholderTextColor="white"
+              value={cpfCliente}
+              onChangeText={(text) => setCpfCliente(text)}
+            />
 
             <TextInput
-              placeholder="Tipo de Obra"
+              placeholder="Número do Contrato"
               style={styles.input}
               placeholderTextColor="white"
-              value={tipoObra}
-              onChangeText={(text) => setTipoObra(text)}
-            />
-            <TextInputMask
-              type={"datetime"}
-              options={{
-                format: "DD/MM/YYYY",
-              }}
-              placeholder="Data de Início"
-              style={styles.input}
-              placeholderTextColor="white"
-              value={dataInicio}
-              onChangeText={(text) => setDataInicio(text)}
+              value={numContrato}
+              onChangeText={(text) => setNumContrato(text)}
             />
 
             <TouchableOpacity

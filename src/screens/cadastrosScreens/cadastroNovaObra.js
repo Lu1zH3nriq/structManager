@@ -74,9 +74,6 @@ export default function CadastroNovaObra({ navigation, route }) {
     setDataInicio("");
     setDataTermino("");
     setOrcamento("");
-    setNomeFind("");
-    setCodFind("");
-    setFind(false);
     setSelectedValue("");
     setIdClienteBuscado("");
     setNomeClienteBuscado("");
@@ -190,12 +187,11 @@ export default function CadastroNovaObra({ navigation, route }) {
       const data = await response.json();
 
       if (response.status === 200) {
+        setCliente(data.nome);
+        setTelefone(data.telefone);
         setIdClienteBuscado(data.id);
         setNomeClienteBuscado(data.nome);
         setTelefoneClienteBuscado(data.telefone);
-
-        setCliente(data.nome);
-        setTelefone(data.telefone);
       } else {
         Alert.alert("Atenção!", data.message, [
           {

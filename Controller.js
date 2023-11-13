@@ -2,8 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const models = require("./models");
 const fs = require("fs");
+const { parseISO, format } = require("date-fns");
 
 const nodemailer = require("nodemailer");
+const { Sequelize, json } = require("sequelize");
 
 const app = express();
 app.use(cors());
@@ -548,9 +550,9 @@ app.get("/buscaTpO", async (req, res) => {
 app.get("/tiposObras", async (req, res) => {
   try {
     const tiposObras = await tpO.findAll();
-    const data = tiposObras.map( ({ id, tipo }) => ({ id, tipo }));
+    const data = tiposObras.map(({ id, tipo }) => ({ id, tipo }));
     //const tipos = tiposObras.map((obra) => obra.tipo);
-    
+
     return res.status(200).json(data);
   } catch (error) {
     console.log("Erro ao buscar tipo de obra: " + error);
@@ -624,12 +626,10 @@ app.post("/cadastraObra", async (req, res) => {
     });
 
     if (obraFinded)
-      return res
-        .status(422)
-        .json({
-          message:
-            "Obra ja cadastrada no sistema com este código e/ou numero de contrato! ",
-        });
+      return res.status(422).json({
+        message:
+          "Obra ja cadastrada no sistema com este código e/ou numero de contrato! ",
+      });
 
     const createObra = {
       codigo: req.body.codigo,
@@ -650,20 +650,67 @@ app.post("/cadastraObra", async (req, res) => {
 
     let response = await obra.create(createObra);
 
-    if(response){
-      return res.status(200).json({message: "Obra cadastrada com sucesso!"});
-    }else{
-      return res.status(400).json({message: "Falha ao cadastrar obra!"});
+    if (response) {
+      return res.status(200).json({ message: "Obra cadastrada com sucesso!" });
+    } else {
+      return res.status(400).json({ message: "Falha ao cadastrar obra!" });
     }
   } catch (error) {
     console.log("Erro ao cadastrar Obra: ", error);
     res.status(500).json({ message: "Erro de requisição ao cadastrar Obra." });
   }
 });
-app.get("/buscaObra");
+app.get("/buscaObra", async (req, res) => {
+  try {
+    // Obtenha os parâmetros da consulta da URL
+    const { nomeCliente, cpfCliente, numContrato } = req.query;
+
+    // Busque o clienteId correspondente ao nome do cliente
+    const cliente = await client.findOne({
+      where: { nome: nomeCliente, cpfcnpj: cpfCliente },
+    });
+
+    if (!cliente) {
+      return res.status(404).json({ message: "Cliente não cadastrado!" });
+    }
+
+    const response = await obra.findAll({
+      where: {
+        clienteId: cliente.id,
+        numContrato: numContrato,
+      },
+      include: [
+        {
+          model: tpO,
+          attributes: ["tipo"],
+          where: {
+            id: Sequelize.col("Obra.tipoObraId"),
+          },
+        },
+      ],
+    });
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log("Erro ao buscar obra: " + error);
+    return res.status(500).json({
+      message: "Erro de requisição ao buscar obra.",
+    });
+  }
+});
 app.get("/allObras", async (req, res) => {
   try {
-    let response = await obra.findAll();
+    let response = await obra.findAll({
+      include: [
+        {
+          model: tpO,
+          attributes: ["tipo"],
+          where: {
+            id: Sequelize.col("Obra.tipoObraId"),
+          },
+        },
+      ],
+    });
 
     return res.status(200).json(response);
   } catch (error) {
