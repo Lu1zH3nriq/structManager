@@ -10,17 +10,14 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import ModalPesquisa from "react-native-modal";
-import { useNavigation } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import { TextInputMask } from "react-native-masked-text";
 
 export default function CadastroNovaObra({ navigation, route }) {
   const { onGoBack } = route.params || {};
-  //const navigation = useNavigation();
 
-  const [isModalPesquisa, setModalPesquisa] = useState(false);
+  
   const [codigo, setCodigo] = useState("");
   const [nomeObra, setNomeObra] = useState("");
   const [cliente, setCliente] = useState("");
@@ -38,16 +35,6 @@ export default function CadastroNovaObra({ navigation, route }) {
   const [selectedValue, setSelectedValue] = useState("");
   const [tipoObra, setTipoObra] = useState([]);
 
-  //SETAR O ESTADO COMO FALSE PARA ACHAR a Nova Obra
-  const [find, setFind] = useState(false);
-  //function para pesquisar o Nova Obra
-  const [nomeFind, setNomeFind] = useState("");
-  const [codFind, setCodFind] = useState("");
-
-  //function para alterar a visibilidade do modal de pesquisa
-  const toggleModalPesquisa = () => {
-    setModalPesquisa(!isModalPesquisa);
-  };
 
   //FUNCTION PARA VALIDAR CAMPOS VAZIOS DO CADASTRO
   const handleValidaCadastro = () => {
@@ -68,18 +55,6 @@ export default function CadastroNovaObra({ navigation, route }) {
     }
 
     // SE OS CAMPOS NÃO ESTIVEREM VAZIOS
-    else {
-      return 1;
-    }
-  };
-
-  //FUNCTION PARA VALIDAR CAMPOS VAZIOS DA PESQUISA
-  const handleValidaPesquisa = () => {
-    //VERIFICA SE OS CAMPOS ESTÃO VAZIOS
-    if (nomeFind === "" && codFind === "") {
-      return 0;
-    }
-    //SE OS CAMPOS NÃO ESTIVEREM VAZIOS
     else {
       return 1;
     }
@@ -108,8 +83,8 @@ export default function CadastroNovaObra({ navigation, route }) {
     setTelefoneClienteBuscado("");
   };
 
-  //CRUD DE OBRAS
-  //function para cadastrar o Nova Obra
+  
+  //FUNCTION PARA CADASTRAR NOVA OBRA
   const handleCadastro = async () => {
     const validaCampos = handleValidaCadastro();
 
@@ -162,7 +137,7 @@ export default function CadastroNovaObra({ navigation, route }) {
                 // LIMPAR TODOS OS CAMPOS
                 handleCancelar();
 
-                if(onGoBack){
+                if (onGoBack) {
                   onGoBack();
                 }
 
@@ -188,86 +163,6 @@ export default function CadastroNovaObra({ navigation, route }) {
     }
   };
 
-  //FUNCTIO PARA PESQUISAR OBRAS CADASTRADAS
-  const handlePesquisa = () => {
-    const validaCampos = handleValidaPesquisa();
-
-    if (validaCampos === 0) {
-      Alert.alert("Atenção!", "Preencha os campos para pesquisar Obras!", [
-        {
-          text: "Ok",
-        },
-      ]);
-    } else {
-      // REALIZAR PESQUISA NO BANCO DE DADOS DE ACORDO COM OS CAMPOS INFORMADOS
-
-      setFind(true);
-      toggleModalPesquisa();
-    }
-  };
-
-  //FUNCTION PARA ALTERAR OBRA CADASTRADA
-  const handleAltera = () => {
-    //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
-    if (
-      nome === "" &&
-      cpfCnpj === "" &&
-      telefone === "" &&
-      email === "" &&
-      endereco === ""
-    ) {
-    }
-
-    //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
-    else {
-      //buscar Nova Obra
-      //se achar, informar que o Nova Obra ja está cadastrado
-      //se nao achar, cadastrar o Nova Obra
-
-      // DEPOIS DE ALTERAR
-      Alert.alert();
-
-      // LIMPAR TODOS OS CAMPOS
-      setNome("");
-      setCpfCnpj("");
-      setTelefone("");
-      setEmail("");
-      setEndereco("");
-      setNomeFind("");
-      setCpfCnpjFind("");
-    }
-  };
-
-  //FUNCTION PARA DELETAR OBRA CADASTRADA
-  const handleDelet = () => {
-    //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
-    if (
-      nome === "" &&
-      cpfCnpj === "" &&
-      telefone === "" &&
-      email === "" &&
-      endereco === ""
-    ) {
-    }
-
-    //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
-    else {
-      //buscar Nova Obra
-      //se achar, informar que o Nova Obra ja está cadastrado
-      //se nao achar, cadastrar o Nova Obra
-
-      // DEPOIS DE DELETAR
-
-      // LIMPAR TODOS OS CAMPOS
-      setNome("");
-      setCpfCnpj("");
-      setTelefone("");
-      setEmail("");
-      setEndereco("");
-      setNomeFind("");
-      setCpfCnpjFind("");
-    }
-  };
 
   //BUSCAR CLIENTE PARA CADASTRAR A OBRA
   const [idClienteBuscado, setIdClienteBuscado] = useState("");
@@ -299,8 +194,8 @@ export default function CadastroNovaObra({ navigation, route }) {
         setNomeClienteBuscado(data.nome);
         setTelefoneClienteBuscado(data.telefone);
 
-        setCliente(nomeClienteBuscado);
-        setTelefone(telefoneClienteBuscado);
+        setCliente(data.nome);
+        setTelefone(data.telefone);
       } else {
         Alert.alert("Atenção!", data.message, [
           {
@@ -331,10 +226,10 @@ export default function CadastroNovaObra({ navigation, route }) {
 
         setTipoObra(tipos);
       } else {
-        console.error("Erro ao buscar tipos de obras do servidor.");
+        //console.error("Erro ao buscar tipos de obras do servidor.");
       }
     } catch (error) {
-      console.error("Erro ao buscar tipos de obras: " + error);
+      //console.error("Erro ao buscar tipos de obras: " + error);
     }
   };
 
@@ -493,64 +388,7 @@ export default function CadastroNovaObra({ navigation, route }) {
           <TouchableOpacity style={styles.button} onPress={handleCadastro}>
             <Text style={styles.buttonText}>Cadastrar Nova Obra</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
-            <Text style={styles.buttonText}>Pesquisar/Alterar Nova Obra</Text>
-          </TouchableOpacity>
 
-          {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Nova Obra */}
-          {find ? (
-            <View>
-              <TouchableOpacity style={styles.button} onPress={() => {}}>
-                <Text style={styles.buttonText}>Salvar Alterações</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => {}}>
-                <Text style={styles.buttonText}>Excluir Cadastro</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.grayBackground}></View>
-          )}
-
-          {/* PESQUISA OBRAS CADASTRADAS, PARA ALTERAR OU EXLCUIR REGISTRO */}
-          <ModalPesquisa
-            isVisible={isModalPesquisa}
-            onBackdropPress={toggleModalPesquisa}
-          >
-            <KeyboardAvoidingView
-              behavior={Platform.OS === "ios" ? "padding" : undefined}
-            >
-              <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>Pesquisar Nova Obra</Text>
-
-                <TextInput
-                  placeholder="Código da Obra"
-                  style={styles.input}
-                  placeholderTextColor={"grey"}
-                  value={codFind}
-                  onChangeText={(text) => {
-                    setCodFind(text);
-                  }}
-                />
-
-                <TextInput
-                  placeholder="Nome da Obra"
-                  style={styles.input}
-                  placeholderTextColor={"grey"}
-                  value={nomeFind}
-                  onChangeText={(text) => {
-                    setNomeFind(text);
-                  }}
-                />
-
-                <TouchableOpacity
-                  onPress={handlePesquisa}
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>Pesquisar</Text>
-                </TouchableOpacity>
-              </View>
-            </KeyboardAvoidingView>
-          </ModalPesquisa>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </ScrollView>
