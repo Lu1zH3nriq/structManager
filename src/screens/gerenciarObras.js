@@ -55,6 +55,9 @@ export default function GerenciarObras() {
 
   function ObraCard({ obra }) {
     const navigateToDetails = () => {
+      navigation.setOptions({
+        onGoBack: getObrasFromDatabase,
+      });
       navigation.navigate("DetailsObra", { obra });
     };
 

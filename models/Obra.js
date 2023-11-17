@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     rtExec: DataTypes.STRING,
     dataInicio: DataTypes.DATE,
     dataFim: DataTypes.DATE,
-    orcamento: DataTypes.FLOAT,
+    orcamento: DataTypes.STRING,
     clienteId: DataTypes.INTEGER,
     tipoObraId: DataTypes.INTEGER,
   }, {

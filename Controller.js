@@ -190,6 +190,25 @@ app.get("/buscaCliente", async (req, res) => {
   }
 });
 
+app.get("/buscaCliente/Id", async (req, res) => {
+  try {
+    const clientFinded = await client.findOne({
+      where: {
+        id: req.query.id,
+      },
+    });
+
+    if (clientFinded) {
+      res.status(200).json(clientFinded);
+    } else {
+      res.status(422).json({ message: "Cliente não encontrado!" });
+    }
+  } catch (error) {
+    //console.log("Erro ao buscar cliente: ", error);
+    res.status(500).json({ message: "Erro de requisição ao buscar cliente!" });
+  }
+});
+
 app.get("/pesquisaCliente", async (req, res) => {
   try {
     const clientFinded = await client.findOne({
@@ -720,8 +739,61 @@ app.get("/allObras", async (req, res) => {
       .json({ message: "Erro de requisição ao buscar tipo de obra!" });
   }
 });
-app.put("/alteraObra");
-app.delete("/apagaObra");
+app.put("/alteraObra", async (req, res) => {
+  try {
+    const _obraAlterada = {
+      codigo: req.body.codigo,
+      nome: req.body.nomeObra,
+      endereco: req.body.endereco,
+      numContrato: req.body.numContrato,
+      numAlvara: req.body.numAlvara,
+      rtProjeto: req.body.RTProjeto,
+      rtExec: req.body.RTExec,
+      dataInicio: req.body.dataInicio,
+      dataFim: req.body.dataTermino,
+      orcamento: req.body.orcamento,
+      clienteId: req.body.clientIdBuscado,
+      tipoObraId: req.body.selectedValue,
+    };
+
+    const updatedObra = await obra.update(_obraAlterada, {
+      where: {
+        id: req.body.id,
+      },
+    });
+
+    if (updatedObra) {
+      return res.status(200).json({ message: "Obra alterada com sucesso!" });
+    } else {
+      return res.status(400).json({ message: "Falha ao alterar Obra!" });
+    }
+  } catch (error) {
+    console.log("erro ao alterar obra : " + error);
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao alterar obra!" });
+  }
+});
+app.delete("/deletaObra", async (req, res) => {
+  try {
+    const deletedObra = obra.destroy({
+      where: {
+        id: req.body.id,
+      },
+    });
+
+    if (deletedObra)
+      return res.status(200).json({ message: "Obra deletada com sucesso!" });
+    else {
+      return res.status(400).json({ message: "Erro ao deletar Obra!" });
+    }
+  } catch (error) {
+    console.log("erro ao deletar obra : " + error);
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao deletar obra!" });
+  }
+});
 
 //-----------------------------------------------------------USUARIO CONTROLLER -------------------------------------------------
 

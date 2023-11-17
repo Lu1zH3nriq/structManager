@@ -37,7 +37,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       orcamento: {
-        type: Sequelize.FLOAT
+        type: Sequelize.STRING
       },
       clienteId: {
         type: Sequelize.INTEGER,

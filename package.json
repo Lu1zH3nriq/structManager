@@ -41,7 +41,8 @@
     "react-native-svg-charts": "^5.4.0",
     "react-native-web": "~0.19.6",
     "sequelize": "^6.33.0",
-    "tr46": "^4.1.1"
+    "tr46": "^4.1.1",
+    "yet": "^0.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

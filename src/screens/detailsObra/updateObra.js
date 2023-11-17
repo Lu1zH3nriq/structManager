@@ -13,11 +13,11 @@ import {
 import { Icon } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import { TextInputMask } from "react-native-masked-text";
+import format from "date-fns/format";
 
-export default function CadastroNovaObra({ navigation, route }) {
-  const { onGoBack } = route.params || {};
+export default function UpdateObra({ navigation, route }) {
+  const obra = route.params?.obra || {};
 
-  
   const [codigo, setCodigo] = useState("");
   const [nomeObra, setNomeObra] = useState("");
   const [cliente, setCliente] = useState("");
@@ -31,13 +31,33 @@ export default function CadastroNovaObra({ navigation, route }) {
   const [dataTermino, setDataTermino] = useState("");
   const [orcamento, setOrcamento] = useState("");
 
-  //SELECT OPTION DO DROPDOWN DE TIPO DE OBRA
   const [selectedValue, setSelectedValue] = useState("");
-  const [tipoObra, setTipoObra] = useState([]);
+  const [tiposObras, setTiposObras] = useState([]);
 
+  const [clientIdBuscado, setClientIdBuscado] = useState("");
+  const [clientNomeBuscado, setclientNomeBuscado] = useState("");
+  const [clientTelefoneBuscado, setClientTelefoneBuscado] = useState("");
 
-  //FUNCTION PARA VALIDAR CAMPOS VAZIOS DO CADASTRO
-  const handleValidaCadastro = () => {
+  const handleSetarCampos = () => {
+    const dataInicioFormatada = format(new Date(obra.dataInicio), "dd/MM/yyyy");
+    const dataFimFormatada = format(new Date(obra.dataFim), "dd/MM/yyyy");
+
+    setCodigo(obra.codigo);
+    setNomeObra(obra.nome);
+    setCliente("");
+    setTelefone("");
+    setEndereco(obra.endereco);
+    setNumContrato(obra.numContrato);
+    setNumAlvara(obra.numAlvara);
+    setRTProjeto(obra.RTProjeto);
+    setRTExec(obra.RTExec);
+    setDataInicio(dataInicioFormatada);
+    setDataTermino(dataFimFormatada);
+    setOrcamento(obra.orcamento);
+    setSelectedValue(obra.TipoObra.tipo);
+  };
+
+  const handleValidaCampos = () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (
       codigo === "" &&
@@ -74,16 +94,49 @@ export default function CadastroNovaObra({ navigation, route }) {
     setDataInicio("");
     setDataTermino("");
     setOrcamento("");
-    setSelectedValue("");
-    setIdClienteBuscado("");
-    setNomeClienteBuscado("");
-    setTelefoneClienteBuscado("");
+
+    setClientIdBuscado("");
+    setclientNomeBuscado("");
+    setClientTelefoneBuscado("");
+
+    navigation.goBack();
   };
 
-  
+  // Função para formatar a data
+  function formatarData(dataString) {
+    const [dia, mes, ano] = dataString.split("/");
+    return `${ano}-${mes}-${dia}`;
+  }
+
+  const compare = () => {
+    const obraAlterada = {
+      codigo: codigo,
+      nomeObra: nomeObra,
+      cliente: clientIdBuscado,
+      telefone: clientTelefoneBuscado,
+      endereco: endereco,
+      numContrato: numContrato,
+      numAlvara: numAlvara,
+      RTProjeto: RTProjeto,
+      RTExec: RTExec,
+      dataInicio: formatarData(dataInicio),
+      dataTermino: formatarData(dataTermino),
+      orcamento: orcamento,
+      tipoObraId: selectedValue,
+    };
+
+    for (const key in obraAlterada) {
+      if (obraAlterada[key] !== obra[key]) {
+        return 1;
+      }
+    }
+
+    return 0;
+  };
+
   //FUNCTION PARA CADASTRAR NOVA OBRA
-  const handleCadastro = async () => {
-    const validaCampos = handleValidaCadastro();
+  const handleUpdate = async () => {
+    const validaCampos = handleValidaCampos();
 
     if (validaCampos === 0) {
       Alert.alert("Atenção!", "Preencha os campos para cadastrar nova obra!", [
@@ -92,77 +145,70 @@ export default function CadastroNovaObra({ navigation, route }) {
         },
       ]);
     } else {
-
-      const novaObra = {
-        codigo: codigo,
-        nome: nomeObra,
-        clienteId: idClienteBuscado,
-        endereco: endereco,
-        numContrato: numContrato,
-        numAlvara: numAlvara,
-        rtProjeto: RTProjeto,
-        rtExec: RTExec,
-        dataInicio: formatarData(dataInicio),
-        dataFim: formatarData(dataTermino),
-        orcamento: orcamento,
-        tipoObraId: selectedValue,
-      };
-
-      // Função para formatar a data
-      function formatarData(dataString) {
-        const [dia, mes, ano] = dataString.split("/");
-        return `${ano}-${mes}-${dia}`;
-      }
-      try {
-        const response = await fetch("http://192.168.100.3:3000/cadastraObra", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(novaObra),
-        });
-
-        const data = await response.json();
-        if (response.status === 200) {
-          Alert.alert("Sucesso!", data.message, [
-            {
-              text: "Confirmar",
-              onPress: () => {
-                // LIMPAR TODOS OS CAMPOS
-                handleCancelar();
-
-                if (onGoBack) {
-                  onGoBack();
-                }
-
-                navigation.goBack();
-              },
+      const _compare = compare();
+      if (_compare === 1) {
+        try {
+          const _obraAlterada = {
+            id: obra.id,
+            codigo: codigo,
+            nomeObra: nomeObra,
+            cliente: clientIdBuscado,
+            telefone: clientTelefoneBuscado,
+            endereco: endereco,
+            numContrato: numContrato,
+            numAlvara: numAlvara,
+            RTProjeto: RTProjeto,
+            RTExec: RTExec,
+            dataInicio: formatarData(dataInicio),
+            dataTermino: formatarData(dataTermino),
+            orcamento: orcamento,
+            tipoObraId: selectedValue,
+          };
+          const response = await fetch("http://192.168.100.3:3000/alteraObra", {
+            method: "PUT",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
             },
-          ]);
-        } else {
-          Alert.alert("Atenção!", data.message, [
+            body: JSON.stringify(_obraAlterada),
+          });
+
+          const data = await response.json();
+          if (response.status === 200) {
+            Alert.alert("Sucesso!", data.message, [
+              {
+                text: "Confirmar",
+                onPress: () => {
+                  // LIMPAR TODOS OS CAMPOS
+                  handleCancelar();
+                  navigation.goBack();
+                },
+              },
+            ]);
+          } else {
+            Alert.alert("Atenção!", data.message, [
+              {
+                text: "Ok",
+              },
+            ]);
+          }
+        } catch (error) {
+          Alert.alert("Atenção!", "Erro ao cadastrar nova obra!", [
             {
               text: "Ok",
             },
           ]);
+          console.error("Erro ao cadastrar nova obra: " + error);
         }
-      } catch (error) {
-        Alert.alert("Atenção!", "Erro ao cadastrar nova obra!", [
+      } else {
+        Alert.alert("Atenção!", "Nenhum campo alterado, nada para salvar!", [
           {
             text: "Ok",
           },
         ]);
-        console.error("Erro ao cadastrar nova obra: " + error);
       }
     }
   };
-
-
-  //BUSCAR CLIENTE PARA CADASTRAR A OBRA
-  const [idClienteBuscado, setIdClienteBuscado] = useState("");
-  const [nomeClienteBuscado, setNomeClienteBuscado] = useState("");
-  const [telefoneClienteBuscado, setTelefoneClienteBuscado] = useState("");
 
   const getCliente = async () => {
     try {
@@ -187,9 +233,49 @@ export default function CadastroNovaObra({ navigation, route }) {
       if (response.status === 200) {
         setCliente(data.nome);
         setTelefone(data.telefone);
-        setIdClienteBuscado(data.id);
-        setNomeClienteBuscado(data.nome);
-        setTelefoneClienteBuscado(data.telefone);
+        setClientIdBuscado(data.id);
+        setclientNomeBuscado(data.nome);
+        setClientTelefoneBuscado(data.telefone);
+      } else {
+        Alert.alert("Atenção!", data.message, [
+          {
+            text: "Ok",
+          },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert("Atenção!", "Erro ao buscar cliente!", [
+        {
+          text: "Ok",
+        },
+      ]);
+      //console.error("Erro ao buscar cliente: " + error);
+    }
+  };
+
+  const getClienteObra = async () => {
+    try {
+      let baseUrl = "http://192.168.100.3:3000/buscaCliente/Id";
+      let params = {
+        id: obra.clienteId,
+      };
+
+      let url = `${baseUrl}?${Object.keys(params)
+        .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+        .join("&")}`;
+
+      let response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+
+      if (response.status === 200) {
+        setCliente(data.nome);
+        setTelefone(data.telefone);
       } else {
         Alert.alert("Atenção!", data.message, [
           {
@@ -218,7 +304,7 @@ export default function CadastroNovaObra({ navigation, route }) {
         // Se a solicitação for bem-sucedida, obtenha os tipos de obras da resposta
         const tipos = await response.json();
 
-        setTipoObra(tipos);
+        setTiposObras(tipos);
       } else {
         //console.error("Erro ao buscar tipos de obras do servidor.");
       }
@@ -228,7 +314,9 @@ export default function CadastroNovaObra({ navigation, route }) {
   };
 
   useEffect(() => {
+    handleSetarCampos();
     getTiposDeObra();
+    getClienteObra();
   }, []);
 
   return (
@@ -247,7 +335,7 @@ export default function CadastroNovaObra({ navigation, route }) {
           >
             <Text style={styles.cancelButtonText}>Cancelar</Text>
           </TouchableOpacity>
-          <Text style={styles.heading}>Dados da Nova Obra</Text>
+          <Text style={styles.heading}>Dados da Obra</Text>
           <TextInput
             style={styles.input}
             placeholder="Código da Obra"
@@ -323,12 +411,10 @@ export default function CadastroNovaObra({ navigation, route }) {
           <Text style={styles.label}>Escolha o tipo de obra:</Text>
           <Picker
             selectedValue={selectedValue}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedValue(itemValue)
-            }
+            onValueChange={(itemValue) => setSelectedValue(itemValue)}
             style={styles.dropdown}
           >
-            {tipoObra.map((tipo) => (
+            {tiposObras.map((tipo) => (
               <Picker.Item label={tipo.tipo} value={tipo.id} key={tipo.id} />
             ))}
           </Picker>
@@ -379,10 +465,9 @@ export default function CadastroNovaObra({ navigation, route }) {
             }}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-            <Text style={styles.buttonText}>Cadastrar Nova Obra</Text>
+          <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+            <Text style={styles.buttonText}>Salvar Alterações</Text>
           </TouchableOpacity>
-
         </KeyboardAvoidingView>
       </SafeAreaView>
     </ScrollView>
