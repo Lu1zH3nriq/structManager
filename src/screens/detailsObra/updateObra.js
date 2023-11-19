@@ -295,7 +295,6 @@ export default function UpdateObra({ navigation, route }) {
   //BUSCA TODAS AS OBRAS CADASTRADAS NO BANCO DE DADOS
   const getTiposDeObra = async () => {
     try {
-      // Fazer uma solicitação GET ao servidor para buscar os tipos de obras
       const response = await fetch("http://192.168.100.3:3000/tiposObras", {
         method: "GET",
       });

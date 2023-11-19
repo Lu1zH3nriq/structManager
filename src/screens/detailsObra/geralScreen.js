@@ -11,11 +11,9 @@ import { format } from "date-fns";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-export default function GeralScreen( {navigation, route} ) {
+export default function GeralScreen({ navigation, route }) {
   const { onGoBack } = route.params || {};
 
-  //const navigation = useNavigation();
-  //const route = useRoute();
   const obra = route.params?.obra || {};
   const [cliente, setCliente] = React.useState("");
 
@@ -98,6 +96,9 @@ export default function GeralScreen( {navigation, route} ) {
             }
           },
         },
+        {
+          text: "Cancelar",
+        },
       ]
     );
   };
@@ -142,14 +143,23 @@ export default function GeralScreen( {navigation, route} ) {
       <View style={styles.bottomContainer}>
         {/* Botões */}
         <View style={styles.botoesContainer}>
-          <TouchableOpacity style={styles.botao}>
+          <TouchableOpacity
+            style={styles.botao}
+            onPress={() => {
+              navigation.navigate("MateriaisObra", { obra: obra });
+            }}
+          >
             <Text style={styles.textoBotao}>Materiais</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.botao}>
+          <TouchableOpacity style={styles.botao} onPress={() => {
+              navigation.navigate("FuncionariosObra", { obra: obra });
+            }}>
             <Text style={styles.textoBotao}>Funcionários</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.botao}>
-            <Text style={styles.textoBotao}>equipamentos</Text>
+          <TouchableOpacity style={styles.botao} onPress={() => {
+              navigation.navigate("EquipamentosObra", { obra: obra });
+            }}>
+            <Text style={styles.textoBotao}>Equipamentos</Text>
           </TouchableOpacity>
         </View>
 
@@ -162,7 +172,11 @@ export default function GeralScreen( {navigation, route} ) {
           >
             <Icon name="pencil" size={30} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={ ()=>{deleteObra()}} >
+          <TouchableOpacity
+            onPress={() => {
+              deleteObra();
+            }}
+          >
             <Icon name="trash" size={30} color="white" />
           </TouchableOpacity>
         </View>
@@ -179,7 +193,9 @@ const styles = StyleSheet.create({
   },
   detalhesObraContainer: {
     alignSelf: "center",
-    flex: 1,
+    backgroundColor: "#60656A",
+    padding: "10%",
+    borderRadius: 10,
   },
   textoDetalhes: {
     fontSize: 16,

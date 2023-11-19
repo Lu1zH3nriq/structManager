@@ -336,6 +336,26 @@ app.get("/buscaFuncionario", async (req, res) => {
       .json({ message: "Erro de requisição ao buscar funcionário!" });
   }
 });
+
+app.get("/buscaFuncionarios", async (req, res) => {
+  try {
+    const funcsFinded = await func.findAll({
+      where: {
+        obraId: req.query.obraId,
+      },
+    });
+
+    if (funcsFinded) {
+      res.status(200).json(funcsFinded);
+    } else {
+      res.status(404).json({ message: "Funcionário não encontrado!" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erro de requisição ao buscar funcionário!" });
+  }
+});
 //UPDATE
 app.put("/alteraFuncionario", async (req, res) => {
   try {
@@ -368,6 +388,57 @@ app.put("/alteraFuncionario", async (req, res) => {
       .json({ message: "Erro de requisição ao alterar funcionário!" });
   }
 });
+
+app.put("/addFunc", async (req, res) => {
+  try {
+    const funcFinded = await func.findOne({
+      where: {
+        nome: req.body.funcName,
+        cpfcnpj: req.body.funcCpf,
+      },
+    });
+
+    if (funcFinded) {
+      let funcId = funcFinded.id;
+      const [affectedRows] = await func.update(
+        {
+          obraId: req.body.obraId,
+        },
+        {
+          where: {
+            id: funcId,
+          },
+        }
+      );
+
+      if (affectedRows > 0) {
+        const updatedFuncs = await func.findAll({
+          where: {
+            obraId: req.body.obraId,
+          },
+        });
+        return res
+          .status(200)
+          .json({
+            message: "Funcionário adicionado com sucesso!",
+            funcionarios: updatedFuncs,
+          });
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Erro ao adicionar o funcionário à obra!" });
+      }
+    } else {
+      return res.status(404).json({ message: "Funcionário não encontrado!" });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erro de requisição ao adicionar funcionário!" });
+  }
+});
+
 //DELETE
 app.delete("/deletaFuncionario", async (req, res) => {
   try {
@@ -451,6 +522,27 @@ app.get("/buscaEquipamento", async (req, res) => {
       .json({ message: "erro de requisição ao buscar equipamento!" });
   }
 });
+
+app.get("/buscaEquipamentos", async (req, res) => {
+  try {
+    const findedEquips = await equip.findAll({
+      where: {
+        obraId: req.query.obraId,
+      },
+    });
+
+    if (findedEquips) {
+      return res.status(200).json(findedEquips);
+    } else {
+      return res.status(422).json({ message: "Erro ao buscar equipamentos!" });
+    }
+  } catch (error) {
+    console.log("Erro ao buscar equipamentos: " + error);
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao buscar equipamento!" });
+  }
+});
 //UPDATE
 app.put("/alteraEquipamento", async (req, res) => {
   try {
@@ -483,6 +575,57 @@ app.put("/alteraEquipamento", async (req, res) => {
       .json({ message: "Erro de requisição ao alterar equipamento! " });
   }
 });
+
+app.put("/addEquip", async (req, res) => {
+  try {
+    const equipFinded = await equip.findOne({
+      where: {
+        nome: req.body.equipName, 
+        codigo: req.body.equipCodigo, 
+      },
+    });
+
+    if (equipFinded) {
+      let equipId = equipFinded.id;
+      const [affectedRows] = await equip.update(
+        {
+          obraId: req.body.obraId,
+        },
+        {
+          where: {
+            id: equipId,
+          },
+        }
+      );
+
+      if (affectedRows > 0) {
+        const updatedEquips = await equip.findAll({
+          where: {
+            obraId: req.body.obraId,
+          },
+        });
+        return res
+          .status(200)
+          .json({
+            message: "Equipamento adicionado com sucesso!",
+            equipamentos: updatedEquips,
+          });
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Erro ao adicionar o equipamento à obra!" });
+      }
+    } else {
+      return res.status(404).json({ message: "Equipamento não encontrado!" });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erro de requisição ao adicionar equipamento!" });
+  }
+});
+
 //DELETE
 app.delete("/apagaEquipamento", async (req, res) => {
   try {
