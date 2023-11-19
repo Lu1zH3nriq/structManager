@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import ModalPesquisa from "react-native-modal";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function EquipamentoScreen({ navigation, route }) {
   const obra = route.params?.obra || {};
@@ -124,7 +125,7 @@ export default function EquipamentoScreen({ navigation, route }) {
         renderRightActions={() => (
           <TouchableOpacity onPress={() => removeEquipamento(item)}>
             <View style={styles.deleteIconContainer}>
-              <Text style={styles.deleteIcon}>🗑️</Text>
+              <Icon name="trash" size={30} color="white" />
             </View>
           </TouchableOpacity>
         )}
@@ -139,7 +140,9 @@ export default function EquipamentoScreen({ navigation, route }) {
       <View style={styles.funcionarioCard}>
         <Text style={styles.funcionarioCardText}>Nome: {item.nome}</Text>
         <Text style={styles.funcionarioCardText}>Código: {item.codigo}</Text>
-        <Text style={styles.funcionarioCardText}>Etiqueta: {item.etiqueta}</Text>
+        <Text style={styles.funcionarioCardText}>
+          Etiqueta: {item.etiqueta}
+        </Text>
       </View>
     );
   };
@@ -176,15 +179,11 @@ export default function EquipamentoScreen({ navigation, route }) {
         ]);
       }
     } catch (error) {
-      Alert.alert(
-        "Atenção!",
-        "Erro de requisição ao remover equipamento.",
-        [
-          {
-            text: "Ok",
-          },
-        ]
-      );
+      Alert.alert("Atenção!", "Erro de requisição ao remover equipamento.", [
+        {
+          text: "Ok",
+        },
+      ]);
     }
   };
 
@@ -242,7 +241,10 @@ export default function EquipamentoScreen({ navigation, route }) {
               onChangeText={(text) => setCodigoFind(text)}
             />
             {/* Adicione outros campos conforme necessário */}
-            <TouchableOpacity onPress={addEquipamento} style={styles.modalButton}>
+            <TouchableOpacity
+              onPress={addEquipamento}
+              style={styles.modalButton}
+            >
               <Text style={styles.modalButtonText}>Adicionar</Text>
             </TouchableOpacity>
           </View>
@@ -344,7 +346,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: 70,
-    height: "100%",
+    height: "90%",
+    borderRadius: 8,
   },
   deleteIcon: {
     color: "white",
