@@ -12,18 +12,25 @@ import {
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import ModalPesquisa from "react-native-modal";
+import ModalPesquisaSearch from "react-native-modal";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function EquipamentoScreen({ navigation, route }) {
   const obra = route.params?.obra || {};
   const [isModalPesquisaVisible, setModalPesquisaVisible] = useState(false);
+  const [isModalPesquisaSearchVisible, setModalPesquisaSearchVisible] =
+    useState(false);
   const toggleModalPesquisa = () => {
     setModalPesquisaVisible(!isModalPesquisaVisible);
+  };
+  const toggleModalPesquisaSearch = () => {
+    setModalPesquisaSearchVisible(!isModalPesquisaSearchVisible);
   };
   const [nomeFind, setNomeFind] = useState("");
   const [codigoFind, setCodigoFind] = useState("");
 
   const [equipamentos, setEquipamentos] = useState([]);
+  const [equipamentosBuscados, setEquipamentosBuscados] = useState([]);
 
   const getEquipamentos = async () => {
     try {
@@ -119,6 +126,58 @@ export default function EquipamentoScreen({ navigation, route }) {
     getEquipamentos();
   }, []);
 
+  const pesquisarEquipamentos = async () => {
+    //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
+    if (nomeFind === "" && codigoFind === "") {
+      Alert.alert(
+        "Atenção!",
+        "Preencha os campos para pesquisar o funcionário!",
+        [
+          {
+            text: "Ok",
+          },
+        ]
+      );
+    }
+
+    //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
+    else {
+      try {
+        let baseUrl = "http://192.168.100.3:3000/buscaEquipObra";
+        let params = {
+          nome: nomeFind,
+          codigo: codigoFind,
+          obraId: obra.id,
+        };
+
+        let url = `${baseUrl}?${Object.keys(params)
+          .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+          .join("&")}`;
+
+        let response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          setEquipamentosBuscados(data);
+        } else {
+          Alert.alert("Atenção!", data.message);
+        }
+      } catch (error) {
+        console.error("Erro na requisição: ", error);
+        Alert.alert(
+          "Erro de rede",
+          "Houve um problema na requisição. Tente novamente mais tarde."
+        );
+      }
+    }
+    toggleModalPesquisaSearch();
+  };
+
   const renderSwipeable = (item) => {
     return (
       <Swipeable
@@ -202,18 +261,61 @@ export default function EquipamentoScreen({ navigation, route }) {
         <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
           <Text style={styles.buttonText}>Adicionar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Remover</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={toggleModalPesquisaSearch}
+        >
+          <Text style={styles.buttonText}>Pesquisar</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.listEquipamentos}>
         <FlatList
-          data={equipamentos}
+          data={
+            equipamentosBuscados.length > 0
+              ? equipamentosBuscados
+              : equipamentos
+          }
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => renderSwipeable({ item })}
         />
       </View>
+
+      <ModalPesquisaSearch
+        isVisible={isModalPesquisaSearchVisible}
+        onBackdropPress={toggleModalPesquisaSearch}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Pesquisar Equipamento</Text>
+            <Text style={styles.inpText}>Nome do Equipamento:</Text>
+            <TextInput
+              placeholder="Nome do Equipamento"
+              style={styles.input}
+              placeholderTextColor="grey"
+              value={nomeFind}
+              onChangeText={(text) => setNomeFind(text)}
+            />
+            <Text style={styles.inpText}>Código do Equipamento:</Text>
+            <TextInput
+              placeholder="Código do Equipamento"
+              style={styles.input}
+              placeholderTextColor="grey"
+              value={codigoFind}
+              onChangeText={(text) => setCodigoFind(text)}
+            />
+            {/* Adicione outros campos conforme necessário */}
+            <TouchableOpacity
+              onPress={addEquipamento}
+              style={styles.modalButton}
+            >
+              <Text style={styles.modalButtonText}>Adicionar</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </ModalPesquisaSearch>
 
       <ModalPesquisa
         isVisible={isModalPesquisaVisible}

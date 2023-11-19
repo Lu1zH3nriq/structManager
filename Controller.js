@@ -337,6 +337,28 @@ app.get("/buscaFuncionario", async (req, res) => {
   }
 });
 
+app.get("/buscaFuncObra", async (req, res) => {
+  try {
+    const funcFinded = await func.findOne({
+      where: {
+        nome: req.query.nome,
+        cpfcnpj: req.query.cpfcnpj,
+        obraId: req.query.obraId,
+      },
+    });
+
+    if (funcFinded) {
+      res.status(200).json(funcFinded);
+    } else {
+      res.status(422).json({ message: "Funcionário não vinculado a esta obra!" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erro de requisição ao buscar funcionário!" });
+  }
+});
+
 app.get("/buscaFuncionarios", async (req, res) => {
   try {
     const funcsFinded = await func.findAll({
@@ -417,12 +439,10 @@ app.put("/addFunc", async (req, res) => {
             obraId: req.body.obraId,
           },
         });
-        return res
-          .status(200)
-          .json({
-            message: "Funcionário adicionado com sucesso!",
-            funcionarios: updatedFuncs,
-          });
+        return res.status(200).json({
+          message: "Funcionário adicionado com sucesso!",
+          funcionarios: updatedFuncs,
+        });
       } else {
         return res
           .status(400)
@@ -436,6 +456,49 @@ app.put("/addFunc", async (req, res) => {
     res
       .status(500)
       .json({ message: "Erro de requisição ao adicionar funcionário!" });
+  }
+});
+
+app.put("/removeFunc", async (req, res) => {
+  try {
+    const funcFinded = await func.findOne({
+      where: {
+        id: req.body.funcId,
+        obraId: req.body.obraId,
+      },
+    });
+
+    const [affectedRows] = await func.update(
+      {
+        obraId: null,
+      },
+      {
+        where: {
+          id: funcFinded.id,
+        },
+      }
+    );
+
+    if (affectedRows > 0) {
+      const updatedFuncs = await func.findAll({
+        where: {
+          obraId: req.body.obraId,
+        },
+      });
+      return res.status(200).json({
+        message: "Funcionário removido com sucesso!",
+        funcionarios: updatedFuncs,
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Erro ao remover o funcionário da obra!" });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erro de requisição ao remover funcionário!" });
   }
 });
 
@@ -523,6 +586,30 @@ app.get("/buscaEquipamento", async (req, res) => {
   }
 });
 
+
+app.get("/buscaEquipObra", async (req, res) => {
+  try {
+    const findedEquip = await equip.findOne({
+      where: {
+        nome: req.query.nome,
+        codigo: req.query.codigo,
+        obraId: req.query.obraId,
+      },
+    });
+
+    if (findedEquip) {
+      return res.status(200).json(findedEquip);
+    } else {
+      return res.status(422).json({ message: "Equipamento não vinculado a esta obra!" });
+    }
+  } catch (error) {
+    console.log("Erro ao buscar equipamento: " + error);
+    return res
+      .status(500)
+      .json({ message: "erro de requisição ao buscar equipamento!" });
+  }
+});
+
 app.get("/buscaEquipamentos", async (req, res) => {
   try {
     const findedEquips = await equip.findAll({
@@ -580,8 +667,8 @@ app.put("/addEquip", async (req, res) => {
   try {
     const equipFinded = await equip.findOne({
       where: {
-        nome: req.body.equipName, 
-        codigo: req.body.equipCodigo, 
+        nome: req.body.equipName,
+        codigo: req.body.equipCodigo,
       },
     });
 
@@ -604,12 +691,10 @@ app.put("/addEquip", async (req, res) => {
             obraId: req.body.obraId,
           },
         });
-        return res
-          .status(200)
-          .json({
-            message: "Equipamento adicionado com sucesso!",
-            equipamentos: updatedEquips,
-          });
+        return res.status(200).json({
+          message: "Equipamento adicionado com sucesso!",
+          equipamentos: updatedEquips,
+        });
       } else {
         return res
           .status(400)
