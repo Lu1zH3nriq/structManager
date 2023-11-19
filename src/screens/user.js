@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     resizeMode: "cover",
     borderWidth: 8,
-    borderColor: "grey",
+    borderColor: "#59A8FF",
     padding: 4,
   },
   changeImageButton: {
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   button: {
-    backgroundColor: "grey", // Cor de fundo dos botões
+    backgroundColor: "#007BFF", // Cor de fundo dos botões
     width: 200,
     marginVertical: 10,
     borderRadius: 10,
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalButton: {
-    backgroundColor: "grey",
+    backgroundColor: "#007BFF",
     borderRadius: 5,
     padding: 10,
     alignItems: "center",

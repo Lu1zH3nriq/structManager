@@ -259,14 +259,14 @@ export default function EquipamentoScreen({ navigation, route }) {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
-          <Text style={styles.buttonText}>Adicionar</Text>
+        <Text style={styles.buttonText}><Icon name="plus" size={15} color="white"/> Adicionar</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/*<TouchableOpacity
           style={styles.button}
           onPress={toggleModalPesquisaSearch}
         >
           <Text style={styles.buttonText}>Pesquisar</Text>
-        </TouchableOpacity>
+          </TouchableOpacity>*/}
       </View>
 
       <View style={styles.listEquipamentos}>

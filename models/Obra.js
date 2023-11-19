@@ -28,6 +28,10 @@ module.exports = (sequelize, DataTypes) => {
     dataInicio: DataTypes.DATE,
     dataFim: DataTypes.DATE,
     orcamento: DataTypes.STRING,
+    materiais: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
     clienteId: DataTypes.INTEGER,
     tipoObraId: DataTypes.INTEGER,
   }, {

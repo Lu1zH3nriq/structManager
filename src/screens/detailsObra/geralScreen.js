@@ -139,7 +139,7 @@ export default function GeralScreen({ navigation, route }) {
         </Text>
       </View>
 
-      {/* Botões e Ícones na parte inferior */}
+      
       <View style={styles.bottomContainer}>
         {/* Botões */}
         <View style={styles.botoesContainer}>
@@ -225,11 +225,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginTop: 10,
-    backgroundColor: "#333", // Cor de fundo dos botões
+    backgroundColor: "#333",
     paddingVertical: 10,
   },
   botao: {
-    backgroundColor: "#007BFF", // Escolha a cor desejada
+    backgroundColor: "#007BFF",
     padding: 10,
     borderRadius: 5,
     flex: 1,
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   },
   iconesContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     backgroundColor: "#333", // Cor de fundo dos ícones
     paddingVertical: 10,
     paddingHorizontal: 20,

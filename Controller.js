@@ -663,6 +663,49 @@ app.put("/alteraEquipamento", async (req, res) => {
   }
 });
 
+app.put("/removeEquip", async (req, res) => {
+  try {
+    const equipFinded = await equip.findOne({
+      where: {
+        id: req.body.equipId,
+        obraId: req.body.obraId,
+      },
+    });
+
+    const [affectedRows] = await equip.update(
+      {
+        obraId: null,
+      },
+      {
+        where: {
+          id: equipFinded.id,
+        },
+      }
+    );
+
+    if (affectedRows > 0) {
+      const updatedEquip = await equip.findAll({
+        where: {
+          obraId: req.body.obraId,
+        },
+      });
+      return res.status(200).json({
+        message: "Equipamento removido com sucesso!",
+        funcionarios: updatedEquip,
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Erro ao remover o equipamento da obra!" });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erro de requisição ao remover equipamento!" });
+  }
+});
+
 app.put("/addEquip", async (req, res) => {
   try {
     const equipFinded = await equip.findOne({

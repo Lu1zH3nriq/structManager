@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   button: {
-    backgroundColor: "grey", // Cor de fundo dos botões
+    backgroundColor: "#007BFF", // Cor de fundo dos botões
     width: 300,
     marginVertical: 10,
     borderRadius: 10,

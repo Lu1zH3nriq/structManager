@@ -99,7 +99,7 @@ export default function GerenciarObras() {
 
   const handlePesquisar = async () => {
     // Verifica se os campos estão vazios
-    if (nomeCliente === "" && tipoObra === "" && dataInicio === "") {
+    if (nomeCliente === "" && cpfCliente === "" && numContrato === "") {
       Alert.alert(
         "Atenção!",
         "Preencha algum dos campos para pesquisar obras.",
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   modalButton: {
-    backgroundColor: "grey",
+    backgroundColor: "#007BFF",
     borderRadius: 5,
     padding: 10,
     alignItems: "center",
