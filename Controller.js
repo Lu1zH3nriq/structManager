@@ -1045,6 +1045,44 @@ app.put("/alteraObra", async (req, res) => {
       .json({ message: "Erro de requisição ao alterar obra!" });
   }
 });
+
+app.put("/addMaterial", async (req, res)=>{
+  try {
+    const { obraId, material } = req.body;
+
+    const obraFinded = await obra.findByPk(obraId);
+
+    if(!obraFinded)
+      return res.status(404).json({message: "Obra nao econtrada!"});
+
+    obraFinded.materiais = obraFinded.materiais || [];
+    obraFinded.materiais.push(material);
+
+    await obraFinded.save();
+
+    return res.status(200).json({ message: 'Material adicionado com sucesso!', materiais: obraFinded.materiais });
+  } catch (error) {
+    console.log("erro ao adicionar material a obra : " + error);
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao adicionar material a obra!" });
+  }
+});
+app.get("/buscaMateriais", async (req,res)=>{
+  try {
+    const obraId = req.query.obraId;
+    const obraFinded = await obra.findByPk(obraId);
+
+    if (!obraFinded)
+      return res.status(404).json({message: "Obra não encontrada!"});
+
+    return res.status(200).json(obraFinded.materiais);
+  } catch (error) {
+    console.log("Erro ao buscar todos os materiais: "+ error);
+    return res.status(500).json({message: "Erro de requisição ao buscar todos os materiais da obra!"});
+  }
+})
+
 app.delete("/deletaObra", async (req, res) => {
   try {
     const deletedObra = obra.destroy({

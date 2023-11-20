@@ -25,6 +25,111 @@ export default function MaterialScreen({ navigation, route }) {
     setModalPesquisaVisible(!isModalPesquisaVisible);
   };
 
+  const addMaterial = async () => {
+    try {
+      const response = await fetch("http://192.168.100.3:3000/addMaterial", {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          obraId: obra.id,
+          material: {
+            nome: nomeMaterial,
+            quantidade: quantidadeMaterial,
+          },
+        }),
+      });
+
+      const data = await response.json();
+      if (response.status === 200) {
+        Alert.alert("Sucesso!", data.message, [
+          {
+            text: "Ok",
+            onPress: () => {
+              // Atualize a lista de materiais localmente, se necessário
+              setMateriais(data.materiais);
+              setNomeMaterial("");
+              setQuantidadeMaterial("");
+              toggleModalAdd();
+            },
+          },
+        ]);
+      } else {
+        Alert.alert("Atenção!", data.message, [
+          {
+            text: "Ok",
+          },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert(
+        "Atenção!",
+        "Erro de requisição ao adicionar material.",
+        [
+          {
+            text: "Ok",
+          },
+        ]
+      );
+    }
+  };
+
+  const getMateriais = async () => {
+    try {
+      let baseUrl = "http://192.168.100.3:3000/buscaMateriais";
+      let params = {
+        obraId: obra.id,
+      };
+
+      let url = `${baseUrl}?${Object.keys(params)
+        .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+        .join("&")}`;
+
+      let response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+
+      if (response.status === 200) {
+        setMateriais(data);
+      } else {
+        console.log("Erro ao buscar todos os materiais desta obra!");
+      }
+    } catch (error) {
+      console.log("Erro ao buscar todos os materiais: " + error);
+    }
+  };
+  useEffect(() => {
+    getMateriais();
+  }, []);
+
+  const renderMaterialItem = ({ item }) => {
+    const swipeRightActions = () => (
+      <View style={styles.deleteIconContainer}>
+        <TouchableOpacity
+          onPress={() => { }}
+        >
+          <Icon name="trash" size={30} color="white" />
+        </TouchableOpacity>
+      </View>
+    );
+
+    return (
+      <Swipeable renderRightActions={swipeRightActions}>
+        <View style={styles.materialItem}>
+          <Text style={styles.materialItemText}>Nome: {item.nome}</Text>
+          <Text style={styles.materialItemText}>Quantidade: {item.quantidade}</Text>
+        </View>
+      </Swipeable>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -38,36 +143,47 @@ export default function MaterialScreen({ navigation, route }) {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={toggleModalAdd}>
-          <Text style={styles.buttonText}><Icon name="plus" size={15} color="white"/> Adicionar</Text>
+          <Text style={styles.buttonText}>
+            <Icon name="plus" size={15} color="white" /> Adicionar
+          </Text>
         </TouchableOpacity>
       </View>
+
+      <FlatList
+        data={materiais}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderMaterialItem}
+        style={styles.listMateriais}
+      />
 
       <ModalAdd
         isVisible={isModalPesquisaVisible}
         onBackdropPress={toggleModalAdd}
       >
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Adicionar Material</Text>
-          <Text style={styles.inpText}>Nome do Material:</Text>
-          <TextInput
-            placeholder="Nome do Material"
-            style={styles.input}
-            placeholderTextColor="grey"
-            value={nomeMaterial}
-            onChangeText={(text) => setNomeMaterial(text)}
-          />
-          <Text style={styles.inpText}>Quantidade do Material:</Text>
-          <TextInput
-            placeholder="Quantidade "
-            style={styles.input}
-            placeholderTextColor="grey"
-            value={quantidadeMaterial}
-            onChangeText={(text) => setQuantidadeMaterial(text)}
-          />
-          <TouchableOpacity onPress={() => {}} style={styles.modalButton}>
-            <Text style={styles.modalButtonText}>Adicionar</Text>
-          </TouchableOpacity>
-        </View>
+        <KeyboardAvoidingView>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Adicionar Material</Text>
+            <Text style={styles.inpText}>Nome do Material:</Text>
+            <TextInput
+              placeholder="Nome do Material"
+              style={styles.input}
+              placeholderTextColor="grey"
+              value={nomeMaterial}
+              onChangeText={(text) => setNomeMaterial(text)}
+            />
+            <Text style={styles.inpText}>Quantidade do Material:</Text>
+            <TextInput
+              placeholder="Quantidade "
+              style={styles.input}
+              placeholderTextColor="grey"
+              value={quantidadeMaterial}
+              onChangeText={(text) => setQuantidadeMaterial(text)}
+            />
+            <TouchableOpacity onPress={addMaterial} style={styles.modalButton}>
+              <Text style={styles.modalButtonText}>Adicionar</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
       </ModalAdd>
     </SafeAreaView>
   );
@@ -119,8 +235,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: 70,
-    height: "90%",
-    borderRadius: 8,
+    height: "100%",
+    borderRadius: 5,
+    flexDirection: "row",
+  },
+  materialItem: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    marginVertical: 8,
+    borderRadius: 5,
+  },
+  materialItemText: {
+    color: "white",
+    fontSize: 16,
   },
   modalContainer: {
     backgroundColor: "#454A50",
