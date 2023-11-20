@@ -384,30 +384,35 @@ export default function CadastroEquipamento() {
           <Text style={styles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
         <Text style={styles.heading}>Dados do Equipamento</Text>
+        <Text style={styles.inpText}>Nome do Equipamento:</Text>
         <TextInput
           style={styles.input}
           placeholder="Nome do Equipamento"
           value={nome}
           onChangeText={(text) => setNome(text)}
         />
+        <Text style={styles.inpText}>Código:</Text>
         <TextInput
           style={styles.input}
           placeholder="Código"
           value={codigo}
           onChangeText={(text) => setCodigo(text)}
         />
+        <Text style={styles.inpText}>Marca:</Text>
         <TextInput
           style={styles.input}
           placeholder="IMarca"
           value={marca}
           onChangeText={(text) => setMarca(text)}
         />
+        <Text style={styles.inpText}>Modelo:</Text>
         <TextInput
           style={styles.input}
           placeholder="Modelo"
           value={modelo}
           onChangeText={(text) => setModelo(text)}
         />
+        <Text style={styles.inpText}>Etiqueta:</Text>
         <TextInput
           style={styles.input}
           placeholder="Etiqueta"
@@ -444,7 +449,7 @@ export default function CadastroEquipamento() {
           >
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Pesquisar Equipamento</Text>
-
+              <Text style={styles.inpText}>Código do Equipamento:</Text>
               <TextInput
                 placeholder="Código ou Etiqueta"
                 style={styles.input}
@@ -454,7 +459,7 @@ export default function CadastroEquipamento() {
                   setCodigoFind(text);
                 }}
               />
-
+              <Text style={styles.inpText}>Nome do Equipamento:</Text>
               <TextInput
                 placeholder="Nome do Equipamento"
                 style={styles.input}
@@ -548,5 +553,10 @@ const styles = StyleSheet.create({
   grayBackground: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,
+  },
+  inpText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

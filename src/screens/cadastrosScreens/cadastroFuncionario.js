@@ -380,30 +380,35 @@ export default function CadastroFuncionario() {
           <Text style={styles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
         <Text style={styles.heading}>Dados do Funcionário</Text>
+        <Text style={styles.inpText}>Nome do Funcionário:</Text>
         <TextInput
           style={styles.input}
           placeholder="Nome do Funcionário"
           value={nome}
           onChangeText={(text) => setNome(text)}
         />
+        <Text style={styles.inpText}>CPF ou CNPJ do Funcionário:</Text>
         <TextInput
           style={styles.input}
           placeholder="CPF ou CNPJ"
           value={cpfCnpj}
           onChangeText={(text) => setCpfCnpj(text)}
         />
+        <Text style={styles.inpText}>Telefone:</Text>
         <TextInput
           style={styles.input}
           placeholder="Telefone"
           value={telefone}
           onChangeText={(text) => setTelefone(text)}
         />
+        <Text style={styles.inpText}>E-mail:</Text>
         <TextInput
           style={styles.input}
           placeholder="Email"
           value={email}
           onChangeText={(text) => setEmail(text)}
         />
+        <Text style={styles.inpText}>Endereço:</Text>
         <TextInput
           style={styles.input}
           placeholder="Endereço"
@@ -440,7 +445,7 @@ export default function CadastroFuncionario() {
           >
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Pesquisar Funcionário</Text>
-
+              <Text style={styles.inpText}>CPF ou CNPJ do Funcionário:</Text>
               <TextInput
                 placeholder="CPF ou CNPJ"
                 style={styles.input}
@@ -450,7 +455,7 @@ export default function CadastroFuncionario() {
                   setCpfCnpjFind(text);
                 }}
               />
-
+              <Text style={styles.inpText}>Nome do Funcionário:</Text>
               <TextInput
                 placeholder="Nome do Funcionário"
                 style={styles.input}
@@ -544,5 +549,10 @@ const styles = StyleSheet.create({
   grayBackground: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,
+  },
+  inpText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

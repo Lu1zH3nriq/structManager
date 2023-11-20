@@ -324,7 +324,7 @@ export default function CadCliente() {
               );
               const data = await response.json();
               if (response.status === 200) {
-                Alert.alert("Sucesso!", data.message , [
+                Alert.alert("Sucesso!", data.message, [
                   {
                     text: "Confirmar",
                     onPress: () => {
@@ -393,30 +393,35 @@ export default function CadCliente() {
           <Text style={styles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
         <Text style={styles.heading}>Dados do Cliente</Text>
+        <Text style={styles.inpText}>Nome do Cliente:</Text>
         <TextInput
           style={styles.input}
           placeholder="Nome do Cliente"
           value={nome}
           onChangeText={(text) => setNome(text)}
         />
+        <Text style={styles.inpText}>CPF ou CNPJ do Cliente:</Text>
         <TextInput
           style={styles.input}
           placeholder="CPF ou CNPJ"
           value={cpfCnpj}
           onChangeText={(text) => setCpfCnpj(text)}
         />
+        <Text style={styles.inpText}>Telefone:</Text>
         <TextInput
           style={styles.input}
           placeholder="Telefone"
           value={telefone}
           onChangeText={(text) => setTelefone(text)}
         />
+        <Text style={styles.inpText}>E-mail:</Text>
         <TextInput
           style={styles.input}
           placeholder="Email"
           value={email}
           onChangeText={(text) => setEmail(text)}
         />
+        <Text style={styles.inpText}>Endereço:</Text>
         <TextInput
           style={styles.input}
           placeholder="Endereço"
@@ -457,6 +462,7 @@ export default function CadCliente() {
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Pesquisar Cliente</Text>
 
+              <Text style={styles.inpText}>CPF ou CNPJ do Cliente:</Text>
               <TextInput
                 placeholder="CPF ou CNPJ"
                 style={styles.input}
@@ -467,6 +473,7 @@ export default function CadCliente() {
                 }}
               />
 
+              <Text style={styles.inpText}>Nome do Cliente:</Text>
               <TextInput
                 placeholder="Nome do Cliente"
                 style={styles.input}
@@ -563,6 +570,11 @@ const styles = StyleSheet.create({
   grayBackground: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,
+  },
+  inpText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 

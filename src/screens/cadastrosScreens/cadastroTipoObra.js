@@ -323,12 +323,14 @@ export default function CadastroTipodeObra() {
           <Text style={styles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
         <Text style={styles.heading}>Dados do Tipo de Obra</Text>
+        <Text style={styles.inpText}>Nome do Tipo de Obra:</Text>
         <TextInput
           style={styles.input}
           placeholder="Nome do Tipo de Obra"
           value={tipo}
           onChangeText={(text) => setTipo(text)}
         />
+        <Text style={styles.inpText}>Código do Tipo de Obra:</Text>
         <TextInput
           style={styles.input}
           placeholder="Código"
@@ -366,7 +368,7 @@ export default function CadastroTipodeObra() {
           >
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Pesquisar Tipo de Obra</Text>
-
+              <Text style={styles.inpText}>Código do Tipo de Obra:</Text>
               <TextInput
                 placeholder="Código"
                 style={styles.input}
@@ -376,7 +378,7 @@ export default function CadastroTipodeObra() {
                   setCodigoFind(text);
                 }}
               />
-
+              <Text style={styles.inpText}>Nome do Tipo de Obra:</Text>
               <TextInput
                 placeholder="Nome do Tipo de Obra"
                 style={styles.input}
@@ -470,5 +472,10 @@ const styles = StyleSheet.create({
   grayBackground: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,
+  },
+  inpText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

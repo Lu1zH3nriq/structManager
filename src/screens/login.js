@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   btnEntrar: {
-    backgroundColor: "#828282",
+    backgroundColor: "#007BFF",
     height: 45,
     borderRadius: 8,
     alignItems: "center",
