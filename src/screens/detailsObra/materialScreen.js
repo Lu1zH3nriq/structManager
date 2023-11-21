@@ -19,7 +19,7 @@ export default function MaterialScreen({ navigation, route }) {
   const [materiais, setMateriais] = useState([]);
   const [isModalPesquisaVisible, setModalPesquisaVisible] = useState(false);
   const [nomeMaterial, setNomeMaterial] = useState("");
-  const [codigoMaterial, setCodigoMaterial ] = useState("");
+  const [codigoMaterial, setCodigoMaterial] = useState("");
   const [quantidadeMaterial, setQuantidadeMaterial] = useState("");
 
 
@@ -38,9 +38,9 @@ export default function MaterialScreen({ navigation, route }) {
         },
         body: JSON.stringify({
           obraId: obra.id,
-          nomeMaterial: nomeMaterial,
-          codigoMaterial: codigoMaterial,
-          quantidadeMaterial: quantidadeMaterial,
+          materialName: nomeMaterial,
+          materialCod: codigoMaterial,
+          materialQuant: quantidadeMaterial,
         }),
       });
 
@@ -51,7 +51,7 @@ export default function MaterialScreen({ navigation, route }) {
             text: "Ok",
             onPress: () => {
 
-              setMateriais(data.materiaisObra);
+              setMateriais(data.materiais);
 
               setNomeMaterial("");
               setQuantidadeMaterial("");
@@ -113,11 +113,57 @@ export default function MaterialScreen({ navigation, route }) {
     getMateriais();
   }, []);
 
+  const deleteMaterial = async ({item}) => {
+    try {
+      const response = await fetch("http://192.168.100.3:3000/removeMaterial", {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: item.id,
+          obraId: obra.id,
+          materialId: item.materialId,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.status === 200) {
+        Alert.alert("Sucesso!", data.message, [
+          {
+            text: "Ok",
+            onPress: () => {
+
+              setMateriais(data.materiais);
+            },
+          },
+        ]);
+      } else {
+        Alert.alert("Atenção!", data.message, [
+          {
+            text: "Ok",
+          },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert(
+        "Atenção!",
+        "Erro de requisição ao remover material.",
+        [
+          {
+            text: "Ok",
+          },
+        ]
+      );
+    }
+  }
+
   const renderMaterialItem = ({ item }) => {
-    const swipeRightActions = () => (
+    const swipeRightActions = ({ item }) => (
       <View style={styles.deleteIconContainer}>
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={deleteMaterial({item})}
         >
           <Icon name="trash" size={30} color="white" />
         </TouchableOpacity>
@@ -125,7 +171,7 @@ export default function MaterialScreen({ navigation, route }) {
     );
 
     return (
-      <Swipeable renderRightActions={swipeRightActions}>
+      <Swipeable renderRightActions={swipeRightActions({item})}>
         <View style={styles.materialItem}>
           <Text style={styles.materialItemText}>Nome: {item.nome}</Text>
           <Text style={styles.materialItemText}>Quantidade: {item.quantidade}</Text>
@@ -155,9 +201,8 @@ export default function MaterialScreen({ navigation, route }) {
 
       <FlatList
         data={materiais}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderMaterialItem}
-        style={styles.listMateriais}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => renderMaterialItem({ item })}
       />
 
       <ModalAdd
@@ -246,7 +291,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF3B30",
     justifyContent: "center",
     alignItems: "center",
-    width: 70,
+    width: 50,
     height: "100%",
     borderRadius: 5,
     flexDirection: "row",

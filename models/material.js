@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Material.belongsToMany(models.Obra, {
-        through: "ObraMaterial", // Nome da tabela de junção
-        as: "obras",
-        foreignKey: "materialId",
+        through: models.ObraMaterial,
+        as: 'obras',
+        foreignKey: 'materialId',
       });
     }
   }

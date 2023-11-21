@@ -15,9 +15,9 @@ module.exports = (sequelize, DataTypes) => {
       Obra.hasMany(models.Equipamento);
 
       Obra.belongsToMany(models.Material, {
-        through: "ObraMaterial", // Nome da tabela de junção
-        as: "materiais",
-        foreignKey: "obraId",
+        through: models.ObraMaterial,
+        as: 'materiais',
+        foreignKey: 'obraId',
       });
     }
   }

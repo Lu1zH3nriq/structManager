@@ -78,7 +78,7 @@ export default function Home() {
       <Tab.Screen name="Início" component={HomeScreen} options={{headerShown : false}}/>
       <Tab.Screen name="Gerencial" component={GerenciarObras} options={{headerShown : false}}/>
       <Tab.Screen name="Cadastros" component={CadastrosScreen}  options={{headerShown : false}}/>
-      <Tab.Screen name="Relatórios" component={RelatoriosScreen} options={{headerShown : false}}/>
+      {/* <Tab.Screen name="Relatórios" component={RelatoriosScreen} options={{headerShown : false}}/> */}
       <Tab.Screen name="Usuário" component={UsuarioScreen} options={{headerShown : false}} />
     </Tab.Navigator>
   );
