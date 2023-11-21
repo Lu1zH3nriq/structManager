@@ -9,6 +9,7 @@ import CadFuncionario from "../screens/cadastrosScreens/cadastroFuncionario.js";
 import CadEquipamento from "../screens/cadastrosScreens/cadastroEquipamento.js";
 import CadTipoObra from "../screens/cadastrosScreens/cadastroTipoObra.js";
 import CadNovaObra from "../screens/cadastrosScreens/cadastroNovaObra.js";
+import CadastraMaterial from "../screens/cadastrosScreens/cadastraMaterial.js";
 import DetailsObra from "../screens/detailsObra/geralScreen.js";
 
 import UpdateObra from "../screens/detailsObra/updateObra.js";
@@ -61,6 +62,13 @@ export default function Routes() {
       <Stack.Screen
         name="CadastraTipodeObra"
         component={CadTipoObra}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="CadastraMaterial"
+        component={CadastraMaterial}
         options={{
           headerShown: false,
         }}

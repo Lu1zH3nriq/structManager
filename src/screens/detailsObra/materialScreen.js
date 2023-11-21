@@ -19,7 +19,10 @@ export default function MaterialScreen({ navigation, route }) {
   const [materiais, setMateriais] = useState([]);
   const [isModalPesquisaVisible, setModalPesquisaVisible] = useState(false);
   const [nomeMaterial, setNomeMaterial] = useState("");
+  const [codigoMaterial, setCodigoMaterial ] = useState("");
   const [quantidadeMaterial, setQuantidadeMaterial] = useState("");
+
+
 
   const toggleModalAdd = () => {
     setModalPesquisaVisible(!isModalPesquisaVisible);
@@ -28,17 +31,16 @@ export default function MaterialScreen({ navigation, route }) {
   const addMaterial = async () => {
     try {
       const response = await fetch("http://192.168.100.3:3000/addMaterial", {
-        method: "PUT",
+        method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           obraId: obra.id,
-          material: {
-            nome: nomeMaterial,
-            quantidade: quantidadeMaterial,
-          },
+          nomeMaterial: nomeMaterial,
+          codigoMaterial: codigoMaterial,
+          quantidadeMaterial: quantidadeMaterial,
         }),
       });
 
@@ -48,10 +50,12 @@ export default function MaterialScreen({ navigation, route }) {
           {
             text: "Ok",
             onPress: () => {
-              // Atualize a lista de materiais localmente, se necessário
-              setMateriais(data.materiais);
+
+              setMateriais(data.materiaisObra);
+
               setNomeMaterial("");
               setQuantidadeMaterial("");
+              setCodigoMaterial("");
               toggleModalAdd();
             },
           },
@@ -170,6 +174,14 @@ export default function MaterialScreen({ navigation, route }) {
               placeholderTextColor="grey"
               value={nomeMaterial}
               onChangeText={(text) => setNomeMaterial(text)}
+            />
+            <Text style={styles.inpText}>Código do Material:</Text>
+            <TextInput
+              placeholder="Código "
+              style={styles.input}
+              placeholderTextColor="grey"
+              value={codigoMaterial}
+              onChangeText={(text) => setCodigoMaterial(text)}
             />
             <Text style={styles.inpText}>Quantidade do Material:</Text>
             <TextInput

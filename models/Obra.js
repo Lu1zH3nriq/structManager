@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Obra extends Model {
     /**
@@ -15,28 +13,33 @@ module.exports = (sequelize, DataTypes) => {
       Obra.belongsTo(models.TipoObra);
       Obra.hasMany(models.Funcionario);
       Obra.hasMany(models.Equipamento);
+
+      Obra.belongsToMany(models.Material, {
+        through: "ObraMaterial", // Nome da tabela de junção
+        as: "materiais",
+        foreignKey: "obraId",
+      });
     }
   }
-  Obra.init({
-    codigo: DataTypes.STRING,
-    nome: DataTypes.STRING,
-    endereco: DataTypes.STRING,
-    numContrato: DataTypes.STRING,
-    numAlvara: DataTypes.STRING,
-    rtProjeto: DataTypes.STRING,
-    rtExec: DataTypes.STRING,
-    dataInicio: DataTypes.DATE,
-    dataFim: DataTypes.DATE,
-    orcamento: DataTypes.STRING,
-    materiais: {
-      type: DataTypes.JSON,
-      allowNull: true,
+  Obra.init(
+    {
+      codigo: DataTypes.STRING,
+      nome: DataTypes.STRING,
+      endereco: DataTypes.STRING,
+      numContrato: DataTypes.STRING,
+      numAlvara: DataTypes.STRING,
+      rtProjeto: DataTypes.STRING,
+      rtExec: DataTypes.STRING,
+      dataInicio: DataTypes.DATE,
+      dataFim: DataTypes.DATE,
+      orcamento: DataTypes.STRING,
+      clienteId: DataTypes.INTEGER,
+      tipoObraId: DataTypes.INTEGER,
     },
-    clienteId: DataTypes.INTEGER,
-    tipoObraId: DataTypes.INTEGER,
-  }, {
-    sequelize,
-    modelName: 'Obra',
-  });
+    {
+      sequelize,
+      modelName: "Obra",
+    }
+  );
   return Obra;
 };

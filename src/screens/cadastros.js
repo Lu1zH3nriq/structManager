@@ -29,6 +29,10 @@ export default function Cadastros() {
     navigation.navigate('CadastraTipodeObra');
   }
 
+  const navigateToCadastroMaterial = () => {
+    navigation.navigate('CadastraMaterial');
+  }
+
   // Função para navegar até a tela de Cadastro da nova Obra
   const navigateToCadastroNovaObra = () => {
     navigation.navigate('CadastraNovaObra');
@@ -62,6 +66,12 @@ export default function Cadastros() {
           titleStyle={styles.buttonText}
         />
         <Button
+          title="Cadastrar Material"
+          onPress={navigateToCadastroMaterial}
+          buttonStyle={styles.button}
+          titleStyle={styles.buttonText}
+        />
+        <Button
           title="Cadastrar Nova Obra"
           onPress={navigateToCadastroNovaObra}
           buttonStyle={styles.button}
@@ -84,12 +94,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   button: {
-    backgroundColor: "#007BFF", // Cor de fundo dos botões
+    backgroundColor: "#007BFF", 
     width: 300,
     marginVertical: 10,
     borderRadius: 10,
   },
   buttonText: {
-    textAlign: "center", // Centraliza o texto horizontalmente
+    textAlign: "center", 
   },
 });

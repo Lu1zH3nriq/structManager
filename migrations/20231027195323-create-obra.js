@@ -39,10 +39,6 @@ module.exports = {
       orcamento: {
         type: Sequelize.STRING
       },
-      materiais: {
-        type: Sequelize.JSON,
-        allowNull: true,
-      },
       clienteId: {
         type: Sequelize.INTEGER,
         references: {

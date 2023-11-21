@@ -1,11 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const models = require("./models");
-const fs = require("fs");
-const { parseISO, format } = require("date-fns");
 
 const nodemailer = require("nodemailer");
-const { Sequelize, json } = require("sequelize");
+const { Sequelize } = require("sequelize");
+const { QueryTypes } = require("sequelize");
 
 const app = express();
 app.use(cors());
@@ -22,6 +21,7 @@ let func = models.Funcionario;
 let equip = models.Equipamento;
 let tpO = models.TipoObra;
 let obra = models.Obra;
+let mat = models.Material;
 
 //LOGIN DO USUARIO
 app.post("/login", async (req, res) => {
@@ -350,7 +350,9 @@ app.get("/buscaFuncObra", async (req, res) => {
     if (funcFinded) {
       res.status(200).json(funcFinded);
     } else {
-      res.status(422).json({ message: "Funcionário não vinculado a esta obra!" });
+      res
+        .status(422)
+        .json({ message: "Funcionário não vinculado a esta obra!" });
     }
   } catch (error) {
     res
@@ -586,7 +588,6 @@ app.get("/buscaEquipamento", async (req, res) => {
   }
 });
 
-
 app.get("/buscaEquipObra", async (req, res) => {
   try {
     const findedEquip = await equip.findOne({
@@ -600,7 +601,9 @@ app.get("/buscaEquipObra", async (req, res) => {
     if (findedEquip) {
       return res.status(200).json(findedEquip);
     } else {
-      return res.status(422).json({ message: "Equipamento não vinculado a esta obra!" });
+      return res
+        .status(422)
+        .json({ message: "Equipamento não vinculado a esta obra!" });
     }
   } catch (error) {
     console.log("Erro ao buscar equipamento: " + error);
@@ -1046,42 +1049,102 @@ app.put("/alteraObra", async (req, res) => {
   }
 });
 
-app.put("/addMaterial", async (req, res)=>{
+async function getMateriais(obraId) {
   try {
-    const { obraId, material } = req.body;
+    const obraFinded = await obra.findByPk(obraId, {
+      include: {
+        model: mat,
+        as: "materiais",
+        through: {
+          attributes: ["quantidade"], // Adicione isso para incluir apenas a quantidade na resposta
+        },
+      },
+    });
+
+    if (!obraFinded) throw new Error("Obra não encontrada!");
+
+    return obraFinded.materiais;
+  } catch (error) {
+    console.log("Erro ao obter materiais da obra: " + error);
+    throw error;
+  }
+}
+app.post("/addMaterial", async (req, res) => {
+  try {
+    const { obraId, nomeMaterial, codigoMaterial, quantidadeMaterial } = req.body;
 
     const obraFinded = await obra.findByPk(obraId);
+    if (!obraFinded)
+      return res.status(404).json({ message: "Obra não encontrada!" });
 
-    if(!obraFinded)
-      return res.status(404).json({message: "Obra nao econtrada!"});
+    const findMat = await mat.findOne({
+      where: {
+        nome: nomeMaterial,
+        codigo: codigoMaterial,
+      },
+    });
 
-    obraFinded.materiais = obraFinded.materiais || [];
-    obraFinded.materiais.push(material);
+    let createdMat;
+    if (!findMat) {
+      let _createdMat = await mat.create({
+        nome: nomeMaterial,
+        codigo: codigoMaterial,
+      });
 
-    await obraFinded.save();
+      createdMat = _createdMat;
+    } else {
+      createdMat = findMat;
+    }
 
-    return res.status(200).json({ message: 'Material adicionado com sucesso!', materiais: obraFinded.materiais });
+    // Adicione o material à obra com a quantidade (se houver)
+    await obraFinded.addMateriais(createdMat, {
+      through: {
+        quantidade: quantidadeMaterial,
+      },
+    });
+
+    // Obtenha a lista atualizada de materiais vinculados à obra
+    const materiaisObraAtualizados = await getMateriais(obraId);
+
+    return res.status(200).json({
+      message: "Material adicionado à obra com sucesso!",
+      materiaisObra: materiaisObraAtualizados,
+    });
   } catch (error) {
-    console.log("erro ao adicionar material a obra : " + error);
+    console.log("Erro ao adicionar material à obra: " + error);
     return res
       .status(500)
-      .json({ message: "Erro de requisição ao adicionar material a obra!" });
+      .json({ message: "Erro de requisição ao adicionar material à obra!" });
   }
 });
-app.get("/buscaMateriais", async (req,res)=>{
+
+app.get("/buscaMateriais", async (req, res) => {
   try {
     const obraId = req.query.obraId;
-    const obraFinded = await obra.findByPk(obraId);
+    const obraFinded = await obra.findByPk(obraId, {
+      include: {
+        model: mat,
+        as: "materiais",
+        through: {
+          model: models.ObraMaterial,
+          as: "obraMateriais",
+        },
+      },
+    });
 
     if (!obraFinded)
-      return res.status(404).json({message: "Obra não encontrada!"});
+      return res.status(404).json({ message: "Obra não encontrada!" });
 
-    return res.status(200).json(obraFinded.materiais);
+    const materiaisObra = obraFinded.materiais; // Acesse os materiais usando a associação
+
+    return res.status(200).json(materiaisObra);
   } catch (error) {
-    console.log("Erro ao buscar todos os materiais: "+ error);
-    return res.status(500).json({message: "Erro de requisição ao buscar todos os materiais da obra!"});
+    console.log("Erro ao buscar todos os materiais: " + error);
+    return res.status(500).json({
+      message: "Erro de requisição ao buscar todos os materiais da obra!",
+    });
   }
-})
+});
 
 app.delete("/deletaObra", async (req, res) => {
   try {
@@ -1197,6 +1260,112 @@ app.put("/updateEmail", async (req, res) => {
   } catch (error) {
     console.log("erro ao alterar email: " + error);
     return res.status(500).json({ message: "Erro ao alterar email! " });
+  }
+});
+
+//CREATE
+app.post("/cadastraMat", async (req, res) => {
+  try {
+    const findMat = await mat.findOne({
+      where: {
+        nome: req.body.nome,
+        codigo: req.body.codigo,
+      },
+    });
+
+    if (findMat)
+      return res
+        .status(422)
+        .json({ message: "Material já cadastrado no sistema!" });
+    else {
+      const createdMat = await mat.create({
+        nome: req.body.nome,
+        codigo: req.body.codigo,
+      });
+
+      if (createdMat)
+        return res
+          .status(200)
+          .json({ message: "Material cadstrado com sucesso!" });
+      else {
+        return res.status(400).json({ message: "Erro ao cadastrar Material" });
+      }
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao criar Material!" });
+  }
+});
+//READ
+app.get("/buscaMat", async (req, res) => {
+  try {
+    const findMat = await mat.findOne({
+      where: {
+        codigo: req.query.codigo,
+        nome: req.query.nome,
+      },
+    });
+
+    if (findMat) return res.status(200).json(findMat);
+    else {
+      return res.status(422).json({ message: "Material  não encontrado!" });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao buscar material!" });
+  }
+});
+
+//UPDATE
+app.put("/alteraMat", async (req, res) => {
+  try {
+    const updateMat = mat.update(
+      {
+        nome: req.body.nome,
+        codigo: req.body.codigo,
+      },
+      {
+        where: {
+          id: req.body.id,
+        },
+      }
+    );
+
+    if (updateMat)
+      return res
+        .status(200)
+        .json({ message: "Material alterado com sucesso!" });
+    else {
+      return res.status(400).json({ message: "Erro ao alterar material!" });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao alterar material!" });
+  }
+});
+//DELETE
+app.delete("/deletaMat", async (req, res) => {
+  try {
+    const deleteMat = mat.destroy({
+      where: {
+        id: req.body.id,
+      },
+    });
+
+    if (deleteMat)
+      return res
+        .status(200)
+        .json({ message: "Material deletado com sucesso!" });
+    else {
+      return res.status(400).json({ message: "Erro ao deletar material!" });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Erro de requisição ao deletar material!" });
   }
 });
 
