@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
+  ScrollView,
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
 import { useNavigation } from "@react-navigation/native"; // Importe o hook de navegação
@@ -146,7 +147,7 @@ export default function CadastroFuncionario() {
         });
         const data = await response.json();
         if (response.status === 200) {
-           // Extrair dados JSON da resposta
+          // Extrair dados JSON da resposta
 
           //console.log(data);
           setNome(data.nome);
@@ -165,9 +166,7 @@ export default function CadastroFuncionario() {
           //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
           setFind(true);
         } else {
-          Alert.alert(
-            "Atenção!", data.message
-          );
+          Alert.alert("Atenção!", data.message);
         }
       } catch (error) {
         console.error("Erro na requisição: ", error);
@@ -254,7 +253,7 @@ export default function CadastroFuncionario() {
               },
             ]);
           } else {
-            Alert.alert("Atenção1", data.message );
+            Alert.alert("Atenção1", data.message);
           }
         } catch (error) {
           console.error("Erro na requisição: ", error);
@@ -336,7 +335,7 @@ export default function CadastroFuncionario() {
                     },
                   ]);
                 } else {
-                  Alert.alert("Atenção!", data.message );
+                  Alert.alert("Atenção!", data.message);
                 }
               } catch (error) {
                 console.error("Erro na requisição: ", error);
@@ -369,110 +368,118 @@ export default function CadastroFuncionario() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.goBackButton}>Voltar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <Text style={styles.heading}>Dados do Funcionário</Text>
-        <Text style={styles.inpText}>Nome do Funcionário:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Nome do Funcionário"
-          value={nome}
-          onChangeText={(text) => setNome(text)}
-        />
-        <Text style={styles.inpText}>CPF ou CNPJ do Funcionário:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="CPF ou CNPJ"
-          value={cpfCnpj}
-          onChangeText={(text) => setCpfCnpj(text)}
-        />
-        <Text style={styles.inpText}>Telefone:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Telefone"
-          value={telefone}
-          onChangeText={(text) => setTelefone(text)}
-        />
-        <Text style={styles.inpText}>E-mail:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <Text style={styles.inpText}>Endereço:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Endereço"
-          value={endereco}
-          onChangeText={(text) => setEndereco(text)}
-        />
-        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-          <Text style={styles.buttonText}>Cadastrar Funcionário</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
-          <Text style={styles.buttonText}>Pesquisar/Alterar Funcionário</Text>
-        </TouchableOpacity>
-
-        {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Funcionário */}
-        {find ? (
-          <View>
-            <TouchableOpacity style={styles.button} onPress={handleAltera}>
-              <Text style={styles.buttonText}>Salvar Alterações</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleDelet}>
-              <Text style={styles.buttonText}>Excluir Cadastro</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.grayBackground}></View>
-        )}
-
-        <ModalPesquisa
-          isVisible={isModalPesquisa}
-          onBackdropPress={toggleModalPesquisa}
+      <ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Pesquisar Funcionário</Text>
-              <Text style={styles.inpText}>CPF ou CNPJ do Funcionário:</Text>
-              <TextInput
-                placeholder="CPF ou CNPJ"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={cpfCnpjFind}
-                onChangeText={(text) => {
-                  setCpfCnpjFind(text);
-                }}
-              />
-              <Text style={styles.inpText}>Nome do Funcionário:</Text>
-              <TextInput
-                placeholder="Nome do Funcionário"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={nomeFind}
-                onChangeText={(text) => {
-                  setNomeFind(text);
-                }}
-              />
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.goBackButton}>Voltar</Text>
+          </TouchableOpacity>
 
-              <TouchableOpacity onPress={handlePesquisa} style={styles.button}>
-                <Text style={styles.buttonText}>Pesquisar</Text>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={handleCancelar}
+          >
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <Text style={styles.heading}>Dados do Funcionário</Text>
+          <Text style={styles.inpText}>Nome do Funcionário:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nome do Funcionário"
+            value={nome}
+            onChangeText={(text) => setNome(text)}
+          />
+          <Text style={styles.inpText}>CPF ou CNPJ do Funcionário:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="CPF ou CNPJ"
+            value={cpfCnpj}
+            onChangeText={(text) => setCpfCnpj(text)}
+          />
+          <Text style={styles.inpText}>Telefone:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Telefone"
+            value={telefone}
+            onChangeText={(text) => setTelefone(text)}
+          />
+          <Text style={styles.inpText}>E-mail:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+          <Text style={styles.inpText}>Endereço:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Endereço"
+            value={endereco}
+            onChangeText={(text) => setEndereco(text)}
+          />
+          <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+            <Text style={styles.buttonText}>Cadastrar Funcionário</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
+            <Text style={styles.buttonText}>Pesquisar/Alterar Funcionário</Text>
+          </TouchableOpacity>
+
+          {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Funcionário */}
+          {find ? (
+            <View>
+              <TouchableOpacity style={styles.button} onPress={handleAltera}>
+                <Text style={styles.buttonText}>Salvar Alterações</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={handleDelet}>
+                <Text style={styles.buttonText}>Excluir Cadastro</Text>
               </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
-        </ModalPesquisa>
-      </KeyboardAvoidingView>
+          ) : (
+            <View style={styles.grayBackground}></View>
+          )}
+
+          <ModalPesquisa
+            isVisible={isModalPesquisa}
+            onBackdropPress={toggleModalPesquisa}
+          >
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            >
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Pesquisar Funcionário</Text>
+                <Text style={styles.inpText}>CPF ou CNPJ do Funcionário:</Text>
+                <TextInput
+                  placeholder="CPF ou CNPJ"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={cpfCnpjFind}
+                  onChangeText={(text) => {
+                    setCpfCnpjFind(text);
+                  }}
+                />
+                <Text style={styles.inpText}>Nome do Funcionário:</Text>
+                <TextInput
+                  placeholder="Nome do Funcionário"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={nomeFind}
+                  onChangeText={(text) => {
+                    setNomeFind(text);
+                  }}
+                />
+
+                <TouchableOpacity
+                  onPress={handlePesquisa}
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Pesquisar</Text>
+                </TouchableOpacity>
+              </View>
+            </KeyboardAvoidingView>
+          </ModalPesquisa>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 }

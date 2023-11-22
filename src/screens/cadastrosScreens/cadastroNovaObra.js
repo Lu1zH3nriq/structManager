@@ -17,7 +17,6 @@ import { TextInputMask } from "react-native-masked-text";
 export default function CadastroNovaObra({ navigation, route }) {
   const { onGoBack } = route.params || {};
 
-  
   const [codigo, setCodigo] = useState("");
   const [nomeObra, setNomeObra] = useState("");
   const [cliente, setCliente] = useState("");
@@ -34,7 +33,6 @@ export default function CadastroNovaObra({ navigation, route }) {
   //SELECT OPTION DO DROPDOWN DE TIPO DE OBRA
   const [selectedValue, setSelectedValue] = useState("");
   const [tipoObra, setTipoObra] = useState([]);
-
 
   //FUNCTION PARA VALIDAR CAMPOS VAZIOS DO CADASTRO
   const handleValidaCadastro = () => {
@@ -80,7 +78,6 @@ export default function CadastroNovaObra({ navigation, route }) {
     setTelefoneClienteBuscado("");
   };
 
-  
   //FUNCTION PARA CADASTRAR NOVA OBRA
   const handleCadastro = async () => {
     const validaCampos = handleValidaCadastro();
@@ -92,7 +89,6 @@ export default function CadastroNovaObra({ navigation, route }) {
         },
       ]);
     } else {
-
       const novaObra = {
         codigo: codigo,
         nome: nomeObra,
@@ -157,7 +153,6 @@ export default function CadastroNovaObra({ navigation, route }) {
       }
     }
   };
-
 
   //BUSCAR CLIENTE PARA CADASTRAR A OBRA
   const [idClienteBuscado, setIdClienteBuscado] = useState("");
@@ -232,8 +227,8 @@ export default function CadastroNovaObra({ navigation, route }) {
   }, []);
 
   return (
-    <ScrollView>
-      <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
@@ -389,10 +384,9 @@ export default function CadastroNovaObra({ navigation, route }) {
           <TouchableOpacity style={styles.button} onPress={handleCadastro}>
             <Text style={styles.buttonText}>Cadastrar Nova Obra</Text>
           </TouchableOpacity>
-
         </KeyboardAvoidingView>
-      </SafeAreaView>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

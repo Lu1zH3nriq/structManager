@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
+  ScrollView,
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
 import { useNavigation } from "@react-navigation/native"; // Importe o hook de navegação
@@ -373,110 +374,118 @@ export default function CadastroEquipamento() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.goBackButton}>Voltar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <Text style={styles.heading}>Dados do Equipamento</Text>
-        <Text style={styles.inpText}>Nome do Equipamento:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Nome do Equipamento"
-          value={nome}
-          onChangeText={(text) => setNome(text)}
-        />
-        <Text style={styles.inpText}>Código:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Código"
-          value={codigo}
-          onChangeText={(text) => setCodigo(text)}
-        />
-        <Text style={styles.inpText}>Marca:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="IMarca"
-          value={marca}
-          onChangeText={(text) => setMarca(text)}
-        />
-        <Text style={styles.inpText}>Modelo:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Modelo"
-          value={modelo}
-          onChangeText={(text) => setModelo(text)}
-        />
-        <Text style={styles.inpText}>Etiqueta:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Etiqueta"
-          value={etiqueta}
-          onChangeText={(text) => setEtiqueta(text)}
-        />
-        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-          <Text style={styles.buttonText}>Cadastrar Equipamento</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
-          <Text style={styles.buttonText}>Pesquisar/Alterar Equipamento</Text>
-        </TouchableOpacity>
-
-        {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Equipamento */}
-        {find ? (
-          <View>
-            <TouchableOpacity style={styles.button} onPress={handleAltera}>
-              <Text style={styles.buttonText}>Salvar Alterações</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleDelet}>
-              <Text style={styles.buttonText}>Excluir Cadastro</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.grayBackground}></View>
-        )}
-
-        <ModalPesquisa
-          isVisible={isModalPesquisa}
-          onBackdropPress={toggleModalPesquisa}
+      <ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Pesquisar Equipamento</Text>
-              <Text style={styles.inpText}>Código do Equipamento:</Text>
-              <TextInput
-                placeholder="Código ou Etiqueta"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={codigoFind}
-                onChangeText={(text) => {
-                  setCodigoFind(text);
-                }}
-              />
-              <Text style={styles.inpText}>Nome do Equipamento:</Text>
-              <TextInput
-                placeholder="Nome do Equipamento"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={nomeFind}
-                onChangeText={(text) => {
-                  setNomeFind(text);
-                }}
-              />
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.goBackButton}>Voltar</Text>
+          </TouchableOpacity>
 
-              <TouchableOpacity onPress={handlePesquisa} style={styles.button}>
-                <Text style={styles.buttonText}>Pesquisar</Text>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={handleCancelar}
+          >
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <Text style={styles.heading}>Dados do Equipamento</Text>
+          <Text style={styles.inpText}>Nome do Equipamento:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nome do Equipamento"
+            value={nome}
+            onChangeText={(text) => setNome(text)}
+          />
+          <Text style={styles.inpText}>Código:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Código"
+            value={codigo}
+            onChangeText={(text) => setCodigo(text)}
+          />
+          <Text style={styles.inpText}>Marca:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="IMarca"
+            value={marca}
+            onChangeText={(text) => setMarca(text)}
+          />
+          <Text style={styles.inpText}>Modelo:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Modelo"
+            value={modelo}
+            onChangeText={(text) => setModelo(text)}
+          />
+          <Text style={styles.inpText}>Etiqueta:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Etiqueta"
+            value={etiqueta}
+            onChangeText={(text) => setEtiqueta(text)}
+          />
+          <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+            <Text style={styles.buttonText}>Cadastrar Equipamento</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
+            <Text style={styles.buttonText}>Pesquisar/Alterar Equipamento</Text>
+          </TouchableOpacity>
+
+          {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Equipamento */}
+          {find ? (
+            <View>
+              <TouchableOpacity style={styles.button} onPress={handleAltera}>
+                <Text style={styles.buttonText}>Salvar Alterações</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={handleDelet}>
+                <Text style={styles.buttonText}>Excluir Cadastro</Text>
               </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
-        </ModalPesquisa>
-      </KeyboardAvoidingView>
+          ) : (
+            <View style={styles.grayBackground}></View>
+          )}
+
+          <ModalPesquisa
+            isVisible={isModalPesquisa}
+            onBackdropPress={toggleModalPesquisa}
+          >
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            >
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Pesquisar Equipamento</Text>
+                <Text style={styles.inpText}>Código do Equipamento:</Text>
+                <TextInput
+                  placeholder="Código ou Etiqueta"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={codigoFind}
+                  onChangeText={(text) => {
+                    setCodigoFind(text);
+                  }}
+                />
+                <Text style={styles.inpText}>Nome do Equipamento:</Text>
+                <TextInput
+                  placeholder="Nome do Equipamento"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={nomeFind}
+                  onChangeText={(text) => {
+                    setNomeFind(text);
+                  }}
+                />
+
+                <TouchableOpacity
+                  onPress={handlePesquisa}
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Pesquisar</Text>
+                </TouchableOpacity>
+              </View>
+            </KeyboardAvoidingView>
+          </ModalPesquisa>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 }

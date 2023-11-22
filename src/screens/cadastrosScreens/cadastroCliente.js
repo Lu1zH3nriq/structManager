@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
+  ScrollView,
 } from "react-native";
 import ModalPesquisaCliente from "react-native-modal";
 import { useNavigation } from "@react-navigation/native";
@@ -22,7 +23,6 @@ export default function CadCliente() {
 
   //SETAR O ESTADO COMO FALSE PARA ACHAR O CLIENTE
   const [find, setFind] = useState(false);
-
 
   //STATE DO CLIENTE ENCONTRADO
   const [idCli, setIdCli] = useState("");
@@ -146,7 +146,6 @@ export default function CadCliente() {
         });
         const data = await response.json();
         if (response.status === 200) {
-
           //console.log(data);
           setNome(data.nome);
           setCpfCnpj(data.cpfcnpj);
@@ -160,7 +159,6 @@ export default function CadCliente() {
           setTelefoneCli(data.telefone);
           setEmailCli(data.email);
           setEnderecoCli(data.endereco);
-
 
           //SE ENCONTRAR CLIENTE, MARCAR ESTADO COMO VERDADEIRO PARA PODER ALANISAR EDIÇÃO DO CADASTRO
           setFind(true);
@@ -217,11 +215,11 @@ export default function CadCliente() {
         clienteAlterado.email != email ||
         clienteAlterado.endereco != endereco
       ) {
-        clienteAlterado.nome = nome,
-          clienteAlterado.cpfcnpj = cpfCnpj,
-          clienteAlterado.telefone = telefone,
-          clienteAlterado.email = email,
-          clienteAlterado.endereco = endereco
+        (clienteAlterado.nome = nome),
+          (clienteAlterado.cpfcnpj = cpfCnpj),
+          (clienteAlterado.telefone = telefone),
+          (clienteAlterado.email = email),
+          (clienteAlterado.endereco = endereco);
         try {
           const response = await fetch(
             "http://192.168.100.3:3000/alteraCliente",
@@ -277,7 +275,6 @@ export default function CadCliente() {
           },
         ]);
       }
-
     }
   };
 
@@ -304,64 +301,67 @@ export default function CadCliente() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      Alert.alert("Atenção!", "Deseja realmente deletar o registro deste cliente? ", [
-        {
-          text: "Deletar Cliente",
-          onPress: async () => {
-            try {
-              let response = await fetch(
-                "http://192.168.100.3:3000/deletaCliente",
-                {
-                  method: "DELETE",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    id: idCli,
-                  })
-                }
-              );
-              const data = await response.json();
-              if (response.status === 200) {
-                Alert.alert("Sucesso!", data.message, [
+      Alert.alert(
+        "Atenção!",
+        "Deseja realmente deletar o registro deste cliente? ",
+        [
+          {
+            text: "Deletar Cliente",
+            onPress: async () => {
+              try {
+                let response = await fetch(
+                  "http://192.168.100.3:3000/deletaCliente",
                   {
-                    text: "Confirmar",
-                    onPress: () => {
-                      // LIMPAR TODOS OS CAMPOS
-                      setNome("");
-                      setCpfCnpj("");
-                      setTelefone("");
-                      setEmail("");
-                      setEndereco("");
-
-                      //LIMPA O ESTADO DO CLIENTE ENCONTRADO
-                      setIdCli("");
-                      setNomeCli("");
-                      setCpfCnpjCli("");
-                      setTelefoneCli("");
-                      setEmailCli("");
-                      setEnderecoCli("");
-
-                      //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
-                      setFind(false);
+                    method: "DELETE",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
                     },
-                  },
-                ]);
-              } else {
-                Alert.alert("Atenção!", data.message);
-              }
-            } catch (error) {
-              //console.error("Erro na requisição: ", error);
-              Alert.alert(
-                "Erro de rede",
-                "Houve um problema na requisição. Tente novamente mais tarde."
-              );
-            }
-          },
-        }
-      ]);
+                    body: JSON.stringify({
+                      id: idCli,
+                    }),
+                  }
+                );
+                const data = await response.json();
+                if (response.status === 200) {
+                  Alert.alert("Sucesso!", data.message, [
+                    {
+                      text: "Confirmar",
+                      onPress: () => {
+                        // LIMPAR TODOS OS CAMPOS
+                        setNome("");
+                        setCpfCnpj("");
+                        setTelefone("");
+                        setEmail("");
+                        setEndereco("");
 
+                        //LIMPA O ESTADO DO CLIENTE ENCONTRADO
+                        setIdCli("");
+                        setNomeCli("");
+                        setCpfCnpjCli("");
+                        setTelefoneCli("");
+                        setEmailCli("");
+                        setEnderecoCli("");
+
+                        //MUDA ESTADO DE CLIENTE ENCONTRADO PARA FALSE, PAR ESCONDER BOTOES DE ALTERAÇÃO
+                        setFind(false);
+                      },
+                    },
+                  ]);
+                } else {
+                  Alert.alert("Atenção!", data.message);
+                }
+              } catch (error) {
+                //console.error("Erro na requisição: ", error);
+                Alert.alert(
+                  "Erro de rede",
+                  "Houve um problema na requisição. Tente novamente mais tarde."
+                );
+              }
+            },
+          },
+        ]
+      );
     }
   };
 
@@ -382,118 +382,132 @@ export default function CadCliente() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.goBackButton}>Voltar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <Text style={styles.heading}>Dados do Cliente</Text>
-        <Text style={styles.inpText}>Nome do Cliente:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Nome do Cliente"
-          value={nome}
-          onChangeText={(text) => setNome(text)}
-        />
-        <Text style={styles.inpText}>CPF ou CNPJ do Cliente:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="CPF ou CNPJ"
-          value={cpfCnpj}
-          onChangeText={(text) => setCpfCnpj(text)}
-        />
-        <Text style={styles.inpText}>Telefone:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Telefone"
-          value={telefone}
-          onChangeText={(text) => setTelefone(text)}
-        />
-        <Text style={styles.inpText}>E-mail:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <Text style={styles.inpText}>Endereço:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Endereço"
-          value={endereco}
-          onChangeText={(text) => setEndereco(text)}
-        />
-        <TouchableOpacity style={styles.button} onPress={handleCadastroCliente}>
-          <Text style={styles.buttonText}>Cadastrar Cliente</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={toggleModalPesquisaCliente}
+      <ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <Text style={styles.buttonText}>Pesquisar/Alterar Cliente</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.goBackButton}>Voltar</Text>
+          </TouchableOpacity>
 
-        {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM CLIENTE */}
-        {find ? (
-          <View>
-            <TouchableOpacity style={styles.button} onPress={handleAlteraCliente}>
-              <Text style={styles.buttonText}>Salvar Alterações</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleDeletaCliente}>
-              <Text style={styles.buttonText}>Excluir Cadastro</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.grayBackground}></View>
-        )}
-
-        <ModalPesquisaCliente
-          isVisible={isModalPesquisaCliente}
-          onBackdropPress={toggleModalPesquisaCliente}
-        >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={handleCancelar}
           >
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Pesquisar Cliente</Text>
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <Text style={styles.heading}>Dados do Cliente</Text>
+          <Text style={styles.inpText}>Nome do Cliente:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nome do Cliente"
+            value={nome}
+            onChangeText={(text) => setNome(text)}
+          />
+          <Text style={styles.inpText}>CPF ou CNPJ do Cliente:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="CPF ou CNPJ"
+            value={cpfCnpj}
+            onChangeText={(text) => setCpfCnpj(text)}
+          />
+          <Text style={styles.inpText}>Telefone:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Telefone"
+            value={telefone}
+            onChangeText={(text) => setTelefone(text)}
+          />
+          <Text style={styles.inpText}>E-mail:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+          <Text style={styles.inpText}>Endereço:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Endereço"
+            value={endereco}
+            onChangeText={(text) => setEndereco(text)}
+          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleCadastroCliente}
+          >
+            <Text style={styles.buttonText}>Cadastrar Cliente</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={toggleModalPesquisaCliente}
+          >
+            <Text style={styles.buttonText}>Pesquisar/Alterar Cliente</Text>
+          </TouchableOpacity>
 
-              <Text style={styles.inpText}>CPF ou CNPJ do Cliente:</Text>
-              <TextInput
-                placeholder="CPF ou CNPJ"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={cpfCnpjFind}
-                onChangeText={(text) => {
-                  setCpfCnpjFind(text);
-                }}
-              />
-
-              <Text style={styles.inpText}>Nome do Cliente:</Text>
-              <TextInput
-                placeholder="Nome do Cliente"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={nomeFind}
-                onChangeText={(text) => {
-                  setNomeFind(text);
-                }}
-              />
-
+          {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM CLIENTE */}
+          {find ? (
+            <View>
               <TouchableOpacity
-                onPress={handlePesquisaCliente}
                 style={styles.button}
+                onPress={handleAlteraCliente}
               >
-                <Text style={styles.buttonText}>Pesquisar</Text>
+                <Text style={styles.buttonText}>Salvar Alterações</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleDeletaCliente}
+              >
+                <Text style={styles.buttonText}>Excluir Cadastro</Text>
               </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
-        </ModalPesquisaCliente>
-      </KeyboardAvoidingView>
+          ) : (
+            <View style={styles.grayBackground}></View>
+          )}
+
+          <ModalPesquisaCliente
+            isVisible={isModalPesquisaCliente}
+            onBackdropPress={toggleModalPesquisaCliente}
+          >
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            >
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Pesquisar Cliente</Text>
+
+                <Text style={styles.inpText}>CPF ou CNPJ do Cliente:</Text>
+                <TextInput
+                  placeholder="CPF ou CNPJ"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={cpfCnpjFind}
+                  onChangeText={(text) => {
+                    setCpfCnpjFind(text);
+                  }}
+                />
+
+                <Text style={styles.inpText}>Nome do Cliente:</Text>
+                <TextInput
+                  placeholder="Nome do Cliente"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={nomeFind}
+                  onChangeText={(text) => {
+                    setNomeFind(text);
+                  }}
+                />
+
+                <TouchableOpacity
+                  onPress={handlePesquisaCliente}
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Pesquisar</Text>
+                </TouchableOpacity>
+              </View>
+            </KeyboardAvoidingView>
+          </ModalPesquisaCliente>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 }

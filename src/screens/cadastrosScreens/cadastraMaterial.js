@@ -8,19 +8,20 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
+  ScrollView,
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
-import { useNavigation } from "@react-navigation/native"; 
+import { useNavigation } from "@react-navigation/native";
 
 export default function CadastraMaterial() {
-  const [isModalPesquisa, setModalPesquisa] = useState(false); 
+  const [isModalPesquisa, setModalPesquisa] = useState(false);
   const [nome, setNome] = useState("");
   const [codigo, setCodigo] = useState("");
 
   //SETAR O ESTADO COMO FALSE PARA ACHAR O Tipo de Obra
   const [find, setFind] = useState(false);
 
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
 
   //function para alterar a visibilidade do modal de pesquisa
   const toggleModalPesquisa = () => {
@@ -95,15 +96,11 @@ export default function CadastraMaterial() {
   const handlePesquisa = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (nomeFind === "" && codigoFind === "") {
-      Alert.alert(
-        "Atenção!",
-        "Preencha os campos para pesquisar Material!",
-        [
-          {
-            text: "Ok",
-          },
-        ]
-      );
+      Alert.alert("Atenção!", "Preencha os campos para pesquisar Material!", [
+        {
+          text: "Ok",
+        },
+      ]);
     }
 
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
@@ -128,7 +125,6 @@ export default function CadastraMaterial() {
         });
         const data = await response.json();
         if (response.status === 200) {
-          
           setNome(data.nome);
           setCodigo(data.codigo);
 
@@ -136,7 +132,6 @@ export default function CadastraMaterial() {
           setNomeBuscado(data.nome);
           setCodigoBuscado(data.codigo);
 
-          
           setFind(true);
         } else {
           Alert.alert("Atenção!", data.message);
@@ -151,7 +146,6 @@ export default function CadastraMaterial() {
     toggleModalPesquisa();
   };
 
- 
   const handleAltera = async () => {
     //VERIFICA SE OS CAMPOS NÃO ESTÃO VAZIOS
     if (nome === "" && codigo === "") {
@@ -164,15 +158,11 @@ export default function CadastraMaterial() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      
-
       if (nomeBuscado != nome || codigoBuscado != codigo) {
-
-
         const materialAlterado = {
           id: idBuscado,
           nome: nome,
-          codigo: codigo
+          codigo: codigo,
         };
 
         try {
@@ -192,16 +182,13 @@ export default function CadastraMaterial() {
               {
                 text: "Confirmar",
                 onPress: () => {
-                  
                   setNome("");
                   setCodigo("");
 
-                  
                   setIdBuscado("");
                   setNomeBuscado("");
                   setCodigoBuscado("");
 
-                  
                   setFind(false);
                 },
               },
@@ -265,16 +252,13 @@ export default function CadastraMaterial() {
                     {
                       text: "Confirmar",
                       onPress: () => {
-                        
                         setNome("");
                         setCodigo("");
 
-                        
                         setIdBuscado("");
                         setNomeBuscado("");
                         setCodigoBuscado("");
 
-                        
                         setFind(false);
                       },
                     },
@@ -304,95 +288,102 @@ export default function CadastraMaterial() {
     setNomeFind("");
     setCodigoFind("");
     setFind(false);
-   
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.goBackButton}>Voltar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <Text style={styles.heading}>Dados do Material</Text>
-        <Text style={styles.inpText}>Nome do Material:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Nome do Material"
-          value={nome}
-          onChangeText={(text) => setNome(text)}
-        />
-        <Text style={styles.inpText}>Código do Material:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Código"
-          value={codigo}
-          onChangeText={(text) => setCodigo(text)}
-        />
-
-        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-          <Text style={styles.buttonText}>Cadastrar Material</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
-          <Text style={styles.buttonText}>Pesquisar/Alterar Material</Text>
-        </TouchableOpacity>
-
-        {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Tipo de Obra */}
-        {find ? (
-          <View>
-            <TouchableOpacity style={styles.button} onPress={handleAltera}>
-              <Text style={styles.buttonText}>Salvar Alterações</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleDelet}>
-              <Text style={styles.buttonText}>Excluir Cadastro</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.grayBackground}></View>
-        )}
-
-        <ModalPesquisa
-          isVisible={isModalPesquisa}
-          onBackdropPress={toggleModalPesquisa}
+      <ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Pesquisar Material</Text>
-              <Text style={styles.inpText}>Código Material:</Text>
-              <TextInput
-                placeholder="Código"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={codigoFind}
-                onChangeText={(text) => {
-                  setCodigoFind(text);
-                }}
-              />
-              <Text style={styles.inpText}>Nome do Material:</Text>
-              <TextInput
-                placeholder="Nome do Material"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={nomeFind}
-                onChangeText={(text) => {
-                  setNomeFind(text);
-                }}
-              />
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.goBackButton}>Voltar</Text>
+          </TouchableOpacity>
 
-              <TouchableOpacity onPress={handlePesquisa} style={styles.button}>
-                <Text style={styles.buttonText}>Pesquisar</Text>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={handleCancelar}
+          >
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <Text style={styles.heading}>Dados do Material</Text>
+          <Text style={styles.inpText}>Nome do Material:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nome do Material"
+            value={nome}
+            onChangeText={(text) => setNome(text)}
+          />
+          <Text style={styles.inpText}>Código do Material:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Código"
+            value={codigo}
+            onChangeText={(text) => setCodigo(text)}
+          />
+
+          <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+            <Text style={styles.buttonText}>Cadastrar Material</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
+            <Text style={styles.buttonText}>Pesquisar/Alterar Material</Text>
+          </TouchableOpacity>
+
+          {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Tipo de Obra */}
+          {find ? (
+            <View>
+              <TouchableOpacity style={styles.button} onPress={handleAltera}>
+                <Text style={styles.buttonText}>Salvar Alterações</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={handleDelet}>
+                <Text style={styles.buttonText}>Excluir Cadastro</Text>
               </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
-        </ModalPesquisa>
-      </KeyboardAvoidingView>
+          ) : (
+            <View style={styles.grayBackground}></View>
+          )}
+
+          <ModalPesquisa
+            isVisible={isModalPesquisa}
+            onBackdropPress={toggleModalPesquisa}
+          >
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            >
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Pesquisar Material</Text>
+                <Text style={styles.inpText}>Código Material:</Text>
+                <TextInput
+                  placeholder="Código"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={codigoFind}
+                  onChangeText={(text) => {
+                    setCodigoFind(text);
+                  }}
+                />
+                <Text style={styles.inpText}>Nome do Material:</Text>
+                <TextInput
+                  placeholder="Nome do Material"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={nomeFind}
+                  onChangeText={(text) => {
+                    setNomeFind(text);
+                  }}
+                />
+
+                <TouchableOpacity
+                  onPress={handlePesquisa}
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Pesquisar</Text>
+                </TouchableOpacity>
+              </View>
+            </KeyboardAvoidingView>
+          </ModalPesquisa>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 }

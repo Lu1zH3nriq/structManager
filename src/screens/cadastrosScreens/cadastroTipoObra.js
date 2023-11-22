@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
+  ScrollView,
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
 import { useNavigation } from "@react-navigation/native"; // Importe o hook de navegação
@@ -165,15 +166,11 @@ export default function CadastroTipodeObra() {
 
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
-      
-
       if (tipoBuscado != tipo || codigoBuscado != codigo) {
-
-
         const tipoAlterado = {
           id: idBuscado,
           tipo: tipo,
-          codigo: codigo
+          codigo: codigo,
         };
 
         try {
@@ -312,90 +309,100 @@ export default function CadastroTipodeObra() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.goBackButton}>Voltar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <Text style={styles.heading}>Dados do Tipo de Obra</Text>
-        <Text style={styles.inpText}>Nome do Tipo de Obra:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Nome do Tipo de Obra"
-          value={tipo}
-          onChangeText={(text) => setTipo(text)}
-        />
-        <Text style={styles.inpText}>Código do Tipo de Obra:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Código"
-          value={codigo}
-          onChangeText={(text) => setCodigo(text)}
-        />
-
-        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-          <Text style={styles.buttonText}>Cadastrar Tipo de Obra</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
-          <Text style={styles.buttonText}>Pesquisar/Alterar Tipo de Obra</Text>
-        </TouchableOpacity>
-
-        {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Tipo de Obra */}
-        {find ? (
-          <View>
-            <TouchableOpacity style={styles.button} onPress={handleAltera}>
-              <Text style={styles.buttonText}>Salvar Alterações</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleDelet}>
-              <Text style={styles.buttonText}>Excluir Cadastro</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.grayBackground}></View>
-        )}
-
-        <ModalPesquisa
-          isVisible={isModalPesquisa}
-          onBackdropPress={toggleModalPesquisa}
+      <ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Pesquisar Tipo de Obra</Text>
-              <Text style={styles.inpText}>Código do Tipo de Obra:</Text>
-              <TextInput
-                placeholder="Código"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={codigoFind}
-                onChangeText={(text) => {
-                  setCodigoFind(text);
-                }}
-              />
-              <Text style={styles.inpText}>Nome do Tipo de Obra:</Text>
-              <TextInput
-                placeholder="Nome do Tipo de Obra"
-                style={styles.input}
-                placeholderTextColor={"grey"}
-                value={tipoFind}
-                onChangeText={(text) => {
-                  setTipoFind(text);
-                }}
-              />
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.goBackButton}>Voltar</Text>
+          </TouchableOpacity>
 
-              <TouchableOpacity onPress={handlePesquisa} style={styles.button}>
-                <Text style={styles.buttonText}>Pesquisar</Text>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={handleCancelar}
+          >
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <Text style={styles.heading}>Dados do Tipo de Obra</Text>
+          <Text style={styles.inpText}>Nome do Tipo de Obra:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nome do Tipo de Obra"
+            value={tipo}
+            onChangeText={(text) => setTipo(text)}
+          />
+          <Text style={styles.inpText}>Código do Tipo de Obra:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Código"
+            value={codigo}
+            onChangeText={(text) => setCodigo(text)}
+          />
+
+          <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+            <Text style={styles.buttonText}>Cadastrar Tipo de Obra</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={toggleModalPesquisa}>
+            <Text style={styles.buttonText}>
+              Pesquisar/Alterar Tipo de Obra
+            </Text>
+          </TouchableOpacity>
+
+          {/*MOSTRAR OS BOTOES DE ALTERAR E EXLCUIR SOMENTE SE ACHAR UM Tipo de Obra */}
+          {find ? (
+            <View>
+              <TouchableOpacity style={styles.button} onPress={handleAltera}>
+                <Text style={styles.buttonText}>Salvar Alterações</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={handleDelet}>
+                <Text style={styles.buttonText}>Excluir Cadastro</Text>
               </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
-        </ModalPesquisa>
-      </KeyboardAvoidingView>
+          ) : (
+            <View style={styles.grayBackground}></View>
+          )}
+
+          <ModalPesquisa
+            isVisible={isModalPesquisa}
+            onBackdropPress={toggleModalPesquisa}
+          >
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            >
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Pesquisar Tipo de Obra</Text>
+                <Text style={styles.inpText}>Código do Tipo de Obra:</Text>
+                <TextInput
+                  placeholder="Código"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={codigoFind}
+                  onChangeText={(text) => {
+                    setCodigoFind(text);
+                  }}
+                />
+                <Text style={styles.inpText}>Nome do Tipo de Obra:</Text>
+                <TextInput
+                  placeholder="Nome do Tipo de Obra"
+                  style={styles.input}
+                  placeholderTextColor={"grey"}
+                  value={tipoFind}
+                  onChangeText={(text) => {
+                    setTipoFind(text);
+                  }}
+                />
+
+                <TouchableOpacity
+                  onPress={handlePesquisa}
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Pesquisar</Text>
+                </TouchableOpacity>
+              </View>
+            </KeyboardAvoidingView>
+          </ModalPesquisa>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
