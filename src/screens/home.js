@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-} from "react-native";
-
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { PieChart } from "react-native-chart-kit";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -15,12 +9,15 @@ export default function Home() {
   const [clientes, setClientes] = useState([]);
   const [funcionarios, setFuncionarios] = useState([]);
 
-
   useEffect(() => {
     async function getUserName() {
-      let response = await AsyncStorage.getItem('userData');
-      let user = JSON.parse(response);
-      setUser(user.usuario);
+      try {
+        let response = await AsyncStorage.getItem('userData');
+        let user = JSON.parse(response);
+        setUser(user.usuario);
+      } catch (error) {
+        console.error("Erro ao obter nome do usuário: " + error);
+      }
     }
 
     async function getAllObras() {
@@ -31,7 +28,6 @@ export default function Home() {
 
         if (response.status === 200) {
           const obras = await response.json();
-
           setObras(obras);
         } else {
           console.error("Erro ao buscar obras do servidor.");
@@ -49,13 +45,12 @@ export default function Home() {
 
         if (response.status === 200) {
           const clientes = await response.json();
-
           setClientes(clientes);
         } else {
-          console.error("Erro ao buscar obras do servidor.");
+          console.error("Erro ao buscar clientes do servidor.");
         }
       } catch (error) {
-        console.error("Erro ao buscar obras: " + error);
+        console.error("Erro ao buscar clientes: " + error);
       }
     }
 
@@ -67,14 +62,12 @@ export default function Home() {
 
         if (response.status === 200) {
           const funcionarios = await response.json();
-
           setFuncionarios(funcionarios);
-
         } else {
-          console.error("Erro ao buscar obras do servidor.");
+          console.error("Erro ao buscar funcionários do servidor.");
         }
       } catch (error) {
-        console.error("Erro ao buscar obras: " + error);
+        console.error("Erro ao buscar funcionários: " + error);
       }
     }
 
@@ -84,34 +77,114 @@ export default function Home() {
     getAllFuncionarios();
   }, []);
 
+  const dataAtual = new Date();
+
+  const obrasConcluidas = obras.filter((obra) => {
+    const dataFimObra = new Date(obra.dataFim);
+    return dataFimObra <= dataAtual;
+  });
+
+  const obrasPendentes = obras.filter((obra) => {
+    const dataFimObra = new Date(obra.dataFim);
+    return dataFimObra > dataAtual;
+  });
+
+  const totalObras = obras.length;
+  const percentObrasConc = (obrasConcluidas.length / totalObras) * 100;
+  const percentObrasPend = (obrasPendentes.length / totalObras) * 100;
+
+  const data = [
+    {
+      name: "Concluídas",
+      population: percentObrasConc,
+      color: "green",
+      legendFontColor: "#7F7F7F",
+      legendFontSize: 15,
+    },
+    {
+      name: "Pendentes",
+      population: percentObrasPend,
+      color: "red",
+      legendFontColor: "#7F7F7F",
+      legendFontSize: 15,
+    },
+  ];
+
+  const getObrasAFinalizar = () => {
+    const ultimoDiaDoMes = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, 0);
+
+    const obrasAFinalizar = obras.filter((obra) => {
+      const dataFimObra = new Date(obra.dataFim);
+      return dataFimObra > dataAtual && dataFimObra <= ultimoDiaDoMes;
+    });
+
+    return obrasAFinalizar.length;
+  };
+  const obrasAFinalizarNoMes = getObrasAFinalizar();
+
+  const getClienteComMaisObras = () => {
+    const contadorObrasPorCliente = {};
+
+    // Contar o número de obras para cada cliente
+    obras.forEach((obra) => {
+      const clienteId = obra.clienteId; // Substitua com o nome do seu campo de identificação do cliente
+      contadorObrasPorCliente[clienteId] = (contadorObrasPorCliente[clienteId] || 0) + 1;
+    });
+
+    // Encontrar o cliente com mais obras
+    let clienteComMaisObras = null;
+    let maxObras = 0;
+
+    Object.keys(contadorObrasPorCliente).forEach((clienteId) => {
+      if (contadorObrasPorCliente[clienteId] > maxObras) {
+        clienteComMaisObras = clienteId;
+        maxObras = contadorObrasPorCliente[clienteId];
+      }
+    });
+
+    return clienteComMaisObras;
+  };
+  const clienteComMaisObras = getClienteComMaisObras();
   return (
     <SafeAreaView style={styles.container}>
-
       <View style={styles.header}>
-        <Text style={styles.headerText}>Bem vindo(a) de volta</Text>
+        <Text style={styles.headerText}>Bem-vindo(a) de volta</Text>
         <Text style={styles.headerText}>{user}</Text>
       </View>
-
       <View style={styles.cardContainer}>
-
-        <View style={styles.card}>
-
-
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardText}>GRÁFICO DE PIZZA</Text>
+        {obras.length > 0 ? (
+          <View style={styles.card}>
+            <View style={styles.chartContainer}>
+              <PieChart
+                data={data}
+                width={300}
+                height={200}
+                chartConfig={{
+                  backgroundColor: "#e26a00",
+                  backgroundGradientFrom: "#fb8c00",
+                  backgroundGradientTo: "#ffa726",
+                  decimalPlaces: 2,
+                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                  },
+                }}
+                accessor="population"
+                backgroundColor="transparent"
+                paddingLeft="15"
+              />
+            </View>
+            <View style={styles.cardFooter}>
+              <Text style={styles.cardText}>Obras cadastradas: {totalObras}</Text>
+              <Text style={styles.cardText}>Cliente cadastrados: {clientes.length}</Text>
+              <Text style={styles.cardText}>Funcionários cadastrados: {funcionarios.length}</Text>
+              <Text style={styles.cardText}>Obras a finalizar neste mês: {obrasAFinalizarNoMes}</Text>
+              <Text style={styles.cardText}>Cliente com mais Obras: {clienteComMaisObras ? clienteComMaisObras : "Nenhum"}</Text>
+            </View>
           </View>
-
-          <View style={styles.cardFooter}>
-            <Text style={styles.cardText}>Obras cadastradas: {obras.length > 0 ? obras.length : 0}</Text>
-            <Text style={styles.cardText}>Cliente cadastrados: {clientes.length > 0 ? clientes.length : 0}</Text>
-            <Text style={styles.cardText}>Funcionários cadastrados: {funcionarios.length > 0 ? funcionarios.length : 0}</Text>
-            <Text style={styles.cardText}>Obras a finalizar neste mês:   0</Text>
-            <Text style={styles.cardText}>Cliente com mais Obras:   0</Text>
-          </View>
-
-
-        </View>
-
+        ) : (
+          <Text style={styles.noDataText}>Nenhuma obra cadastrada.</Text>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -142,15 +215,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   card: {
-    flex: 1, // Adicione esta linha
-    flexDirection: "column", // Adicione esta linha
-    justifyContent: "center", // Adicione esta linha
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
   },
-  cardHeader: {
-    justifyContent: "center", // Alinhe no início do card
-    alignItems: "center",
+  chartContainer: {
+    alignItems: "flex-start",
   },
-
   cardFooter: {
     position: "absolute",
     bottom: 0,
@@ -159,5 +230,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     paddingBottom: 8,
+  },
+  noDataText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
