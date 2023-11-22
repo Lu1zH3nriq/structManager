@@ -22,7 +22,7 @@ let equip = models.Equipamento;
 let tpO = models.TipoObra;
 let obra = models.Obra;
 let mat = models.Material;
-let obraMaterial = models.ObraMaterial;
+let ObraMaterial = models.ObraMaterial;
 
 //LOGIN DO USUARIO
 app.post("/login", async (req, res) => {
@@ -397,7 +397,6 @@ app.get("/buscaFuncionarios", async (req, res) => {
   }
 });
 
-
 app.get("/buscaAllFuncionarios", async (req, res) => {
   try {
     const funcFinded = await func.findAll();
@@ -408,11 +407,11 @@ app.get("/buscaAllFuncionarios", async (req, res) => {
       res.status(422).json({ message: "Funcionários não encontrados!" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Erro de requisição ao buscar funcionários!" });
+    res
+      .status(500)
+      .json({ message: "Erro de requisição ao buscar funcionários!" });
   }
 });
-
-
 
 //UPDATE
 app.put("/alteraFuncionario", async (req, res) => {
@@ -1083,21 +1082,27 @@ app.put("/alteraObra", async (req, res) => {
   }
 });
 
-
 app.post("/addMaterial", async (req, res) => {
   try {
-    const [ obraId, materialName, materialCod, materialQuant ] = req.body;
+    console.log(req.body);
+
+    const obraId = req.body.obraId;
+    const materialName = req.body.materialName;
+    const materialCod = req.body.materialCod;
+    const materialQuant = req.body.materialQuant;
 
     const findMat = await mat.findOne({
       where: {
         nome: materialName,
         codigo: materialCod,
-      }
+      },
     });
-    var material;
-    if(findMat){
+
+    let material;
+
+    if (findMat) {
       material = findMat;
-    }else{
+    } else {
       let createMat = await mat.create({
         nome: materialName,
         codigo: materialCod,
@@ -1106,24 +1111,38 @@ app.post("/addMaterial", async (req, res) => {
       material = createMat;
     }
 
-    const obraMaterialAdd = await obraMaterial.create({
+    const obraMaterialAdd = await ObraMaterial.create({
       obraId: obraId,
       materialId: material.id,
       quantidade: materialQuant,
     });
 
-    if(obraMaterialAdd){
-
-      const materiais_da_obra = await ObraMaterial.findAll({
-        where:{
-          obraId: obraId,
-        }
+    if (obraMaterialAdd) {
+      // Atualizar a lista de materiais da obra
+      const materiais_da_obra = await obra.findByPk(obraId, {
+        include: [
+          {
+            model: mat,
+            as: "materiais",
+            through: { model: ObraMaterial, as: "obraMateriais" },
+          },
+        ],
       });
 
-      return res.status(200).json({ message: "Material adicionado com sucesso!", materiais: materiais_da_obra });
-    }
-    else{
-      return res.status(400).json({ message: "Erro ao adicionar o material a obra!" });
+      if (materiais_da_obra) {
+        return res.status(200).json({
+          message: "Material adicionado com sucesso!",
+          materiais: materiais_da_obra.materiais,
+        });
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Erro ao buscar todos os materiais desta obra!" });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Erro ao adicionar o material a obra!" });
     }
   } catch (error) {
     console.log("Erro ao adicionar material à obra: " + error);
@@ -1133,20 +1152,27 @@ app.post("/addMaterial", async (req, res) => {
   }
 });
 
+
 app.get("/buscaMateriais", async (req, res) => {
   try {
-    const obraId = req.body.obraId;
+    const obraId = req.query.obraId;
 
-    const materiais_da_obra = await ObraMaterial.findAll({
-      where: {
-        obraId: obraId, 
-      }
+    const materiais_da_obra = await obra.findByPk(obraId, {
+      include: [
+        {
+          model: mat,
+          as: "materiais",
+          through: { model: ObraMaterial, as: "obraMateriais" },
+        },
+      ],
     });
 
-    if(materiais_da_obra){
-      return res.status(200).json(materiais_da_obra);
-    }else{
-      return res.status(400).json({message:"Erro ao buscar todos os materiais desta obra!"});
+    if (materiais_da_obra) {
+      return res.status(200).json(materiais_da_obra.materiais);
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Erro ao buscar todos os materiais desta obra!" });
     }
   } catch (error) {
     console.log("Erro ao buscar todos os materiais: " + error);
@@ -1156,27 +1182,48 @@ app.get("/buscaMateriais", async (req, res) => {
   }
 });
 
-
-app.delete("/removeMaterial", async (req, res)=>{
+app.delete("/removeMaterial", async (req, res) => {
   try {
-    const [ id, obraId, materialId ] = req.body;
-    const removedMaterialObra =  await obraMaterial.destroy({
+    const id = req.body.id;
+    const obraId = req.body.obraId;
+    const materialId = req.body.materialId;
+
+    // Remover o material da tabela de relacionamento
+    const result = await ObraMaterial.destroy({
       where: {
         id: id,
         obraId: obraId,
         materialId: materialId,
-      }
+      },
     });
 
-    if(removedMaterialObra){
+    if (result) {
+      // Buscar novamente os materiais da obra após a remoção
+      const materiais_da_obra = await obra.findByPk(obraId, {
+        include: [
+          {
+            model: mat,
+            as: "materiais",
+            through: { model: ObraMaterial, as: "obraMateriais" },
+          },
+        ],
+      });
 
-      const materiais_da_obra = await obraMaterial.findAll({
-        where: {
-          obraId: obraId,
-        }
-      })
+      if (materiais_da_obra) {
 
-      return res.status(200).json({message: "Material removido com sucesso!", materiais: materiais_da_obra});
+        return res.status(200).json({
+          message: "Material removido com sucesso!",
+          materiais: materiais_da_obra.materiais,
+        });
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Erro ao buscar todos os materiais desta obra!" });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Erro ao remover o material da obra!" });
     }
   } catch (error) {
     console.log("Erro ao remover material da obra: " + error);

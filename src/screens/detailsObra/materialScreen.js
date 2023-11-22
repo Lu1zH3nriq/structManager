@@ -22,8 +22,6 @@ export default function MaterialScreen({ navigation, route }) {
   const [codigoMaterial, setCodigoMaterial] = useState("");
   const [quantidadeMaterial, setQuantidadeMaterial] = useState("");
 
-
-
   const toggleModalAdd = () => {
     setModalPesquisaVisible(!isModalPesquisaVisible);
   };
@@ -50,7 +48,6 @@ export default function MaterialScreen({ navigation, route }) {
           {
             text: "Ok",
             onPress: () => {
-
               setMateriais(data.materiais);
 
               setNomeMaterial("");
@@ -68,15 +65,11 @@ export default function MaterialScreen({ navigation, route }) {
         ]);
       }
     } catch (error) {
-      Alert.alert(
-        "Atenção!",
-        "Erro de requisição ao adicionar material.",
-        [
-          {
-            text: "Ok",
-          },
-        ]
-      );
+      Alert.alert("Atenção!", "Erro de requisição ao adicionar material.", [
+        {
+          text: "Ok",
+        },
+      ]);
     }
   };
 
@@ -113,9 +106,10 @@ export default function MaterialScreen({ navigation, route }) {
     getMateriais();
   }, []);
 
-  const deleteMaterial = async ({item}) => {
+  const deleteMaterial = async ({ item }) => {
+
     try {
-      const response = await fetch("http://192.168.100.3:3000/removeMaterial", {
+      const response = await fetch(`http://192.168.100.3:3000/removeMaterial`, {
         method: "DELETE",
         headers: {
           Accept: "application/json",
@@ -124,18 +118,18 @@ export default function MaterialScreen({ navigation, route }) {
         body: JSON.stringify({
           id: item.id,
           obraId: obra.id,
-          materialId: item.materialId,
+          materialId: item.obraMateriais.materialId,
         }),
       });
 
       const data = await response.json();
       if (response.status === 200) {
+        console.log(data.materiais);
+
         Alert.alert("Sucesso!", data.message, [
           {
             text: "Ok",
             onPress: () => {
-
-              setMateriais(data.materiais);
             },
           },
         ]);
@@ -147,34 +141,30 @@ export default function MaterialScreen({ navigation, route }) {
         ]);
       }
     } catch (error) {
-      Alert.alert(
-        "Atenção!",
-        "Erro de requisição ao remover material.",
-        [
-          {
-            text: "Ok",
-          },
-        ]
-      );
+      Alert.alert("Atenção!", "Erro de requisição ao remover material.", [
+        {
+          text: "Ok",
+        },
+      ]);
     }
-  }
+  };
 
   const renderMaterialItem = ({ item }) => {
-    const swipeRightActions = ({ item }) => (
+    const swipeRightActions = () => (
       <View style={styles.deleteIconContainer}>
-        <TouchableOpacity
-          onPress={deleteMaterial({item})}
-        >
+        <TouchableOpacity onPress={() => deleteMaterial({ item })}>
           <Icon name="trash" size={30} color="white" />
         </TouchableOpacity>
       </View>
     );
 
     return (
-      <Swipeable renderRightActions={swipeRightActions({item})}>
+      <Swipeable renderRightActions={swipeRightActions}>
         <View style={styles.materialItem}>
-          <Text style={styles.materialItemText}>Nome: {item.nome}</Text>
-          <Text style={styles.materialItemText}>Quantidade: {item.quantidade}</Text>
+          <Text style={styles.materialItemText}>Nome: {item?.nome}</Text>
+          <Text style={styles.materialItemText}>
+            Quantidade: {item?.obraMateriais?.quantidade}
+          </Text>
         </View>
       </Swipeable>
     );
@@ -199,11 +189,13 @@ export default function MaterialScreen({ navigation, route }) {
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={materiais}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => renderMaterialItem({ item })}
-      />
+      <View style={styles.listMateriais}>
+        <FlatList
+          data={materiais}
+          keyExtractor={(item) => (item ? item.id.toString() : null)}
+          renderItem={({ item }) => renderMaterialItem({ item })}
+        />
+      </View>
 
       <ModalAdd
         isVisible={isModalPesquisaVisible}
@@ -291,16 +283,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF3B30",
     justifyContent: "center",
     alignItems: "center",
-    width: 50,
-    height: "100%",
-    borderRadius: 5,
-    flexDirection: "row",
+    width: 70,
+    height: "87%",
+    borderRadius: 8,
   },
   materialItem: {
-    backgroundColor: "#007BFF",
-    padding: 10,
-    marginVertical: 8,
-    borderRadius: 5,
+    backgroundColor: "#60656A",
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 10,
   },
   materialItemText: {
     color: "white",
