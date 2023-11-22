@@ -1118,13 +1118,14 @@ app.post("/addMaterial", async (req, res) => {
     });
 
     if (obraMaterialAdd) {
+
       // Atualizar a lista de materiais da obra
       const materiais_da_obra = await obra.findByPk(obraId, {
         include: [
           {
             model: mat,
             as: "materiais",
-            through: { model: ObraMaterial, as: "obraMateriais" },
+            through: { model: ObraMaterial, as: "obraMateriais", attributes: ["id", "materialId"], },
           },
         ],
       });
@@ -1162,7 +1163,7 @@ app.get("/buscaMateriais", async (req, res) => {
         {
           model: mat,
           as: "materiais",
-          through: { model: ObraMaterial, as: "obraMateriais" },
+          through: { model: ObraMaterial, as: "obraMateriais", attributes: ["id", "materialId"], },
         },
       ],
     });
@@ -1204,7 +1205,7 @@ app.delete("/removeMaterial", async (req, res) => {
           {
             model: mat,
             as: "materiais",
-            through: { model: ObraMaterial, as: "obraMateriais" },
+            through: { model: ObraMaterial, as: "obraMateriais", attributes: ["id", "materialId"], },
           },
         ],
       });

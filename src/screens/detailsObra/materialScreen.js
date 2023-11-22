@@ -116,7 +116,7 @@ export default function MaterialScreen({ navigation, route }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: item.id,
+          id: item.obraMateriais.id,
           obraId: obra.id,
           materialId: item.obraMateriais.materialId,
         }),
@@ -129,8 +129,7 @@ export default function MaterialScreen({ navigation, route }) {
         Alert.alert("Sucesso!", data.message, [
           {
             text: "Ok",
-            onPress: () => {
-            },
+            onPress: () => {setMateriais(data.materiais)},
           },
         ]);
       } else {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { PieChart } from "react-native-chart-kit";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -12,7 +11,7 @@ export default function Home() {
   useEffect(() => {
     async function getUserName() {
       try {
-        let response = await AsyncStorage.getItem('userData');
+        let response = await AsyncStorage.getItem("userData");
         let user = JSON.parse(response);
         setUser(user.usuario);
       } catch (error) {
@@ -39,9 +38,12 @@ export default function Home() {
 
     async function getAllClientes() {
       try {
-        const response = await fetch("http://192.168.100.3:3000/buscaAllClientes", {
-          method: "GET",
-        });
+        const response = await fetch(
+          "http://192.168.100.3:3000/buscaAllClientes",
+          {
+            method: "GET",
+          }
+        );
 
         if (response.status === 200) {
           const clientes = await response.json();
@@ -56,9 +58,12 @@ export default function Home() {
 
     async function getAllFuncionarios() {
       try {
-        const response = await fetch("http://192.168.100.3:3000/buscaAllFuncionarios", {
-          method: "GET",
-        });
+        const response = await fetch(
+          "http://192.168.100.3:3000/buscaAllFuncionarios",
+          {
+            method: "GET",
+          }
+        );
 
         if (response.status === 200) {
           const funcionarios = await response.json();
@@ -93,25 +98,12 @@ export default function Home() {
   const percentObrasConc = (obrasConcluidas.length / totalObras) * 100;
   const percentObrasPend = (obrasPendentes.length / totalObras) * 100;
 
-  const data = [
-    {
-      name: "Concluídas",
-      population: percentObrasConc,
-      color: "green",
-      legendFontColor: "#7F7F7F",
-      legendFontSize: 15,
-    },
-    {
-      name: "Pendentes",
-      population: percentObrasPend,
-      color: "red",
-      legendFontColor: "#7F7F7F",
-      legendFontSize: 15,
-    },
-  ];
-
   const getObrasAFinalizar = () => {
-    const ultimoDiaDoMes = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, 0);
+    const ultimoDiaDoMes = new Date(
+      dataAtual.getFullYear(),
+      dataAtual.getMonth() + 1,
+      0
+    );
 
     const obrasAFinalizar = obras.filter((obra) => {
       const dataFimObra = new Date(obra.dataFim);
@@ -122,29 +114,6 @@ export default function Home() {
   };
   const obrasAFinalizarNoMes = getObrasAFinalizar();
 
-  const getClienteComMaisObras = () => {
-    const contadorObrasPorCliente = {};
-
-    // Contar o número de obras para cada cliente
-    obras.forEach((obra) => {
-      const clienteId = obra.clienteId; // Substitua com o nome do seu campo de identificação do cliente
-      contadorObrasPorCliente[clienteId] = (contadorObrasPorCliente[clienteId] || 0) + 1;
-    });
-
-    // Encontrar o cliente com mais obras
-    let clienteComMaisObras = null;
-    let maxObras = 0;
-
-    Object.keys(contadorObrasPorCliente).forEach((clienteId) => {
-      if (contadorObrasPorCliente[clienteId] > maxObras) {
-        clienteComMaisObras = clienteId;
-        maxObras = contadorObrasPorCliente[clienteId];
-      }
-    });
-
-    return clienteComMaisObras;
-  };
-  const clienteComMaisObras = getClienteComMaisObras();
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -152,39 +121,48 @@ export default function Home() {
         <Text style={styles.headerText}>{user}</Text>
       </View>
       <View style={styles.cardContainer}>
-        {obras.length > 0 ? (
-          <View style={styles.card}>
-            <View style={styles.chartContainer}>
-              <PieChart
-                data={data}
-                width={300}
-                height={200}
-                chartConfig={{
-                  backgroundColor: "#e26a00",
-                  backgroundGradientFrom: "#fb8c00",
-                  backgroundGradientTo: "#ffa726",
-                  decimalPlaces: 2,
-                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                  style: {
-                    borderRadius: 16,
-                  },
-                }}
-                accessor="population"
-                backgroundColor="transparent"
-                paddingLeft="15"
-              />
-            </View>
-            <View style={styles.cardFooter}>
-              <Text style={styles.cardText}>Obras cadastradas: {totalObras}</Text>
-              <Text style={styles.cardText}>Cliente cadastrados: {clientes.length}</Text>
-              <Text style={styles.cardText}>Funcionários cadastrados: {funcionarios.length}</Text>
-              <Text style={styles.cardText}>Obras a finalizar neste mês: {obrasAFinalizarNoMes}</Text>
-              <Text style={styles.cardText}>Cliente com mais Obras: {clienteComMaisObras ? clienteComMaisObras : "Nenhum"}</Text>
-            </View>
-          </View>
-        ) : (
-          <Text style={styles.noDataText}>Nenhuma obra cadastrada.</Text>
-        )}
+        <View style={styles.obrasContainer}>
+          <Text style={styles.descriptionText}>
+            Total de Obras Cadastradas:
+          </Text>
+          <Text style={styles.numeroObrasText}>{obras.length}</Text>
+        </View>
+
+        <View style={styles.obrasContainer}>
+          <Text style={styles.descriptionText}>
+            Obras Concluidas:
+          </Text>
+          <Text style={styles.numeroObrasText}>{percentObrasConc} %</Text>
+        </View>
+
+        <View style={styles.obrasContainer}>
+          <Text style={styles.descriptionText}>
+            Obras Pendentes:
+          </Text>
+          <Text style={styles.numeroObrasText}>{percentObrasPend} %</Text>
+        </View>
+
+        <View style={styles.obrasContainer}>
+          <Text style={styles.descriptionText}>
+            Obras para entregar este mês:
+          </Text>
+          <Text style={styles.numeroObrasText}>{obrasAFinalizarNoMes}</Text>
+        </View>
+
+        <View style={styles.obrasContainer}>
+          <Text style={styles.descriptionText}>
+            Total de Cliente Cadastrados:
+          </Text>
+          <Text style={styles.numeroObrasText}>{clientes.length}</Text>
+        </View>
+
+        <View style={styles.obrasContainer}>
+          <Text style={styles.descriptionText}>
+            Total de Funcionários Cadastrados:
+          </Text>
+          <Text style={styles.numeroObrasText}>{funcionarios.length}</Text>
+        </View>
+        
       </View>
     </SafeAreaView>
   );
@@ -198,14 +176,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 25,
   },
   headerText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   cardContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.15)",
@@ -213,28 +191,27 @@ const styles = StyleSheet.create({
     height: "80%",
     borderRadius: 10,
     padding: 10,
-  },
-  card: {
-    flex: 1,
-    flexDirection: "column",
     justifyContent: "center",
+    alignItems: "center",
   },
-  chartContainer: {
-    alignItems: "flex-start",
+  obrasContainer: {
+    flexDirection: "row",
+    marginVertical: 10,
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 10,
+    width: "90%",
   },
-  cardFooter: {
-    position: "absolute",
-    bottom: 0,
-  },
-  cardText: {
+  descriptionText: {
     color: "white",
-    fontSize: 18,
-    paddingBottom: 8,
+    fontSize: 16,
   },
-  noDataText: {
-    color: 'white',
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 20,
+  numeroObrasText: {
+    color: "white",
+    fontSize: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 5,
+    marginLeft: 8,
   },
 });
