@@ -17,6 +17,7 @@ import { TextInputMask } from "react-native-masked-text";
 export default function CadastroNovaObra({ navigation, route }) {
   const { onGoBack } = route.params || {};
 
+
   const [codigo, setCodigo] = useState("");
   const [nomeObra, setNomeObra] = useState("");
   const [cliente, setCliente] = useState("");
@@ -78,6 +79,7 @@ export default function CadastroNovaObra({ navigation, route }) {
     setTelefoneClienteBuscado("");
   };
 
+  
   //FUNCTION PARA CADASTRAR NOVA OBRA
   const handleCadastro = async () => {
     const validaCampos = handleValidaCadastro();
@@ -410,6 +412,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginHorizontal: 10,
   },
+  inpText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginHorizontal: 10,
+  },
   button: {
     backgroundColor: "#007BFF",
     borderRadius: 8,
@@ -491,10 +499,5 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     marginHorizontal: 10,
-  },
-  inpText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
   },
 });

@@ -41,9 +41,9 @@ export default function User() {
       setUserLogadoEmail(user.email);
       setUserLogadoPass(user.password);
 
-      if(user.fotoPerfil){
+      if (user.fotoPerfil) {
         setAvatarSource(user.fotoPerfil);
-      }else{
+      } else {
         setAvatarSource(require("../../assets/undefinedUser.jpg"));
       }
     }
@@ -161,9 +161,9 @@ export default function User() {
             password: newPassword,
           }),
         });
-  
+
         const data = await response.json();
-  
+
         if (response.status === 200) {
           Alert.alert("Sucesso!", data.message);
           toggleModalSenha();
@@ -222,9 +222,9 @@ export default function User() {
             email: newEmail,
           }),
         });
-  
+
         const data = await response.json();
-  
+
         if (response.status === 200) {
           Alert.alert("Sucesso!", data.message);
           toggleModalEmail();
@@ -297,14 +297,16 @@ export default function User() {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Redefinir Senha</Text>
+              <Text style={styles.inpText}>E-mail cadastrado:</Text>
               <TextInput
-                placeholder="Email atual"
+                placeholder="Digite o e-mail cadastrado"
                 style={styles.input}
                 value={emailAtual}
                 onChangeText={(text) => setEmailAtual(text)}
                 placeholderTextColor="white"
                 color="white"
               />
+              <Text style={styles.inpText}>Nova senha:</Text>
               <TextInput
                 placeholder="Digite a nova senha"
                 style={styles.input}
@@ -341,16 +343,18 @@ export default function User() {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Redefinir Email</Text>
+              <Text style={styles.inpText}>E-mail atual:</Text>
               <TextInput
-                placeholder="Email atual"
+                placeholder="Digite o e-mail atual"
                 style={styles.input}
                 value={email}
                 onChangeText={(text) => setEmail(text)}
                 placeholderTextColor="white"
                 color="white"
               />
+              <Text style={styles.inpText}>Nome e-mail:</Text>
               <TextInput
-                placeholder="Digite o novo email"
+                placeholder="Digite o novo e-mail"
                 style={styles.input}
                 value={newEmail}
                 onChangeText={(text) => setNewEmail(text)}
@@ -435,6 +439,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
+  },
+  inpText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginHorizontal: 10,
   },
   modalButton: {
     backgroundColor: "#007BFF",

@@ -335,6 +335,7 @@ export default function UpdateObra({ navigation, route }) {
             <Text style={styles.cancelButtonText}>Cancelar</Text>
           </TouchableOpacity>
           <Text style={styles.heading}>Dados da Obra</Text>
+          <Text style={styles.inpText}>Código da Obra:</Text>
           <TextInput
             style={styles.input}
             placeholder="Código da Obra"
@@ -342,6 +343,7 @@ export default function UpdateObra({ navigation, route }) {
             value={codigo}
             onChangeText={(text) => setCodigo(text)}
           />
+          <Text style={styles.inpText}>Nome da Obra:</Text>
           <TextInput
             style={styles.input}
             placeholder="Nome da Obra"
@@ -349,6 +351,7 @@ export default function UpdateObra({ navigation, route }) {
             onChangeText={(text) => setNomeObra(text)}
           />
           <View style={styles.clienteContainer}>
+          <Text style={styles.inpText}>Cliente da Obra:</Text>
             <TextInput
               style={styles.inputCliente}
               placeholder="Cliente da Obra  (CPF/CNPJ)"
@@ -364,6 +367,7 @@ export default function UpdateObra({ navigation, route }) {
               />
             </TouchableOpacity>
           </View>
+          <Text style={styles.inpText}>Telefone do Cliente:</Text>
           <TextInput
             style={styles.input}
             placeholder="Contato do cliente"
@@ -371,13 +375,14 @@ export default function UpdateObra({ navigation, route }) {
             value={telefone}
             onChangeText={(text) => setTelefone(text)}
           />
+          <Text style={styles.inpText}>Endereço da Obra:</Text>
           <TextInput
             style={styles.input}
             placeholder="Endereço da Obra"
             value={endereco}
             onChangeText={(text) => setEndereco(text)}
           />
-
+          <Text style={styles.inpText}>Número do Contrato:</Text>
           <TextInput
             style={styles.input}
             placeholder="Número do Contrato"
@@ -385,6 +390,7 @@ export default function UpdateObra({ navigation, route }) {
             value={numContrato}
             onChangeText={(text) => setNumContrato(text)}
           />
+          <Text style={styles.inpText}>Número do Alvará:</Text>
           <TextInput
             style={styles.input}
             placeholder="Número do Alvará"
@@ -392,13 +398,14 @@ export default function UpdateObra({ navigation, route }) {
             value={numAlvara}
             onChangeText={(text) => setNumAlvara(text)}
           />
-
+          <Text style={styles.inpText}>Responsável do Projeto:</Text>
           <TextInput
             style={styles.input}
             placeholder="Responsável de Projeto"
             value={RTProjeto}
             onChangeText={(text) => setRTProjeto(text)}
           />
+          <Text style={styles.inpText}>Responsável da Execução:</Text>
           <TextInput
             style={styles.input}
             placeholder="Responsável de Execução"
@@ -417,7 +424,7 @@ export default function UpdateObra({ navigation, route }) {
               <Picker.Item label={tipo.tipo} value={tipo.id} key={tipo.id} />
             ))}
           </Picker>
-
+          <Text style={styles.inpText}>Data de Início:</Text>
           <TextInputMask
             type={"datetime"}
             options={{
@@ -431,7 +438,7 @@ export default function UpdateObra({ navigation, route }) {
             onChangeText={(text) => setDataInicio(text)}
             keyboardType="numeric"
           />
-
+          <Text style={styles.inpText}>Data prevista para o término:</Text>
           <TextInputMask
             type={"datetime"}
             options={{
@@ -445,7 +452,7 @@ export default function UpdateObra({ navigation, route }) {
             onChangeText={(text) => setDataTermino(text)}
             keyboardType="numeric"
           />
-
+          <Text style={styles.inpText}>Orçamento da Obra:</Text>
           <TextInputMask
             type={"money"}
             placeholder="Orçamento da Obra"
@@ -491,6 +498,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
+    marginHorizontal: 10,
+  },
+  inpText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
     marginHorizontal: 10,
   },
   button: {
