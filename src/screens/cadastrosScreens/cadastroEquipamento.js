@@ -11,7 +11,8 @@ import {
   ScrollView,
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
-import { useNavigation } from "@react-navigation/native"; // Importe o hook de navegação
+import { useNavigation } from "@react-navigation/native"; 
+import Config from "../../../config/config.json";
 
 export default function CadastroEquipamento() {
   const [isModalPesquisa, setModalPesquisa] = useState(false); // inicializa o modal oculto
@@ -56,7 +57,7 @@ export default function CadastroEquipamento() {
     else {
       try {
         let response = await fetch(
-          "http://192.168.100.3:3000/cadastraEquipamento",
+          `${Config.urlRoot}/cadastraEquipamento`,
           {
             method: "POST",
             headers: {
@@ -130,7 +131,7 @@ export default function CadastroEquipamento() {
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
       try {
-        let baseUrl = "http://192.168.100.3:3000/buscaEquipamento";
+        let baseUrl = `${Config.urlRoot}/buscaEquipamento`;
         let params = {
           nome: nomeFind,
           codigo: codigoFind,
@@ -217,7 +218,7 @@ export default function CadastroEquipamento() {
           (equipAlterado.etiqueta = etiqueta);
         try {
           const response = await fetch(
-            "http://192.168.100.3:3000/alteraEquipamento",
+            `${Config.urlRoot}/alteraEquipamento`,
             {
               method: "PUT",
               headers: {
@@ -303,7 +304,7 @@ export default function CadastroEquipamento() {
             onPress: async () => {
               try {
                 let response = await fetch(
-                  "http://192.168.100.3:3000/apagaEquipamento",
+                  `${Config.urlRoot}/apagaEquipamento`,
                   {
                     method: "DELETE",
                     headers: {

@@ -11,7 +11,8 @@ import {
   ScrollView,
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
-import { useNavigation } from "@react-navigation/native"; // Importe o hook de navegação
+import { useNavigation } from "@react-navigation/native";
+import Config from "../../../config/config.json";
 
 export default function CadastroTipodeObra() {
   const [isModalPesquisa, setModalPesquisa] = useState(false); // inicializa o modal oculto
@@ -47,7 +48,7 @@ export default function CadastroTipodeObra() {
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
       try {
-        let response = await fetch("http://192.168.100.3:3000/cadastraTpO", {
+        let response = await fetch(`${Config.urlRoot}/cadastraTpO`, {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -110,7 +111,7 @@ export default function CadastroTipodeObra() {
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
       try {
-        let baseUrl = "http://192.168.100.3:3000/buscaTpO";
+        let baseUrl = `${Config.urlRoot}/buscaTpO`;
         let params = {
           tipo: tipoFind,
           codigo: codigoFind,
@@ -174,7 +175,7 @@ export default function CadastroTipodeObra() {
         };
 
         try {
-          const response = await fetch("http://192.168.100.3:3000/alteraTpO", {
+          const response = await fetch(`${Config.urlRoot}/alteraTpO`, {
             method: "PUT",
             headers: {
               Accept: "application/json",
@@ -246,7 +247,7 @@ export default function CadastroTipodeObra() {
             onPress: async () => {
               try {
                 let response = await fetch(
-                  "http://192.168.100.3:3000/deletaTpO",
+                  `${Config.urlRoot}/deletaTpO`,
                   {
                     method: "DELETE",
                     headers: {

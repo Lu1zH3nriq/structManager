@@ -16,6 +16,7 @@ import { TextInputMask } from "react-native-masked-text";
 import { useNavigation } from "@react-navigation/native";
 import { FlatList } from "react-native";
 import { format } from "date-fns";
+import Config from "../../config/config.json";
 
 export default function GerenciarObras() {
   const [isModalPesquisaVisible, setModalPesquisaVisible] = useState(false);
@@ -36,7 +37,7 @@ export default function GerenciarObras() {
   const getObrasFromDatabase = async () => {
     try {
       // Fazer uma solicitação GET ao servidor para buscar todas as obras
-      const response = await fetch("http://192.168.100.3:3000/allObras", {
+      const response = await fetch(`${Config.urlRoot}/allObras`, {
         method: "GET",
       });
 
@@ -107,7 +108,7 @@ export default function GerenciarObras() {
       );
     } else {
       try {
-        let baseUrl = "http://192.168.100.3:3000/buscaObra";
+        let baseUrl = `${Config.urlRoot}/buscaObra`;
         let params = {
           nomeCliente: nomeCliente,
           cpfCliente: cpfCliente,

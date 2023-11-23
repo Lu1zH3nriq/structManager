@@ -11,7 +11,8 @@ import {
   ScrollView,
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
-import { useNavigation } from "@react-navigation/native"; // Importe o hook de navegação
+import { useNavigation } from "@react-navigation/native";
+import Config from "../../../config/config.json";
 
 export default function CadastroFuncionario() {
   const [isModalPesquisa, setModalPesquisa] = useState(false); // inicializa o modal oculto
@@ -64,7 +65,7 @@ export default function CadastroFuncionario() {
     else {
       try {
         let response = await fetch(
-          "http://192.168.100.3:3000/cadastraFuncionario",
+          `${Config.urlRoot}/cadastraFuncionario`,
           {
             method: "POST",
             headers: {
@@ -128,7 +129,7 @@ export default function CadastroFuncionario() {
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
       try {
-        let baseUrl = "http://192.168.100.3:3000/buscaFuncionario";
+        let baseUrl = `${Config.urlRoot}/buscaFuncionario`;
         let params = {
           nome: nomeFind,
           cpfcnpj: cpfCnpjFind,
@@ -216,7 +217,7 @@ export default function CadastroFuncionario() {
           (funcionarioBuscado.endereco = endereco);
         try {
           const response = await fetch(
-            "http://192.168.100.3:3000/alteraFuncionario",
+            `${Config.urlRoot}/alteraFuncionario`,
             {
               method: "PUT",
               headers: {
@@ -296,7 +297,7 @@ export default function CadastroFuncionario() {
             onPress: async () => {
               try {
                 let response = await fetch(
-                  "http://192.168.100.3:3000/deletaFuncionario",
+                  `${Config.urlRoot}/deletaFuncionario`,
                   {
                     method: "DELETE",
                     headers: {

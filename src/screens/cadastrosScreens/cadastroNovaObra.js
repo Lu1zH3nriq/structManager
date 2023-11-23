@@ -13,6 +13,7 @@ import {
 import { Icon } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import { TextInputMask } from "react-native-masked-text";
+import Config from "../../../config/config.json";
 
 export default function CadastroNovaObra({ navigation, route }) {
   const { onGoBack } = route.params || {};
@@ -112,7 +113,7 @@ export default function CadastroNovaObra({ navigation, route }) {
         return `${ano}-${mes}-${dia}`;
       }
       try {
-        const response = await fetch("http://192.168.100.3:3000/cadastraObra", {
+        const response = await fetch(`${Config.urlRoot}/cadastraObra`, {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -163,7 +164,7 @@ export default function CadastroNovaObra({ navigation, route }) {
 
   const getCliente = async () => {
     try {
-      let baseUrl = "http://192.168.100.3:3000/pesquisaCliente";
+      let baseUrl = `${Config.urlRoot}/pesquisaCliente`;
       let params = {
         cpfcnpj: cliente,
       };
@@ -207,7 +208,7 @@ export default function CadastroNovaObra({ navigation, route }) {
   const getTiposDeObra = async () => {
     try {
       // Fazer uma solicitação GET ao servidor para buscar os tipos de obras
-      const response = await fetch("http://192.168.100.3:3000/tiposObras", {
+      const response = await fetch(`${Config.urlRoot}/tiposObras`, {
         method: "GET",
       });
 
