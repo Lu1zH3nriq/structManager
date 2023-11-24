@@ -67,7 +67,7 @@ const transporter = nodemailer.createTransport({
   service: "Gmail", // Por exemplo, "Gmail", "Outlook", etc.
   auth: {
     user: "struct.engenharias@gmail.com",
-    pass: "structEngenharia21",
+    pass: "21112000Luiz!",
   },
 });
 // Função para enviar o email
