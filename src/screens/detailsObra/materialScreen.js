@@ -13,6 +13,7 @@ import {
 import { Swipeable } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ModalAdd from "react-native-modal";
+import Config from "../../../config/config.json";
 
 export default function MaterialScreen({ navigation, route }) {
   const obra = route.params?.obra || {};
@@ -28,7 +29,7 @@ export default function MaterialScreen({ navigation, route }) {
 
   const addMaterial = async () => {
     try {
-      const response = await fetch("http://192.168.100.3:3000/addMaterial", {
+      const response = await fetch(`${Config.urlRoot}/addMaterial`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -75,7 +76,7 @@ export default function MaterialScreen({ navigation, route }) {
 
   const getMateriais = async () => {
     try {
-      let baseUrl = "http://192.168.100.3:3000/buscaMateriais";
+      let baseUrl = `${Config.urlRoot}/buscaMateriais`;
       let params = {
         obraId: obra.id,
       };
@@ -109,7 +110,7 @@ export default function MaterialScreen({ navigation, route }) {
   const deleteMaterial = async ({ item }) => {
 
     try {
-      const response = await fetch(`http://192.168.100.3:3000/removeMaterial`, {
+      const response = await fetch(`${Config.urlRoot}/removeMaterial`, {
         method: "DELETE",
         headers: {
           Accept: "application/json",

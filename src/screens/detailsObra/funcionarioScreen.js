@@ -14,6 +14,7 @@ import ModalPesquisa from "react-native-modal";
 import ModalPesquisaSearch from "react-native-modal";
 import { Swipeable } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Config from "../../../config/config.json";
 
 export default function FuncionarioScreen({ navigation, route }) {
   const obra = route.params?.obra || {};
@@ -34,7 +35,7 @@ export default function FuncionarioScreen({ navigation, route }) {
 
   const getFuncionarios = async () => {
     try {
-      let baseUrl = "http://192.168.100.3:3000/buscaFuncionarios";
+      let baseUrl = `${Config.urlRoot}/buscaFuncionarios`;
       let params = {
         obraId: obra.id,
       };
@@ -79,7 +80,7 @@ export default function FuncionarioScreen({ navigation, route }) {
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
       try {
-        let baseUrl = "http://192.168.100.3:3000/buscaFuncObra";
+        let baseUrl = `${Config.urlRoot}/buscaFuncObra`;
         let params = {
           nome: nomeFind,
           cpfcnpj: cpfFind,
@@ -127,7 +128,7 @@ export default function FuncionarioScreen({ navigation, route }) {
       );
     } else {
       try {
-        const response = await fetch("http://192.168.100.3:3000/addFunc", {
+        const response = await fetch(`${Config.urlRoot}/addFunc`, {
           method: "PUT",
           headers: {
             Accept: "application/json",
@@ -208,7 +209,7 @@ export default function FuncionarioScreen({ navigation, route }) {
 
   const removeFuncionario = async ({ item }) => {
     try {
-      const response = await fetch("http://192.168.100.3:3000/removeFunc", {
+      const response = await fetch(`${Config.urlRoot}/removeFunc`, {
         method: "PUT",
         headers: {
           Accept: "application/json",
