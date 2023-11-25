@@ -14,10 +14,10 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "username": "zbhjre7ga9mfwfp7",
+    "password": "p75bgbxl4v3xxal9",
+    "database": "msogxb3ilxg2i6uk",
+    "host": "frwahxxknm9kwy6c.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
     "dialect": "mysql"
   },
   "urlRoot": "http://192.168.100.3:3000"
