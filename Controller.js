@@ -12,7 +12,7 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log("Back-end Rodando");
+  console.log(`Back-end Rodando na porta ${port}`);
 });
 
 let user = models.Usuario;
