@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "structManager",
-    "slug": "O seu gerenciador de obras",
+    "slug": "structManager",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/iconProd.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/bgImage3.jpg",
+      "image": "./assets/bgImage.png",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
@@ -19,12 +19,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/iconProd.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.luizmendess.structManager"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2e89dea4-e425-4928-b450-875fab97258a"
+      }
     }
   }
 }
