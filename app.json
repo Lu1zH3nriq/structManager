@@ -21,16 +21,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/iconProd.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.luizmendess.structManager"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "2e89dea4-e425-4928-b450-875fab97258a"
-      }
-    }
+    "extra": {}
   }
 }
