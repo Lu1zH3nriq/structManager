@@ -14,7 +14,7 @@ import { Icon } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import { TextInputMask } from "react-native-masked-text";
 import format from "date-fns/format";
-import Config from "../../../config/config.json";
+import { SERVER_URL } from "@env";
 
 export default function UpdateObra({ navigation, route }) {
   const obra = route.params?.obra || {};
@@ -165,7 +165,7 @@ export default function UpdateObra({ navigation, route }) {
             orcamento: orcamento,
             tipoObraId: selectedValue,
           };
-          const response = await fetch(`${Config.urlRoot}/alteraObra`, {
+          const response = await fetch(`${SERVER_URL}/alteraObra`, {
             method: "PUT",
             headers: {
               Accept: "application/json",
@@ -213,7 +213,7 @@ export default function UpdateObra({ navigation, route }) {
 
   const getCliente = async () => {
     try {
-      let baseUrl = `${Config.urlRoot}/pesquisaCliente`;
+      let baseUrl = `${SERVER_URL}/pesquisaCliente`;
       let params = {
         cpfcnpj: cliente,
       };
@@ -256,7 +256,7 @@ export default function UpdateObra({ navigation, route }) {
 
   const getClienteObra = async () => {
     try {
-      let baseUrl = `${Config.urlRoot}/buscaCliente/Id`;
+      let baseUrl = `${SERVER_URL}/buscaCliente/Id`;
       let params = {
         id: obra.clienteId,
       };
@@ -296,7 +296,7 @@ export default function UpdateObra({ navigation, route }) {
   //BUSCA TODAS AS OBRAS CADASTRADAS NO BANCO DE DADOS
   const getTiposDeObra = async () => {
     try {
-      const response = await fetch(`${Config.urlRoot}/tiposObras`, {
+      const response = await fetch(`${SERVER_URL}/tiposObras`, {
         method: "GET",
       });
 

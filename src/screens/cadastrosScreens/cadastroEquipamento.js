@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
 import { useNavigation } from "@react-navigation/native"; 
-import Config from "../../../config/config.json";
+import { SERVER_URL } from "@env";
 
 export default function CadastroEquipamento() {
   const [isModalPesquisa, setModalPesquisa] = useState(false); // inicializa o modal oculto
@@ -57,7 +57,7 @@ export default function CadastroEquipamento() {
     else {
       try {
         let response = await fetch(
-          `${Config.urlRoot}/cadastraEquipamento`,
+          `${SERVER_URL}/cadastraEquipamento`,
           {
             method: "POST",
             headers: {
@@ -131,7 +131,7 @@ export default function CadastroEquipamento() {
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
       try {
-        let baseUrl = `${Config.urlRoot}/buscaEquipamento`;
+        let baseUrl = `${SERVER_URL}/buscaEquipamento`;
         let params = {
           nome: nomeFind,
           codigo: codigoFind,
@@ -218,7 +218,7 @@ export default function CadastroEquipamento() {
           (equipAlterado.etiqueta = etiqueta);
         try {
           const response = await fetch(
-            `${Config.urlRoot}/alteraEquipamento`,
+            `${SERVER_URL}/alteraEquipamento`,
             {
               method: "PUT",
               headers: {
@@ -304,7 +304,7 @@ export default function CadastroEquipamento() {
             onPress: async () => {
               try {
                 let response = await fetch(
-                  `${Config.urlRoot}/apagaEquipamento`,
+                  `${SERVER_URL}/apagaEquipamento`,
                   {
                     method: "DELETE",
                     headers: {

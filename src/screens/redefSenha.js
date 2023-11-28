@@ -11,7 +11,7 @@ import {
 
 import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
-import Config from "../../config/config.json";
+import { SERVER_URL } from "@env";
 
 export default function RedefSenha() {
   const navigation = useNavigation();
@@ -33,7 +33,7 @@ export default function RedefSenha() {
       );
     } else {
       try {
-        let response = await fetch(`${Config.urlRoot}/resetPassword`, {
+        let response = await fetch(`${SERVER_URL}/resetPassword`, {
           method: "POST",
           headers: {
             Accept: "application/json",

@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import ModalPesquisaCliente from "react-native-modal";
 import { useNavigation } from "@react-navigation/native";
-import Config from "../../../config/config.json";
+import { SERVER_URL } from "@env";
 
 export default function CadCliente() {
   const [isModalPesquisaCliente, setModalPesquisaCliente] = useState(false); // inicializa o modal oculto
@@ -66,7 +66,7 @@ export default function CadCliente() {
     else {
       try {
         let response = await fetch(
-          `${Config.urlRoot}/cadastraCliente`,
+          `${SERVER_URL}/cadastraCliente`,
           {
             method: "POST",
             headers: {
@@ -128,7 +128,7 @@ export default function CadCliente() {
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
       try {
-        let baseUrl = `${Config.urlRoot}/buscaCliente`;
+        let baseUrl = `${SERVER_URL}/buscaCliente`;
         let params = {
           nome: nomeFind,
           cpfcnpj: cpfCnpjFind,
@@ -223,7 +223,7 @@ export default function CadCliente() {
           (clienteAlterado.endereco = endereco);
         try {
           const response = await fetch(
-            `${Config.urlRoot}/alteraCliente`,
+            `${SERVER_URL}/alteraCliente`,
             {
               method: "PUT",
               headers: {
@@ -311,7 +311,7 @@ export default function CadCliente() {
             onPress: async () => {
               try {
                 let response = await fetch(
-                  `${Config.urlRoot}/deletaCliente`,
+                  `${SERVER_URL}/deletaCliente`,
                   {
                     method: "DELETE",
                     headers: {

@@ -17,7 +17,8 @@ import {
 import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Config from "../../config/config.json"; 
+
+import { SERVER_URL } from "@env";
 
 
 export default function Login() {
@@ -43,7 +44,7 @@ export default function Login() {
       );
     } else {
       try {
-        let response = await fetch(`${Config.urlRoot}/login`, {
+        let response = await fetch(`${SERVER_URL}/login`, {
           method: "POST",
           headers: {
             Accept: "application/json",

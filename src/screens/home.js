@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Config from "../../config/config.json";
+import { SERVER_URL } from "@env";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -22,7 +22,7 @@ export default function Home() {
 
     async function getAllObras() {
       try {
-        const response = await fetch(`${Config.urlRoot}/allObras`, {
+        const response = await fetch(`${SERVER_URL}/allObras`, {
           method: "GET",
         });
 
@@ -40,7 +40,7 @@ export default function Home() {
     async function getAllClientes() {
       try {
         const response = await fetch(
-          `${Config.urlRoot}/buscaAllClientes`,
+          `${SERVER_URL}/buscaAllClientes`,
           {
             method: "GET",
           }
@@ -60,7 +60,7 @@ export default function Home() {
     async function getAllFuncionarios() {
       try {
         const response = await fetch(
-          `${Config.urlRoot}/buscaAllFuncionarios`,
+          `${SERVER_URL}/buscaAllFuncionarios`,
           {
             method: "GET",
           }

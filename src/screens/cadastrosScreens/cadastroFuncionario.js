@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
 import { useNavigation } from "@react-navigation/native";
-import Config from "../../../config/config.json";
+import { SERVER_URL } from "@env";
 
 export default function CadastroFuncionario() {
   const [isModalPesquisa, setModalPesquisa] = useState(false); // inicializa o modal oculto
@@ -65,7 +65,7 @@ export default function CadastroFuncionario() {
     else {
       try {
         let response = await fetch(
-          `${Config.urlRoot}/cadastraFuncionario`,
+          `${SERVER_URL}/cadastraFuncionario`,
           {
             method: "POST",
             headers: {
@@ -129,7 +129,7 @@ export default function CadastroFuncionario() {
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
       try {
-        let baseUrl = `${Config.urlRoot}/buscaFuncionario`;
+        let baseUrl = `${SERVER_URL}/buscaFuncionario`;
         let params = {
           nome: nomeFind,
           cpfcnpj: cpfCnpjFind,
@@ -217,7 +217,7 @@ export default function CadastroFuncionario() {
           (funcionarioBuscado.endereco = endereco);
         try {
           const response = await fetch(
-            `${Config.urlRoot}/alteraFuncionario`,
+            `${SERVER_URL}/alteraFuncionario`,
             {
               method: "PUT",
               headers: {
@@ -297,7 +297,7 @@ export default function CadastroFuncionario() {
             onPress: async () => {
               try {
                 let response = await fetch(
-                  `${Config.urlRoot}/deletaFuncionario`,
+                  `${SERVER_URL}/deletaFuncionario`,
                   {
                     method: "DELETE",
                     headers: {

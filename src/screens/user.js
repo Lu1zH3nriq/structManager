@@ -17,7 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import ModalSenha from "react-native-modal";
 import ModalEmail from "react-native-modal";
 import * as ImagePicker from "expo-image-picker";
-import Config from "../../config/config.json";
+import { SERVER_URL } from "@env";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -70,7 +70,7 @@ export default function User() {
     // Lógica para salvar a foto
 
     try {
-      let response = await fetch(`${Config.urlRoot}/uploadFoto`, {
+      let response = await fetch(`${SERVER_URL}/uploadFoto`, {
         method: "PUT",
         headers: {
           Accept: "application/json",
@@ -151,7 +151,7 @@ export default function User() {
       ]);
     } else {
       try {
-        let response = await fetch(`${Config.urlRoot}/updateSenha`, {
+        let response = await fetch(`${SERVER_URL}/updateSenha`, {
           method: "PUT",
           headers: {
             Accept: "application/json",
@@ -212,7 +212,7 @@ export default function User() {
       ]);
     } else {
       try {
-        let response = await fetch(`${Config.urlRoot}/updateEmail`, {
+        let response = await fetch(`${SERVER_URL}/updateEmail`, {
           method: "PUT",
           headers: {
             Accept: "application/json",

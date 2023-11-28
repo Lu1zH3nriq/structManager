@@ -14,7 +14,7 @@ import { Swipeable } from "react-native-gesture-handler";
 import ModalPesquisa from "react-native-modal";
 import ModalPesquisaSearch from "react-native-modal";
 import Icon from "react-native-vector-icons/FontAwesome";
-import Config from "../../../config/config.json";
+import { SERVER_URL } from "@env";
 
 export default function EquipamentoScreen({ navigation, route }) {
   const obra = route.params?.obra || {};
@@ -35,7 +35,7 @@ export default function EquipamentoScreen({ navigation, route }) {
 
   const getEquipamentos = async () => {
     try {
-      let baseUrl = `${Config.urlRoot}/buscaEquipamentos`;
+      let baseUrl = `${SERVER_URL}/buscaEquipamentos`;
       let params = {
         obraId: obra.id,
       };
@@ -76,7 +76,7 @@ export default function EquipamentoScreen({ navigation, route }) {
       );
     } else {
       try {
-        const response = await fetch(`${Config.urlRoot}/addEquip`, {
+        const response = await fetch(`${SERVER_URL}/addEquip`, {
           method: "PUT",
           headers: {
             Accept: "application/json",
@@ -144,7 +144,7 @@ export default function EquipamentoScreen({ navigation, route }) {
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
       try {
-        let baseUrl = `${Config.urlRoot}/buscaEquipObra`;
+        let baseUrl = `${SERVER_URL}/buscaEquipObra`;
         let params = {
           nome: nomeFind,
           codigo: codigoFind,
@@ -209,7 +209,7 @@ export default function EquipamentoScreen({ navigation, route }) {
 
   const removeEquipamento = async (item) => {
     try {
-      const response = await fetch(`${Config.urlRoot}/removeEquip`, {
+      const response = await fetch(`${SERVER_URL}/removeEquip`, {
         method: "DELETE",
         headers: {
           Accept: "application/json",

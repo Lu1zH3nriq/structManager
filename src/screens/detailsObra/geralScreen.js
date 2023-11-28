@@ -10,7 +10,7 @@ import {
 import { format } from "date-fns";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import Config from "../../../config/config.json";
+import { SERVER_URL } from "@env";
 
 export default function GeralScreen({ navigation, route }) {
   const { onGoBack } = route.params || {};
@@ -21,7 +21,7 @@ export default function GeralScreen({ navigation, route }) {
   React.useEffect(() => {
     const getCliente = async () => {
       try {
-        let baseUrl = `${Config.urlRoot}/buscaCliente/Id`;
+        let baseUrl = `${SERVER_URL}/buscaCliente/Id`;
         let params = { id: obra.clienteId };
         let url = `${baseUrl}?${new URLSearchParams(params).toString()}`;
 
@@ -60,7 +60,7 @@ export default function GeralScreen({ navigation, route }) {
           onPress: async () => {
             try {
               let response = await fetch(
-                `${Config.urlRoot}/deletaObra`,
+                `${SERVER_URL}/deletaObra`,
                 {
                   method: "DELETE",
                   headers: {

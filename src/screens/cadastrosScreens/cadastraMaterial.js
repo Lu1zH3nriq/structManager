@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import ModalPesquisa from "react-native-modal";
 import { useNavigation } from "@react-navigation/native";
-import Config from "../../../config/config.json";
+import { SERVER_URL } from "@env";
 
 export default function CadastraMaterial() {
   const [isModalPesquisa, setModalPesquisa] = useState(false);
@@ -48,7 +48,7 @@ export default function CadastraMaterial() {
     //SE NÃO ESTIVER VAZIOS, BUSCAR SE JA EXISTE
     else {
       try {
-        let response = await fetch(`${Config.urlRoot}/cadastraMat`, {
+        let response = await fetch(`${SERVER_URL}/cadastraMat`, {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -107,7 +107,7 @@ export default function CadastraMaterial() {
     //SE NÃO ESTIVER VAZIOS, FAZER A BUSCA PELOS CAMPOS COLETADOS
     else {
       try {
-        let baseUrl = `${Config.urlRoot}/buscaMat`;
+        let baseUrl = `${SERVER_URL}/buscaMat`;
         let params = {
           nome: nomeFind,
           codigo: codigoFind,
@@ -167,7 +167,7 @@ export default function CadastraMaterial() {
         };
 
         try {
-          const response = await fetch(`${Config.urlRoot}/alteraMat`, {
+          const response = await fetch(`${SERVER_URL}/alteraMat`, {
             method: "PUT",
             headers: {
               Accept: "application/json",
@@ -235,7 +235,7 @@ export default function CadastraMaterial() {
             onPress: async () => {
               try {
                 let response = await fetch(
-                  `${Config.urlRoot}/deletaMat`,
+                  `${SERVER_URL}/deletaMat`,
                   {
                     method: "DELETE",
                     headers: {
