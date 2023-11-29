@@ -23,16 +23,15 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.luizrmendes.structManager",
-      "usesCleartextTraffic": true
+      "config": {
+        "usesCleartextTraffic": true
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "SERVER_URL": "http://18.228.223.30:3000",
-      "eas": {
-        "projectId": "99b3694b-74a8-45fd-bd75-ca2c5f633e86"
-      }
+      "SERVER_URL": "http://18.228.223.30:3000"
     }
   }
 }
