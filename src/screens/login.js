@@ -59,22 +59,22 @@ export default function Login() {
         const data = await response.json();
 
         if (response.status === 200) {
-          
+
           const user_logado = data;
           //  COLOCAR O USER_LOGADO NO ASYNC STORAGE PARA CONTROLE DE LOGIN
           await AsyncStorage.setItem('userData', JSON.stringify(user_logado));
-            
+
           setUser("");
           setPassword("");
           navigation.navigate("Main");
         } else {
-          Alert.alert("Erro de login", data.message );
+          Alert.alert("Erro de login", data.message);
         }
       } catch (error) {
         //console.error("Erro na requisição: ", error);
         Alert.alert(
           "Erro de rede",
-          `Houve um problema na requisição. Tente novamente mais tarde. ${error}`
+          `Houve um problema na requisição. Tente novamente mais tarde. ${error} endereço do servidor: ${SERVER_URL}`
         );
       }
     }
