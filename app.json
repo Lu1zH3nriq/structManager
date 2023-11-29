@@ -26,6 +26,8 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {}
+    "extra": {
+      "SERVER_URL": "http://18.228.223.30:3000"
+    }
   }
 }
