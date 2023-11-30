@@ -39,12 +39,9 @@ export default function Home() {
 
     async function getAllClientes() {
       try {
-        const response = await fetch(
-          `${SERVER_URL}/buscaAllClientes`,
-          {
-            method: "GET",
-          }
-        );
+        const response = await fetch(`${SERVER_URL}/buscaAllClientes`, {
+          method: "GET",
+        });
 
         if (response.status === 200) {
           const clientes = await response.json();
@@ -59,12 +56,9 @@ export default function Home() {
 
     async function getAllFuncionarios() {
       try {
-        const response = await fetch(
-          `${SERVER_URL}/buscaAllFuncionarios`,
-          {
-            method: "GET",
-          }
-        );
+        const response = await fetch(`${SERVER_URL}/buscaAllFuncionarios`, {
+          method: "GET",
+        });
 
         if (response.status === 200) {
           const funcionarios = await response.json();
@@ -96,8 +90,16 @@ export default function Home() {
   });
 
   const totalObras = obras.length;
-  const percentObrasConcText = obrasConcluidas.length > 0 ? percentObrasConc.toFixed(2) + "%" : "0%";
-  const percentObrasPendText = obrasPendentes.length > 0 ? percentObrasPend.toFixed(2) + "%" : "0%"; 
+
+  const percentObrasConc =
+    totalObras > 0 ? (obrasConcluidas.length / totalObras) * 100 : 0;
+  const percentObrasPend =
+    totalObras > 0 ? (obrasPendentes.length / totalObras) * 100 : 0;
+
+  const percentObrasConcText =
+    obrasConcluidas.length > 0 ? percentObrasConc.toFixed(2) + "%" : "0%";
+  const percentObrasPendText =
+    obrasPendentes.length > 0 ? percentObrasPend.toFixed(2) + "%" : "0%";
 
   const getObrasAFinalizar = () => {
     const ultimoDiaDoMes = new Date(
@@ -123,23 +125,17 @@ export default function Home() {
       </View>
       <View style={styles.cardContainer}>
         <View style={styles.obrasContainer}>
-          <Text style={styles.descriptionText}>
-            Obras Cadastradas:
-          </Text>
+          <Text style={styles.descriptionText}>Obras Cadastradas:</Text>
           <Text style={styles.numeroObrasText}>{obras.length}</Text>
         </View>
 
         <View style={styles.obrasContainer}>
-          <Text style={styles.descriptionText}>
-            Obras Concluidas:
-          </Text>
+          <Text style={styles.descriptionText}>Obras Concluidas:</Text>
           <Text style={styles.numeroObrasText}>{percentObrasConcText}</Text>
         </View>
 
         <View style={styles.obrasContainer}>
-          <Text style={styles.descriptionText}>
-            Obras Pendentes:
-          </Text>
+          <Text style={styles.descriptionText}>Obras Pendentes:</Text>
           <Text style={styles.numeroObrasText}>{percentObrasPendText}</Text>
         </View>
 
@@ -163,7 +159,6 @@ export default function Home() {
           </Text>
           <Text style={styles.numeroObrasText}>{funcionarios.length}</Text>
         </View>
-        
       </View>
     </SafeAreaView>
   );

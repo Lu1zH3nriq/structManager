@@ -1162,7 +1162,7 @@ app.get("/buscaMateriais", async (req, res) => {
         {
           model: mat,
           as: "materiais",
-          through: { model: ObraMaterial, as: "obraMateriais", attributes: ["id", "materialId"], },
+          through: { model: ObraMaterial, as: "obraMateriais", attributes: ["id", "materialId", "obraId", "quantidade"], },
         },
       ],
     });
@@ -1204,7 +1204,7 @@ app.delete("/removeMaterial", async (req, res) => {
           {
             model: mat,
             as: "materiais",
-            through: { model: ObraMaterial, as: "obraMateriais", attributes: ["id", "materialId"], },
+            through: { model: ObraMaterial, as: "obraMateriais", attributes: ["id", "materialId", "obraId", "quantidade"], },
           },
         ],
       });
