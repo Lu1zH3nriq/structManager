@@ -96,8 +96,8 @@ export default function Home() {
   });
 
   const totalObras = obras.length;
-  const percentObrasConc = (obrasConcluidas.length / totalObras) * 100;
-  const percentObrasPend = (obrasPendentes.length / totalObras) * 100;
+  const percentObrasConcText = obrasConcluidas.length > 0 ? percentObrasConc.toFixed(2) + "%" : "0%";
+  const percentObrasPendText = obrasPendentes.length > 0 ? percentObrasPend.toFixed(2) + "%" : "0%"; 
 
   const getObrasAFinalizar = () => {
     const ultimoDiaDoMes = new Date(
@@ -124,7 +124,7 @@ export default function Home() {
       <View style={styles.cardContainer}>
         <View style={styles.obrasContainer}>
           <Text style={styles.descriptionText}>
-            Total de Obras Cadastradas:
+            Obras Cadastradas:
           </Text>
           <Text style={styles.numeroObrasText}>{obras.length}</Text>
         </View>
@@ -133,14 +133,14 @@ export default function Home() {
           <Text style={styles.descriptionText}>
             Obras Concluidas:
           </Text>
-          <Text style={styles.numeroObrasText}>{percentObrasConc} %</Text>
+          <Text style={styles.numeroObrasText}>{percentObrasConcText}</Text>
         </View>
 
         <View style={styles.obrasContainer}>
           <Text style={styles.descriptionText}>
             Obras Pendentes:
           </Text>
-          <Text style={styles.numeroObrasText}>{percentObrasPend} %</Text>
+          <Text style={styles.numeroObrasText}>{percentObrasPendText}</Text>
         </View>
 
         <View style={styles.obrasContainer}>

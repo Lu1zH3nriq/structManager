@@ -1084,7 +1084,6 @@ app.put("/alteraObra", async (req, res) => {
 
 app.post("/addMaterial", async (req, res) => {
   try {
-    console.log(req.body);
 
     const obraId = req.body.obraId;
     const materialName = req.body.materialName;
@@ -1125,7 +1124,7 @@ app.post("/addMaterial", async (req, res) => {
           {
             model: mat,
             as: "materiais",
-            through: { model: ObraMaterial, as: "obraMateriais", attributes: ["id", "materialId"], },
+            through: { model: ObraMaterial, as: "obraMateriais", attributes: ["id", "materialId", "obraId", "quantidade"], },
           },
         ],
       });

@@ -351,8 +351,8 @@ export default function UpdateObra({ navigation, route }) {
             value={nomeObra}
             onChangeText={(text) => setNomeObra(text)}
           />
-          <View style={styles.clienteContainer}>
           <Text style={styles.inpText}>Cliente da Obra:</Text>
+          <View style={styles.clienteContainer}>
             <TextInput
               style={styles.inputCliente}
               placeholder="Cliente da Obra  (CPF/CNPJ)"
