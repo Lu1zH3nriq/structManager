@@ -22,16 +22,14 @@
         "foregroundImage": "./assets/iconProd.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.luizrmendes.structManager",
-      "config": {
-        "usesCleartextTraffic": true
-      }
+      "package": "com.luizrmendes.structManager"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "SERVER_URL": "http://18.228.223.30:3000"
-    }
+    },
+    "config": {}
   }
 }
