@@ -28,7 +28,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "SERVER_URL": "http://18.228.223.30:3000"
+      "SERVER_URL": "https://appstructmanager.lhdevelopment.com.br"
     },
     "config": {}
   }

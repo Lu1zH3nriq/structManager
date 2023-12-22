@@ -20,5 +20,5 @@
     "host": "172.31.39.31",
     "dialect": "mysql"
   },
-  "urlRoot": "http://18.228.223.30:3000"
+  "urlRoot": "https://appstructmanager.lhdevelopment.com.br"
 }
