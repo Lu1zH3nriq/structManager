@@ -1,26 +1,14 @@
 {
   "cli": {
-    "version": ">= 5.9.1"
+    "version": ">= 5.9.3"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "env": {
-        "SERVER_URL": "https://appstructmanager.lhdevelopment.com.br"
-      }
+      "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "env": {
-        "SERVER_URL": "https://appstructmanager.lhdevelopment.com.br"
-      }
+      "distribution": "internal"
     },
     "production": {
       "android": {

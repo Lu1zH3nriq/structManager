@@ -28,7 +28,10 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "SERVER_URL": "https://appstructmanager.lhdevelopment.com.br"
+      "SERVER_URL": "https://appstructmanager.lhdevelopment.com.br",
+      "eas": {
+        "projectId": "8e373459-2259-4ae9-848a-49da02b0f38d"
+      }
     },
     "config": {}
   }
